@@ -52,6 +52,7 @@ public class ESPlorer extends javax.swing.JFrame {
     public static ArrayList<String> LAFclass;
     public static Preferences prefs;
     private static int FirmwareType;
+    private static String MachineModule = "machine";
 
     private static pyFiler pyFiler = new pyFiler();
 
@@ -130,6 +131,7 @@ public class ESPlorer extends javax.swing.JFrame {
         buttonGroupLF = new javax.swing.ButtonGroup();
         ContextMenuFileManager = new javax.swing.JPopupMenu();
         ShowFileManager = new javax.swing.JCheckBoxMenuItem();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         HorizontSplit = new javax.swing.JSplitPane();
         LeftBasePane = new javax.swing.JLayeredPane();
         LeftTab = new javax.swing.JTabbedPane();
@@ -288,6 +290,8 @@ public class ESPlorer extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         AutodetectFirmware = new javax.swing.JCheckBox();
         CommandEcho = new javax.swing.JCheckBox();
+        OptionsMachineModule = new javax.swing.JLayeredPane();
+        pyMachineModule = new javax.swing.JComboBox<>();
         ATvXX = new javax.swing.JLayeredPane();
         BasicATcommandsPane = new javax.swing.JLayeredPane();
         cmdAT = new javax.swing.JButton();
@@ -1343,11 +1347,11 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
         TextEditor.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                TextEditorCaretPositionChanged(evt);
-            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 TextEditorInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                TextEditorCaretPositionChanged(evt);
             }
         });
         TextEditor.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -2843,6 +2847,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
         TextTab.addTab("Snippets", NodeMCUSnippets);
 
+        NodeMCUSettings.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         NodeMCUSettings.setAutoscrolls(true);
         NodeMCUSettings.setOpaque(true);
 
@@ -2868,14 +2873,19 @@ public class ESPlorer extends javax.swing.JFrame {
         Firmware.add(OptionMicroPython);
         OptionMicroPython.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         OptionMicroPython.setText("MicroPython");
+        OptionMicroPython.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                OptionMicroPythonItemStateChanged(evt);
+            }
+        });
         OptionMicroPython.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 OptionMicroPythonStateChanged(evt);
             }
         });
-        OptionMicroPython.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                OptionMicroPythonItemStateChanged(evt);
+        OptionMicroPython.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OptionMicroPythonActionPerformed(evt);
             }
         });
 
@@ -2992,7 +3002,7 @@ public class ESPlorer extends javax.swing.JFrame {
                     .addComponent(EditorTheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(FileAutoRun)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         OptionsFileSendMode.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Send", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
@@ -3111,7 +3121,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             .addComponent(DelayLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, OptionsFileSendModeLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 101, Short.MAX_VALUE)
                         .addGroup(OptionsFileSendModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(DumbMode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Delay, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3296,11 +3306,42 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        OptionsMachineModule.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "uPython machine module", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
+        OptionsMachineModule.setName("uPython machine module"); // NOI18N
+
+        pyMachineModule.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "machine", "pyb" }));
+        pyMachineModule.setToolTipText("uPython  machine library, select \"pyb\" for a pyboard");
+        pyMachineModule.setName(""); // NOI18N
+        pyMachineModule.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pyMachineModuleActionPerformed(evt);
+            }
+        });
+
+        OptionsMachineModule.setLayer(pyMachineModule, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout OptionsMachineModuleLayout = new javax.swing.GroupLayout(OptionsMachineModule);
+        OptionsMachineModule.setLayout(OptionsMachineModuleLayout);
+        OptionsMachineModuleLayout.setHorizontalGroup(
+            OptionsMachineModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(OptionsMachineModuleLayout.createSequentialGroup()
+                .addComponent(pyMachineModule, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        OptionsMachineModuleLayout.setVerticalGroup(
+            OptionsMachineModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(OptionsMachineModuleLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pyMachineModule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         NodeMCUSettings.setLayer(OptionsFirmware, javax.swing.JLayeredPane.DEFAULT_LAYER);
         NodeMCUSettings.setLayer(OptionsOther, javax.swing.JLayeredPane.DEFAULT_LAYER);
         NodeMCUSettings.setLayer(OptionsFileSendMode, javax.swing.JLayeredPane.DEFAULT_LAYER);
         NodeMCUSettings.setLayer(jLayeredPane2, javax.swing.JLayeredPane.DEFAULT_LAYER);
         NodeMCUSettings.setLayer(jLayeredPane3, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        NodeMCUSettings.setLayer(OptionsMachineModule, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout NodeMCUSettingsLayout = new javax.swing.GroupLayout(NodeMCUSettings);
         NodeMCUSettings.setLayout(NodeMCUSettingsLayout);
@@ -3308,30 +3349,33 @@ public class ESPlorer extends javax.swing.JFrame {
             NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
                 .addGroup(NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(OptionsOther)
                     .addComponent(OptionsFirmware)
-                    .addComponent(OptionsFileSendMode, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(OptionsFileSendMode)
+                    .addComponent(OptionsMachineModule)
+                    .addComponent(OptionsOther, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLayeredPane2)
                     .addComponent(jLayeredPane3))
-                .addContainerGap(135, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         NodeMCUSettingsLayout.setVerticalGroup(
             NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
                 .addGroup(NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
-                        .addComponent(OptionsFirmware, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(OptionsOther, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
                         .addComponent(jLayeredPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLayeredPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(45, 45, 45)
+                        .addComponent(jLayeredPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
+                        .addComponent(OptionsFirmware, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(OptionsMachineModule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(OptionsOther, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(OptionsFileSendMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 134, Short.MAX_VALUE))
+                .addGap(0, 106, Short.MAX_VALUE))
         );
 
         TextTab.addTab("Settings", new javax.swing.ImageIcon(getClass().getResource("/resources/settings2.png")), NodeMCUSettings, "Settings for file sending"); // NOI18N
@@ -7003,7 +7047,7 @@ public class ESPlorer extends javax.swing.JFrame {
         MenuView.add(MenuItemViewRightExtra);
 
         MenuItemViewDonate.setSelected(true);
-        MenuItemViewDonate.setText("<html>I'm already make donation, <br />please hide dontation button at bottom right!");
+        MenuItemViewDonate.setText("<html>I've already made a donation, <br />please hide dontation button at bottom right!");
         MenuItemViewDonate.setToolTipText("Enable/disable Extra buttons panel at bottom right");
         MenuItemViewDonate.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -8730,18 +8774,20 @@ public class ESPlorer extends javax.swing.JFrame {
                 if (Snippets[i].isEmpty()) {
                     ButtonSnippet0.setText("GPIO2 1");
                     prefs.put("Snippet" + i + suffix + "name", "GPIO2 1");
-                    Snippets[i] = "import pyb\r\n"
-                            + "pin = pyb.Pin(2, pyb.Pin.OUT)\r\n"
-                            + "pin.value(1)";
+                    Snippets[i] = "#Set GPIO2 On\r\n"
+                            + "import machine\r\n"
+                            + "pin2 = machine.Pin(2, machine.Pin.OUT)\r\n"
+                            + "pin2.value(1)";
                 }
             }
             if (i == 1 && OptionMicroPython.isSelected()) {
                 if (Snippets[i].isEmpty()) {
                     ButtonSnippet1.setText("GPIO2 0");
                     prefs.put("Snippet" + i + suffix + "name", "GPIO2 0");
-                    Snippets[i] = "import pyb\r\n"
-                            + "pin = pyb.Pin(2, pyb.Pin.OUT)\r\n"
-                            + "pin.value(0)";
+                    Snippets[i] = "#Set GPIO2 Off\r\n"
+                            + "import machine\r\n"
+                            + "pin2 = machine.Pin(2, machine.Pin.OUT)\r\n"
+                            + "pin2.value(0)";
                 }
             }
         }
@@ -9681,150 +9727,6 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_TextTabStateChanged
 
-    private void AutodetectFirmwareItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_AutodetectFirmwareItemStateChanged
-        prefs.putBoolean(AUTODETECT, AutodetectFirmware.isSelected());
-    }//GEN-LAST:event_AutodetectFirmwareItemStateChanged
-
-    private void UseCustomPortNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UseCustomPortNameActionPerformed
-        Port.setEnabled(!UseCustomPortName.isSelected());
-        Port.setVisible(!UseCustomPortName.isSelected());
-        CustomPortName.setEnabled(UseCustomPortName.isSelected());
-        prefs.putBoolean(USE_CUSTOM_PORT, UseCustomPortName.isSelected());
-    }//GEN-LAST:event_UseCustomPortNameActionPerformed
-
-    private void CustomPortNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_CustomPortNameFocusLost
-        prefs.put(CUSTOM_PORT_NAME, CustomPortName.getText());
-    }//GEN-LAST:event_CustomPortNameFocusLost
-
-    private void LogMaxSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogMaxSizeActionPerformed
-
-    }//GEN-LAST:event_LogMaxSizeActionPerformed
-
-    private void LogMaxSizeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_LogMaxSizeFocusLost
-        try {
-            LogMax = Integer.parseInt(LogMaxSize.getText()) * 1024;
-        } catch (Exception e) {
-            LogMax = 1024 * 10;
-        }
-        if (LogMax < 2048) {
-            LogMax = 2048;
-        } else if (LogMax > 32 * 1024) {
-            LogMax = 32 * 1024;
-        }
-        prefs.putInt(LOG_MAX_SIZE, LogMax);
-        log("Log max size set to " + Integer.toString(LogMax / 1024) + " KB", DEBUG);
-    }//GEN-LAST:event_LogMaxSizeFocusLost
-
-    private void TerminalMaxSizeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_TerminalMaxSizeFocusLost
-        try {
-            TerminalMax = Integer.parseInt(TerminalMaxSize.getText()) * 1024;
-        } catch (Exception e) {
-            TerminalMax = 1024 * 100;
-        }
-        if (TerminalMax < 2048) {
-            TerminalMax = 2048;
-        } else if (TerminalMax > 1024 * 1024) {
-            TerminalMax = 1024 * 1024;
-        }
-        prefs.putInt(TERMINAL_MAX_SIZE, TerminalMax);
-        log("Terminal max size set to " + Integer.toString(TerminalMax / 1024) + " KB", DEBUG);
-    }//GEN-LAST:event_TerminalMaxSizeFocusLost
-
-    private void TurboModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TurboModeActionPerformed
-        if (TurboMode.isSelected()) {
-            DumbMode.setEnabled(false);
-            DumbMode.setSelected(false);
-        } else {
-            DumbMode.setEnabled(true);
-        }
-        prefs.putBoolean(TURBO_MODE, TurboMode.isSelected());
-        PrefsFlush();
-    }//GEN-LAST:event_TurboModeActionPerformed
-
-    private void TurboModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TurboModeItemStateChanged
-
-    }//GEN-LAST:event_TurboModeItemStateChanged
-
-    private void LineDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_LineDelayStateChanged
-        LineDelayLabel.setText("Line delay for \"Dumb Mode\" = " + Integer.toString(LineDelay.getValue()) + " ms");
-        prefs.putInt(LINE_DELAY, LineDelay.getValue());
-        PrefsFlush();
-    }//GEN-LAST:event_LineDelayStateChanged
-
-    private void DumbModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_DumbModeItemStateChanged
-        if (DumbMode.isSelected()) {
-            DelayLabel.setEnabled(false);
-            Delay.setEnabled(false);
-            AnswerDelayLabel.setEnabled(false);
-            AnswerDelay.setEnabled(false);
-            LineDelayLabel.setEnabled(true);
-            LineDelay.setEnabled(true);
-            TurboMode.setSelected(false);
-            TurboMode.setEnabled(false);
-        } else {
-            DelayLabel.setEnabled(true);
-            Delay.setEnabled(true);
-            AnswerDelayLabel.setEnabled(true);
-            AnswerDelay.setEnabled(true);
-            LineDelayLabel.setEnabled(false);
-            LineDelay.setEnabled(false);
-            TurboMode.setEnabled(true);
-        }
-        prefs.putBoolean(DUMB_MODE, DumbMode.isSelected());
-        PrefsFlush();
-    }//GEN-LAST:event_DumbModeItemStateChanged
-
-    private void AnswerDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_AnswerDelayStateChanged
-        AnswerDelayLabel.setText("Answer timout = " + Integer.toString(AnswerDelay.getValue()) + " s");
-        prefs.putInt(TIMEOUT, AnswerDelay.getValue());
-        PrefsFlush();
-    }//GEN-LAST:event_AnswerDelayStateChanged
-
-    private void DelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_DelayStateChanged
-        DelayLabel.setText("Delay after answer = " + Integer.toString(Delay.getValue()) + " ms");
-        prefs.putInt(DELAY, Delay.getValue());
-        PrefsFlush();
-    }//GEN-LAST:event_DelayStateChanged
-
-    private void UseExternalEditorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_UseExternalEditorItemStateChanged
-        prefs.putBoolean(USE_EXT_EDITOR, UseExternalEditor.isSelected());
-        UpdateButtons();
-    }//GEN-LAST:event_UseExternalEditorItemStateChanged
-
-    private void EditorThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditorThemeActionPerformed
-        int n = EditorTheme.getSelectedIndex();
-        prefs.putInt(COLOR_THEME, n);
-        PrefsFlush();
-        SetTheme(n, true); // for all
-    }//GEN-LAST:event_EditorThemeActionPerformed
-
-    private void FileAutoRunItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FileAutoRunItemStateChanged
-        prefs.putBoolean(FILE_AUTO_RUN, FileAutoRun.isSelected());
-        PrefsFlush();
-    }//GEN-LAST:event_FileAutoRunItemStateChanged
-
-    private void FileAutoSaveESPItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FileAutoSaveESPItemStateChanged
-        prefs.putBoolean(FILE_AUTO_SAVE_ESP, FileAutoSaveESP.isSelected());
-        PrefsFlush();
-    }//GEN-LAST:event_FileAutoSaveESPItemStateChanged
-
-    private void FileAutoSaveDiskItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FileAutoSaveDiskItemStateChanged
-        prefs.putBoolean(FILE_AUTO_SAVE_DISK, FileAutoSaveDisk.isSelected());
-        PrefsFlush();
-    }//GEN-LAST:event_FileAutoSaveDiskItemStateChanged
-
-    private void OptionMicroPythonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_OptionMicroPythonItemStateChanged
-        if (OptionMicroPython.isSelected()) {
-            SetFirmwareType(FIRMWARE_MPYTHON);
-        }
-    }//GEN-LAST:event_OptionMicroPythonItemStateChanged
-
-    private void OptionNodeMCUItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_OptionNodeMCUItemStateChanged
-        if (OptionNodeMCU.isSelected()) {
-            SetFirmwareType(FIRMWARE_NODEMCU);
-        }
-    }//GEN-LAST:event_OptionNodeMCUItemStateChanged
-
     private void CondensedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CondensedItemStateChanged
         prefs.putBoolean(CONDENSED, Condensed.isSelected());
     }//GEN-LAST:event_CondensedItemStateChanged
@@ -10245,18 +10147,6 @@ public class ESPlorer extends javax.swing.JFrame {
         MenuItemFileNew.doClick();
     }//GEN-LAST:event_ButtonFileNewActionPerformed
 
-    private void OptionNodeMCUStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_OptionNodeMCUStateChanged
-        if (OptionNodeMCU.isSelected()) {
-            SetFirmwareType(FIRMWARE_NODEMCU);
-        }
-    }//GEN-LAST:event_OptionNodeMCUStateChanged
-
-    private void OptionMicroPythonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_OptionMicroPythonStateChanged
-        if (OptionMicroPython.isSelected()) {
-            SetFirmwareType(FIRMWARE_MPYTHON);
-        }
-    }//GEN-LAST:event_OptionMicroPythonStateChanged
-
     private void MicroPythonGPIO0_1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MicroPythonGPIO0_1ActionPerformed
         cmdButtonGPIO(0, 1);
     }//GEN-LAST:event_MicroPythonGPIO0_1ActionPerformed
@@ -10462,7 +10352,9 @@ public class ESPlorer extends javax.swing.JFrame {
     private void PyFileAsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PyFileAsButton1ActionPerformed
         String fn = evt.getActionCommand();
         if (fn.endsWith(".py") || fn.endsWith(".pyc")) {
-            String cmd = "dofile(\"" + fn + "\")";
+            //String cmd = "dofile(\"" + fn + "\")";
+            String cmd = "exec(open(\"" + fn + "\").read(),globals())";
+
             btnSend(cmd);
         } else if (fn.endsWith(".bin") || fn.endsWith(".dat")) {
             //HexDump(fn);
@@ -10470,10 +10362,6 @@ public class ESPlorer extends javax.swing.JFrame {
             //ViewFile(fn);
         }
     }//GEN-LAST:event_PyFileAsButton1ActionPerformed
-
-    private void CommandEchoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CommandEchoItemStateChanged
-        prefs.putBoolean(COMMAND_ECHO, CommandEcho.isSelected());
-    }//GEN-LAST:event_CommandEchoItemStateChanged
 
     private void cmdSysResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSysResetActionPerformed
         btnSendEcho("sys reset");
@@ -10661,6 +10549,179 @@ public class ESPlorer extends javax.swing.JFrame {
     private void cmdSetPINGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSetPINGActionPerformed
         btnSend("AT+PING=\"" + PingIP.getText() + "\"");
     }//GEN-LAST:event_cmdSetPINGActionPerformed
+
+    private void CommandEchoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CommandEchoItemStateChanged
+        prefs.putBoolean(COMMAND_ECHO, CommandEcho.isSelected());
+    }//GEN-LAST:event_CommandEchoItemStateChanged
+
+    private void AutodetectFirmwareItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_AutodetectFirmwareItemStateChanged
+        prefs.putBoolean(AUTODETECT, AutodetectFirmware.isSelected());
+    }//GEN-LAST:event_AutodetectFirmwareItemStateChanged
+
+    private void UseCustomPortNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UseCustomPortNameActionPerformed
+        Port.setEnabled(!UseCustomPortName.isSelected());
+        Port.setVisible(!UseCustomPortName.isSelected());
+        CustomPortName.setEnabled(UseCustomPortName.isSelected());
+        prefs.putBoolean(USE_CUSTOM_PORT, UseCustomPortName.isSelected());
+    }//GEN-LAST:event_UseCustomPortNameActionPerformed
+
+    private void CustomPortNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_CustomPortNameFocusLost
+        prefs.put(CUSTOM_PORT_NAME, CustomPortName.getText());
+    }//GEN-LAST:event_CustomPortNameFocusLost
+
+    private void LogMaxSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogMaxSizeActionPerformed
+
+    }//GEN-LAST:event_LogMaxSizeActionPerformed
+
+    private void LogMaxSizeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_LogMaxSizeFocusLost
+        try {
+            LogMax = Integer.parseInt(LogMaxSize.getText()) * 1024;
+        } catch (Exception e) {
+            LogMax = 1024 * 10;
+        }
+        if (LogMax < 2048) {
+            LogMax = 2048;
+        } else if (LogMax > 32 * 1024) {
+            LogMax = 32 * 1024;
+        }
+        prefs.putInt(LOG_MAX_SIZE, LogMax);
+        log("Log max size set to " + Integer.toString(LogMax / 1024) + " KB", DEBUG);
+    }//GEN-LAST:event_LogMaxSizeFocusLost
+
+    private void TerminalMaxSizeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_TerminalMaxSizeFocusLost
+        try {
+            TerminalMax = Integer.parseInt(TerminalMaxSize.getText()) * 1024;
+        } catch (Exception e) {
+            TerminalMax = 1024 * 100;
+        }
+        if (TerminalMax < 2048) {
+            TerminalMax = 2048;
+        } else if (TerminalMax > 1024 * 1024) {
+            TerminalMax = 1024 * 1024;
+        }
+        prefs.putInt(TERMINAL_MAX_SIZE, TerminalMax);
+        log("Terminal max size set to " + Integer.toString(TerminalMax / 1024) + " KB", DEBUG);
+    }//GEN-LAST:event_TerminalMaxSizeFocusLost
+
+    private void TurboModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TurboModeActionPerformed
+        if (TurboMode.isSelected()) {
+            DumbMode.setEnabled(false);
+            DumbMode.setSelected(false);
+        } else {
+            DumbMode.setEnabled(true);
+        }
+        prefs.putBoolean(TURBO_MODE, TurboMode.isSelected());
+        PrefsFlush();
+    }//GEN-LAST:event_TurboModeActionPerformed
+
+    private void TurboModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TurboModeItemStateChanged
+
+    }//GEN-LAST:event_TurboModeItemStateChanged
+
+    private void LineDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_LineDelayStateChanged
+        LineDelayLabel.setText("Line delay for \"Dumb Mode\" = " + Integer.toString(LineDelay.getValue()) + " ms");
+        prefs.putInt(LINE_DELAY, LineDelay.getValue());
+        PrefsFlush();
+    }//GEN-LAST:event_LineDelayStateChanged
+
+    private void DumbModeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_DumbModeItemStateChanged
+        if (DumbMode.isSelected()) {
+            DelayLabel.setEnabled(false);
+            Delay.setEnabled(false);
+            AnswerDelayLabel.setEnabled(false);
+            AnswerDelay.setEnabled(false);
+            LineDelayLabel.setEnabled(true);
+            LineDelay.setEnabled(true);
+            TurboMode.setSelected(false);
+            TurboMode.setEnabled(false);
+        } else {
+            DelayLabel.setEnabled(true);
+            Delay.setEnabled(true);
+            AnswerDelayLabel.setEnabled(true);
+            AnswerDelay.setEnabled(true);
+            LineDelayLabel.setEnabled(false);
+            LineDelay.setEnabled(false);
+            TurboMode.setEnabled(true);
+        }
+        prefs.putBoolean(DUMB_MODE, DumbMode.isSelected());
+        PrefsFlush();
+    }//GEN-LAST:event_DumbModeItemStateChanged
+
+    private void AnswerDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_AnswerDelayStateChanged
+        AnswerDelayLabel.setText("Answer timout = " + Integer.toString(AnswerDelay.getValue()) + " s");
+        prefs.putInt(TIMEOUT, AnswerDelay.getValue());
+        PrefsFlush();
+    }//GEN-LAST:event_AnswerDelayStateChanged
+
+    private void DelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_DelayStateChanged
+        DelayLabel.setText("Delay after answer = " + Integer.toString(Delay.getValue()) + " ms");
+        prefs.putInt(DELAY, Delay.getValue());
+        PrefsFlush();
+    }//GEN-LAST:event_DelayStateChanged
+
+    private void UseExternalEditorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_UseExternalEditorItemStateChanged
+        prefs.putBoolean(USE_EXT_EDITOR, UseExternalEditor.isSelected());
+        UpdateButtons();
+    }//GEN-LAST:event_UseExternalEditorItemStateChanged
+
+    private void EditorThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditorThemeActionPerformed
+        int n = EditorTheme.getSelectedIndex();
+        prefs.putInt(COLOR_THEME, n);
+        PrefsFlush();
+        SetTheme(n, true); // for all
+    }//GEN-LAST:event_EditorThemeActionPerformed
+
+    private void FileAutoRunItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FileAutoRunItemStateChanged
+        prefs.putBoolean(FILE_AUTO_RUN, FileAutoRun.isSelected());
+        PrefsFlush();
+    }//GEN-LAST:event_FileAutoRunItemStateChanged
+
+    private void FileAutoSaveESPItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FileAutoSaveESPItemStateChanged
+        prefs.putBoolean(FILE_AUTO_SAVE_ESP, FileAutoSaveESP.isSelected());
+        PrefsFlush();
+    }//GEN-LAST:event_FileAutoSaveESPItemStateChanged
+
+    private void FileAutoSaveDiskItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_FileAutoSaveDiskItemStateChanged
+        prefs.putBoolean(FILE_AUTO_SAVE_DISK, FileAutoSaveDisk.isSelected());
+        PrefsFlush();
+    }//GEN-LAST:event_FileAutoSaveDiskItemStateChanged
+
+    private void OptionMicroPythonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_OptionMicroPythonItemStateChanged
+        if (OptionMicroPython.isSelected()) {
+            SetFirmwareType(FIRMWARE_MPYTHON);
+        }
+    }//GEN-LAST:event_OptionMicroPythonItemStateChanged
+
+    private void OptionMicroPythonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_OptionMicroPythonStateChanged
+        if (OptionMicroPython.isSelected()) {
+            SetFirmwareType(FIRMWARE_MPYTHON);
+        }
+    }//GEN-LAST:event_OptionMicroPythonStateChanged
+
+    private void OptionNodeMCUItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_OptionNodeMCUItemStateChanged
+        if (OptionNodeMCU.isSelected()) {
+            SetFirmwareType(FIRMWARE_NODEMCU);
+        }
+    }//GEN-LAST:event_OptionNodeMCUItemStateChanged
+
+    private void OptionNodeMCUStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_OptionNodeMCUStateChanged
+        if (OptionNodeMCU.isSelected()) {
+            SetFirmwareType(FIRMWARE_NODEMCU);
+        }
+    }//GEN-LAST:event_OptionNodeMCUStateChanged
+
+    private void pyMachineModuleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pyMachineModuleActionPerformed
+        // get the setting from the UX, save the changed setting
+        MachineModule = pyMachineModule.getItemAt(pyMachineModule.getSelectedIndex());
+        log("uPython Machine Module set to :" + MachineModule );
+        prefs.put(MACHINE_MODULE, MachineModule );
+        PrefsFlush();
+    }//GEN-LAST:event_pyMachineModuleActionPerformed
+
+    private void OptionMicroPythonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OptionMicroPythonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_OptionMicroPythonActionPerformed
+
     private void NodeFileSystemInfo() {
         String cmd = "r,u,t=file.fsinfo() print(\"Total : \"..t..\" bytes\\r\\nUsed  : \"..u..\" bytes\\r\\nRemain: \"..r..\" bytes\\r\\n\") r=nil u=nil t=nil";
         LocalEcho = false;
@@ -11073,6 +11134,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JRadioButton OptionNodeMCU;
     private javax.swing.JLayeredPane OptionsFileSendMode;
     private javax.swing.JLayeredPane OptionsFirmware;
+    private javax.swing.JLayeredPane OptionsMachineModule;
     private javax.swing.JLayeredPane OptionsOther;
     private javax.swing.JTextField PASS;
     private javax.swing.JTextField PASSsoftAP;
@@ -11165,6 +11227,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JLayeredPane WiFiStationPane;
     private javax.swing.JLayeredPane WiFi_common;
     private javax.swing.JLayeredPane WiFisoftAPPane;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroupLF;
     private javax.swing.JComboBox channel;
     private javax.swing.JButton cmdAT;
@@ -11291,6 +11354,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparatorFileMenu;
     private javax.swing.JRadioButton multi;
     private javax.swing.JComboBox protocol;
+    private javax.swing.JComboBox<String> pyMachineModule;
     private javax.swing.JTextField remote_address;
     private javax.swing.JTextField remote_port;
     private javax.swing.JRadioButton single;
@@ -11428,7 +11492,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private static final String LOG_FONT_SIZE = "log_font_size";
     private static final String LOG_MAX_SIZE = "log_max_size";
     private static final String TERMINAL_MAX_SIZE = "terminal_max_size";
-
+    private static final String MACHINE_MODULE = "machine_module";
     // v0.2
     private static final String AUTO_SCROLL = "auto_scroll";
     private static final String SHOW_LOG = "show_log";
@@ -11983,7 +12047,7 @@ public class ESPlorer extends javax.swing.JFrame {
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
         chooser.setCurrentDirectory(new File(workDir));
-
+        // Settings - Firmware
         String SavedFirmware = prefs.get(FIRMWARE, "NodeMCU");
         log("Load saved settings: Firmware:" + SavedFirmware);
         if (SavedFirmware.equals("NodeMCU")) {
@@ -11993,6 +12057,16 @@ public class ESPlorer extends javax.swing.JFrame {
         } else {
             SetFirmwareType(FIRMWARE_AT);
         }
+        // Settings - Machine Library 
+        MachineModule = prefs.get(MACHINE_MODULE, "machine");
+        log("Loaded setting - uPython module : " + MachineModule );            
+        if (MachineModule.equals("machine")) {
+            pyMachineModule.setSelectedIndex(0); // Hardcoded 
+        } else {
+            pyMachineModule.setSelectedIndex(1); // Hardcoded 
+        }
+        
+        // Settings - various
         FileAutoSaveDisk.setSelected(prefs.getBoolean(FILE_AUTO_SAVE_DISK, true));
         FileAutoSaveESP.setSelected(prefs.getBoolean(FILE_AUTO_SAVE_ESP, true));
         FileAutoRun.setSelected(prefs.getBoolean(FILE_AUTO_RUN, true));
@@ -12513,6 +12587,7 @@ public class ESPlorer extends javax.swing.JFrame {
             provider.addCompletion(new BasicCompletion(provider, "import network"));
             provider.addCompletion(new BasicCompletion(provider, "import time"));
             provider.addCompletion(new BasicCompletion(provider, "import Timer"));
+            // todo: - use MachineModule to asdd support for pyb 
             provider.addCompletion(new BasicCompletion(provider, "from machine import Pin"));
             provider.addCompletion(new BasicCompletion(provider, "from machine import Pin, PWM"));
             provider.addCompletion(new BasicCompletion(provider, "from machine import ADC"));
@@ -13692,6 +13767,8 @@ public class ESPlorer extends javax.swing.JFrame {
                 NodeFileManagerPane.setVisible(false);
                 PyFileManagerPane.setVisible(true);
                 DisablingNotImplemented();
+                // enable uPython Machine Module Options
+                pyMachineModule.setEnabled(true);
                 break;
             case FIRMWARE_NODEMCU:
                 prefs.put(FIRMWARE, "NodeMCU");
@@ -13703,6 +13780,8 @@ public class ESPlorer extends javax.swing.JFrame {
                 CommandsNodeMCU.setVisible(true);
                 NodeFileManagerPane.setVisible(true);
                 PyFileManagerPane.setVisible(false);
+                // disable uPython Machine Module Options
+                pyMachineModule.setEnabled(false);
                 break;
             default:
                 // AT-based
@@ -13710,6 +13789,8 @@ public class ESPlorer extends javax.swing.JFrame {
                 PrefsFlush();
                 chooser.setFileFilter(FILTER_ALL);
                 CommandsSetAT();
+                // disable uPython Machine Module Options
+                pyMachineModule.setEnabled(false);
                 break;
         }
         LoadSnippets(); // reloading needed
@@ -13756,7 +13837,10 @@ public class ESPlorer extends javax.swing.JFrame {
             return;
         }
         log("Send command GPIO" + Integer.toString(gpio) + " : " + Integer.toString(value));
-        String cmd = "import pyb;p=pyb.Pin(" + Integer.toString(gpio) + ",pyb.Pin.OUT);p.value(" + Integer.toString(value) + ")";
+        
+        String cmd = "from machine import Pin;p=Pin(" + Integer.toString(gpio) + ",Pin.OUT);p.value(" + Integer.toString(value) + ")";
+        // replace machine by pyb module if needed 
+        cmd = cmd.replace("machine",MachineModule);
         btnSend(cmd);
     } // cmdButtonGPIO
 
@@ -13773,10 +13857,14 @@ public class ESPlorer extends javax.swing.JFrame {
             return;
         }
         log("Send command GET GPIO" + Integer.toString(gpio));
-        String cmd = "import pyb;p=pyb.Pin(" + Integer.toString(gpio) + ",pyb.Pin.IN);p.value()";
+        String cmd = "from machine import Pin;p=Pin(" + Integer.toString(gpio) + ",Pin.IN);p.value()";
+        // replace machine by pyb module if needed 
+        cmd = cmd.replace("machine",MachineModule);        
         btnSend(cmd);
     }
 
+    // simple save file , is handled in pyFiler.jave , 
+    // BUGBUG: but seems to have a problem 
     private boolean pySaveFileESP(String ft) {
         boolean success = false;
         log("pyFileSaveESP: Starting...");
@@ -13788,6 +13876,7 @@ public class ESPlorer extends javax.swing.JFrame {
         return success;
     } // pySaveFileESP
 
+    // generate list of all files on the board 
     private void AddPyFileButton(String FileName) {
         PyFileAsButton.add(new javax.swing.JButton());
         int i = PyFileAsButton.size() - 1;
@@ -13859,6 +13948,9 @@ public class ESPlorer extends javax.swing.JFrame {
         PyFileAsButton = new ArrayList<javax.swing.JButton>();
     } // ClearPyFileManager
 
+    //uPython : get a list of all files on the MCU for the current folder 
+    // send os.listdir for current folder 
+    // eventhandler picks up response , and adds it to the file list 
     private void PyListFiles() {
         if (portJustOpen) {
             log("ERROR: Communication with MCU not yet established.");
@@ -13881,6 +13973,12 @@ public class ESPlorer extends javax.swing.JFrame {
         rx_data = "";
         rcvBuf = "";
         log("pyFileManager: Starting...");
+        // Q&D hack : create the 'runfile' function each time
+//        log("pyFileManager: Create runfile function");
+//        String runfile= "def dofile(script):\r\n" +
+//                        "exec(open(script).read(),globals())\r\n" +
+//                        "\r\n";
+//        btnSend(runfile);
         String cmd = "import os;os.listdir('" + pyFiler.pwd() + "')";
         btnSend(cmd);
         WatchDogPyListDir();
