@@ -4115,7 +4115,7 @@
                                                   <Component id="Condensed" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <EmptySpace pref="69" max="32767" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -4312,7 +4312,7 @@
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="OptionsFileSendMode" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="106" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -6182,7 +6182,7 @@
                                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                                   <Component id="cmdCIPSEND" alignment="0" max="32767" attributes="0"/>
                                                   <Component id="cmdCIPSENDinteractive" alignment="0" max="32767" attributes="0"/>
-                                                  <Component id="cmdSetCIPCLOSE" alignment="0" pref="230" max="32767" attributes="0"/>
+                                                  <Component id="cmdSetCIPCLOSE" alignment="0" pref="0" max="32767" attributes="0"/>
                                               </Group>
                                               <Component id="cmdGetCIPSTART" alignment="1" min="-2" pref="230" max="-2" attributes="0"/>
                                           </Group>
@@ -7924,7 +7924,7 @@
                                               <Component id="cmdSysGetVer" min="-2" pref="120" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="cmdSysGetHwEui" min="-2" pref="120" max="-2" attributes="0"/>
-                                              <EmptySpace pref="20" max="32767" attributes="0"/>
+                                              <EmptySpace max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                     </DimensionLayout>
@@ -8114,7 +8114,7 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="cmdMacGetDevAddr" min="-2" pref="100" max="-2" attributes="0"/>
-                                              <EmptySpace min="0" pref="10" max="32767" attributes="0"/>
+                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                     </DimensionLayout>
@@ -8627,7 +8627,7 @@
                                               <Group type="102" attributes="0">
                                                   <Component id="LF" min="-2" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
-                                                  <Component id="EditorOnlyCheckBox" pref="70" max="32767" attributes="0"/>
+                                                  <Component id="EditorOnlyCheckBox" pref="0" max="32767" attributes="0"/>
                                               </Group>
                                               <Group type="102" attributes="0">
                                                   <Component id="CR" min="-2" max="-2" attributes="0"/>
@@ -8660,7 +8660,7 @@
                                       <Component id="ReScan" max="32767" attributes="0"/>
                                       <Group type="102" attributes="0">
                                           <Group type="103" groupAlignment="3" attributes="0">
-                                              <Component id="AutoScroll" alignment="3" pref="19" max="32767" attributes="0"/>
+                                              <Component id="AutoScroll" alignment="3" pref="0" max="32767" attributes="0"/>
                                               <Component id="CR" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="TerminalOnlyCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
