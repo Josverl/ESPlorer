@@ -10,6 +10,11 @@ Improved uPython support
     * Hexdump file - View in Terminal 
     * Remove file 
 * Unified File-Managers between LUA and uPython 
+* Fix line number alignment in Script and Snippet editor 
+    Issue : font sizes do not match 
+    >> Sync Font size in SnippetText and SnippetScrollPane
+
+
 
 ToDo: 
 
@@ -70,7 +75,8 @@ Add / enable not yet implemented functions in the UI
 
 * autodetect detect pyboard / generic module 
 
-* fix line number alignment in editor 
+
+
 * TimeOut in ListDir 
 
 Terminal 
@@ -85,4 +91,4 @@ Syntax
 Snippets editor 
     Allow edit after saving 
     Rename Buttons for simpler editing 
-
+    //todo: change snippets suffix to .py 

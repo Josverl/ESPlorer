@@ -8720,6 +8720,7 @@ public class ESPlorer extends javax.swing.JFrame {
             suffix = "";
             SnippetText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA);
         } else {
+            //todo: change snippets suffix to .py 
             suffix = "_mpy";
             SnippetText.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PYTHON);
         }
@@ -12064,7 +12065,10 @@ public class ESPlorer extends javax.swing.JFrame {
         LineDelay.setValue(prefs.getInt(LINE_DELAY, 200));
         // Font size
         Terminal.setFont(Terminal.getFont().deriveFont(prefs.getFloat(TERMINAL_FONT_SIZE, TERMINAL_FONT_SIZE_DEFAULT)));
+        // allign text sizes to allign line numbering 
         SnippetText.setFont(SnippetText.getFont().deriveFont(prefs.getFloat(EDITOR_FONT_SIZE, EDITOR_FONT_SIZE_DEFAULT)));
+        SnippetScrollPane.setFont(SnippetText.getFont());
+        
         Log.setFont(Log.getFont().deriveFont(prefs.getFloat(LOG_FONT_SIZE, LOG_FONT_SIZE_DEFAULT)));
         LogMax = prefs.getInt(LOG_MAX_SIZE, LogMax);
         LogMaxSize.setText(Integer.toString(LogMax / 1024));
@@ -12423,10 +12427,15 @@ public class ESPlorer extends javax.swing.JFrame {
             if (all) {
                 for (int i = 0; i < FilesTabbedPane.getTabCount(); i++) {
                     theme.apply(TextEditor1.get(i));
+                    //todo: Verify text allignment
                     TextEditor1.get(i).setFont(TextEditor1.get(i).getFont().deriveFont(prefs.getFloat(EDITOR_FONT_SIZE, EDITOR_FONT_SIZE_DEFAULT)));
+
                 }
                 theme.apply(SnippetText);
                 SnippetText.setFont(SnippetText.getFont().deriveFont(prefs.getFloat(EDITOR_FONT_SIZE, EDITOR_FONT_SIZE_DEFAULT)));
+                // allign text sizes to allign line numbering 
+                SnippetScrollPane.setFont(SnippetText.getFont());
+                
                 theme.apply(Terminal);
                 Terminal.setFont(Terminal.getFont().deriveFont(prefs.getFloat(TERMINAL_FONT_SIZE, TERMINAL_FONT_SIZE_DEFAULT)));
                 themeTextBackground = SnippetText.getBackground();
