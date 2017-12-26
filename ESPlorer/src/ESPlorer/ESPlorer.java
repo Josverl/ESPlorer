@@ -8549,47 +8549,71 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     private void HexDump(String FileName) {
-        String cmd = "_dump=function()\n"
-                + "  local buf\n"
-                + "  local j=0\n"
-                + "  if file.open(\"" + FileName + "\", \"r\") then\n"
-                + "  print('--HexDump start')\n"
-                + "  repeat\n"
-                + "     buf=file.read(1024)\n"
-                + "     if buf~=nil then\n"
-                + "     local n \n"
-                + "     if #buf==1024 then\n"
-                + "        n=(#buf/16)*16\n"
-                + "     else\n"
-                + "        n=(#buf/16+1)*16\n"
-                + "     end\n"
-                + "     for i=1,n do\n"
-                + "         j=j+1\n"
-                + "         if (i-1)%16==0 then\n"
-                + "            uart.write(0,string.format('%08X  ',j-1)) \n"
-                + "         end\n"
-                + "         uart.write(0,i>#buf and'   'or string.format('%02X ',buf:byte(i)))\n"
-                + "         if i%8==0 then uart.write(0,' ')end\n"
-                + "         if i%16==0 then uart.write(0,buf:sub(i-16+1, i):gsub('%c','.'),'\\n')end\n"
-                + "         if i%128==0 then tmr.wdclr()end\n"
-                + "     end\n"
-                + "     end\n"
-                + "  until(buf==nil)\n"
-                + "  file.close()\n"
-                + "  print(\"\\r--HexDump done.\")\n"
-                + "  else\n"
-                + "  print(\"\\r--HexDump error: can't open file\")\n"
-                + "  end\n"
-                + "end\n"
-                + "_dump()\n"
-                + "_dump=nil\n";
-        LocalEcho = false;
-        SendToESP(cmdPrep(cmd));
+        String cmd;
+        if (FirmwareType == FIRMWARE_MPYTHON ) {
+        //uPython 
+        //ref : http://code.activestate.com/recipes/572181-unicode-string-hex-dump
+        //todo: add errorhandling to uPython code 
+        cmd =   "FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])\n" +
+                "def dumpString(src, length=16):\n" +
+                "    result = []\n" +
+                "    for i in range(0, len(src), length):\n" +
+                "       chars = src[i:i+length]\n" +
+                "       hex = ' '.join([\"%02x\" % ord(x) for x in chars])\n" +
+                "       printable = ''.join([\"%s\" % ((ord(x) <= 127 and FILTER[ord(x)]) or '.') for x in chars])\n" +
+                "       result.append(\"%04x  %-*s  %s\\n\\r\" % (i, length*3, hex, printable))\n" +
+                "    return ''.join(result)\n" +
+                "print('---- :" +FileName+ "')\n" +
+                "with open('" +FileName+ "', 'r') as f:\n" +
+                "     print( dumpString( f.read()))" + 
+                "#-=-";
+                LocalEcho = false;
+                LocalEchoResumeString = "#-=-";
+                SendToESP(cmd);
+        } else { 
+        // LUA 
+            cmd = "_dump=function()\n"
+                    + "  local buf\n"
+                    + "  local j=0\n"
+                    + "  if file.open(\"" + FileName + "\", \"r\") then\n"
+                    + "  print('--HexDump start')\n"
+                    + "  repeat\n"
+                    + "     buf=file.read(1024)\n"
+                    + "     if buf~=nil then\n"
+                    + "     local n \n"
+                    + "     if #buf==1024 then\n"
+                    + "        n=(#buf/16)*16\n"
+                    + "     else\n"
+                    + "        n=(#buf/16+1)*16\n"
+                    + "     end\n"
+                    + "     for i=1,n do\n"
+                    + "         j=j+1\n"
+                    + "         if (i-1)%16==0 then\n"
+                    + "            uart.write(0,string.format('%08X  ',j-1)) \n"
+                    + "         end\n"
+                    + "         uart.write(0,i>#buf and'   'or string.format('%02X ',buf:byte(i)))\n"
+                    + "         if i%8==0 then uart.write(0,' ')end\n"
+                    + "         if i%16==0 then uart.write(0,buf:sub(i-16+1, i):gsub('%c','.'),'\\n')end\n"
+                    + "         if i%128==0 then tmr.wdclr()end\n"
+                    + "     end\n"
+                    + "     end\n"
+                    + "  until(buf==nil)\n"
+                    + "  file.close()\n"
+                    + "  print(\"\\r--HexDump done.\")\n"
+                    + "  else\n"
+                    + "  print(\"\\r--HexDump error: can't open file\")\n"
+                    + "  end\n"
+                    + "end\n"
+                    + "_dump()\n"
+                    + "_dump=nil\n";
+            LocalEcho = false;
+            SendToESP(cmdPrep(cmd));
+        }
     }
 
     private ArrayList<String> cmdPrep(String cmd) {
         String[] str = cmd.split("\n");
-        ArrayList<String> s256 = new ArrayList<String>();
+        ArrayList<String> s256 = new ArrayList<>();
         int i = 0;
         s256.add("");
         for (String subs : str) {
@@ -8675,11 +8699,18 @@ public class ESPlorer extends javax.swing.JFrame {
         FileRemoveESP(ft);
     }//GEN-LAST:event_MenuItemFileRemoveESPActionPerformed
     private void FileRemoveESP(String FileName) {
-        btnSend("file.remove(\"" + FileName + "\")");
+        if (FirmwareType == FIRMWARE_MPYTHON ) {
+            //uPython   
+            btnSend("import os;os.remove('" + FileName + "')");
+        } else { 
+            // LUA 
+            btnSend("file.remove(\"" + FileName + "\")");
+        }
         try {
             Thread.sleep(200L);
         } catch (Exception e) {
         }
+        //investigate: Frequent timeout on ESP32
         FileListReload.doClick();
     }
     private void MenuItemFileSaveESPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemFileSaveESPActionPerformed
@@ -10357,9 +10388,8 @@ public class ESPlorer extends javax.swing.JFrame {
     private void PyFileAsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PyFileAsButton1ActionPerformed
         String fn = evt.getActionCommand();
         if (fn.endsWith(".py") || fn.endsWith(".pyc")) {
-            //String cmd = "dofile(\"" + fn + "\")";
+            LocalEcho = false;
             String cmd = "exec(open(\"" + fn + "\").read(),globals())";
-
             btnSend(cmd);
         } else if (fn.endsWith(".bin") || fn.endsWith(".dat")) {
             //HexDump(fn);
@@ -11543,8 +11573,11 @@ public class ESPlorer extends javax.swing.JFrame {
     private static final int FIRMWARE_MPYTHON = 1;
     private static final int FIRMWARE_AT = 2;
 
+    // suppress Echo for a single line 
     private static boolean LocalEcho = true;
-
+    // Suppress echo until after this string is returned from the MCU
+    private static String LocalEchoResumeString = "";
+    
     public void inc_j() {
         ++j;
     }
@@ -12219,31 +12252,30 @@ public class ESPlorer extends javax.swing.JFrame {
         FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
     }
 
+
+    // Add a Run  menu item that allows both LUA and uPython scripts to run 
     private void AddMenuItemRun(int x, String FileName) {
-       
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
         FilePopupMenuItem.get(y).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/play.png")));
         FilePopupMenuItem.get(y).setText("Run " + FileName);
-        FilePopupMenuItem.get(y).setToolTipText("Execute command dofile(\"" + FileName + "\") for run this file");
-        FilePopupMenuItem.get(y).setActionCommand(FileName);
+
+        FilePopupMenuItem.get(y).setToolTipText("Run script file on the ESP");
+        if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
+            FilePopupMenuItem.get(y).setActionCommand( 
+                "exec(open(\"" + FileName + "\").read(),globals())") ; 
+        } else { 
+            FilePopupMenuItem.get(y).setActionCommand( 
+                "dofile(\"" + FileName + "\")" );
+        }
         FilePopupMenuItem.get(y).addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSend("dofile(\"" + evt.getActionCommand() + "\")");
+                btnSend(evt.getActionCommand());
             }
         });
-
-        // get uPython or LUA button 
-        if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
-            //get the new button
-            FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
-        } else { 
-            //get the new button
-            FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
-        }
         
-
+        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
     }
 
     private void AddMenuItemCompile(int x, String FileName) {
@@ -12777,9 +12809,11 @@ public class ESPlorer extends javax.swing.JFrame {
                             log(e.toString());
                         }
                         UpdateButtons();
-                        if (data.contains("\r\n>>>")) {
-                            TerminalAdd("\r\nMicroPython firmware detected, try get version...\r\n\r\n");
+                        if (data.contains("\r\n>>>") || data.contains(">>>\r\n")) {
+                            // todo: ESP32 does not seem to get detected , it initially sends just a \r
+                            TerminalAdd("\r\nMicroPython firmware detected, try get version...");
                             //Improved upython version 
+                            LocalEcho = false;
                             btnSend("import sys; print( sys.implementation.name, \".\".join(str(n) for n in sys.implementation.version) , \"on\", sys.platform )");
                             LeftTab.setSelectedIndex(0);
                             SetFirmwareType(FIRMWARE_MPYTHON);
@@ -12797,13 +12831,33 @@ public class ESPlorer extends javax.swing.JFrame {
                             NodeFileManagerPane.setVisible(false);
                             FirmwareType = FIRMWARE_AT;
                         } else {
-                            TerminalAdd("\r\nCan't autodetect firmware, because proper answer not received (may be unknown firmware). \r\nPlease, reset module or continue.\r\n");
+                            TerminalAdd("\r\nCan't autodetect firmware, because proper answer not received (may be unknown firmware).\r\nUsing configured firmware type\r\nPlease continue or reset module.\r\n");
+                            //use configured firmware type if set 
+                            if (OptionMicroPython.isSelected()) {
+                                SetFirmwareType(FIRMWARE_MPYTHON);
+                            }
+                            if( OptionNodeMCU.isSelected()) { 
+                                SetFirmwareType(FIRMWARE_NODEMCU);
+                            }
                         }
                     } else if (LocalEcho) {
                         TerminalAdd(data);
+                        
                     } else if (data.contains("\r")) {
-                        LocalEcho = true;
-                        TerminalAdd(data.substring(data.indexOf("\r")));
+                        if ( LocalEchoResumeString == "" &
+                                data.contains("\r") ){
+                            // single line echo supression 
+                            LocalEcho = true;
+                            TerminalAdd(data.substring(data.indexOf("\r")));
+                        } else { 
+                            // allow supressing of multiline scriptlets 
+                            // suppress up and including the ResumeEchoString
+                            if ( data.contains(LocalEchoResumeString)) {
+                                // turn off all supression
+                                LocalEcho = true;
+                                LocalEchoResumeString = ""; 
+                            }
+                        }
                     }
                 } catch (SerialPortException ex) {
                     log(ex.toString());
@@ -13759,28 +13813,47 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
-    private void ViewFile(String fn) {
-        String cmd = "_view=function()\n"
-                + "local _line\n"
-                + "if file.open(\"" + fn + "\",\"r\") then \n"
-                + "    print(\"--FileView start\")\n"
-                + "    repeat _line = file.readline() \n"
-                + "        if (_line~=nil) then \n"
-                + "            print(string.sub(_line,1,-2)) \n"
-                + "        end \n"
-                + "    until _line==nil\n"
-                + "    file.close() \n"
-                + "    print(\"--FileView done.\") \n"
-                + "else\n"
-                + "  print(\"\\r--FileView error: can't open file\")\n"
-                + "end\n"
-                + "end\n"
-                + "_view()\n"
-                + "_view=nil\n";
-        LocalEcho = false;
-        SendToESP(cmdPrep(cmd));
+    // View file on MCU ( LUA and uPython) 
+    // uses the console to echo back the file, so it must be a text file
+    private void ViewFile(String FileName) {
+        String cmd = "";
+        if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
+            //todo: Add try/catch     
+            cmd =   "print('------ :" +FileName+ "')\n" + 
+                    "with open('" +FileName+ "') as f: \n" + 
+                    "     s = f.read()\n" +
+                    "     print(s)\n" +
+                    "print('------')\n" + 
+                    "#-=-=-" ;
+            LocalEcho = false;
+            LocalEchoResumeString = "#-=-=-" ; 
+            // execute
+            SendToESP(cmd);
+        } else {
+            cmd = "_view=function()\n"
+                    + "local _line\n"
+                    + "if file.open(\"" + FileName + "\",\"r\") then \n"
+                    + "    print(\"--FileView start\")\n"
+                    + "    repeat _line = file.readline() \n"
+                    + "        if (_line~=nil) then \n"
+                    + "            print(string.sub(_line,1,-2)) \n"
+                    + "        end \n"
+                    + "    until _line==nil\n"
+                    + "    file.close() \n"
+                    + "    print(\"--FileView done.\") \n"
+                    + "else\n"
+                    + "  print(\"\\r--FileView error: can't open file\")\n"
+                    + "end\n"
+                    + "end\n"
+                    + "_view()\n"
+                    + "_view=nil\n";
+            LocalEcho = false;
+            // compress and execute
+            SendToESP(cmdPrep(cmd));
+        } 
     }
-
+    
+    
     private void SetFirmwareType(int ftype) {
         FirmwareType = ftype;
         switch (ftype) {
@@ -13924,24 +13997,33 @@ public class ESPlorer extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 PyFileAsButton1ActionPerformed(evt);
             }
-
         });
+        Button.setToolTipText(Button.getActionCommand() + ", LeftClick - View, RightClick - Other actions");
         // Create a new PopUp menu to add to the file node 
         FilePopupMenu.add(new javax.swing.JPopupMenu());
+        
         int x = FilePopupMenu.size() - 1;
         int y;
         // Now add the menu items to that popup menu
         if (FileName.endsWith(".py")) {
             Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
-            Button.setToolTipText(Button.getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
             AddMenuItemRun(x, FileName);
 //            AddMenuItemCompile(x, FileName);
             AddMenuItemSeparator(x);
             AddMenuItemView(x, FileName);
-//            AddMenuItemDump(x, FileName);
+            AddMenuItemDump(x, FileName);
 //            AddMenuItemEdit(x, FileName, size);
 //            AddMenuItemDownload(x, FileName, size);
-            AddMenuItemRename(x, FileName);
+//            AddMenuItemRename(x, FileName);
+            AddMenuItemSeparator(x);
+            AddMenuItemRemove(x, FileName);
+        } else {
+            Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
+            AddMenuItemView(x, FileName);
+            AddMenuItemDump(x, FileName);
+//            AddMenuItemEdit(x, FileName, size);
+//            AddMenuItemDownload(x, FileName, size);
+//            AddMenuItemRename(x, FileName);
             AddMenuItemSeparator(x);
             AddMenuItemRemove(x, FileName);
         }
@@ -13950,7 +14032,6 @@ public class ESPlorer extends javax.swing.JFrame {
         // - Change Directory
         // - Rename 
         // - Remove 
-        
         } else if (FileName.endsWith(".lc")) {
             FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lc.png")));
             FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
@@ -13961,18 +14042,7 @@ public class ESPlorer extends javax.swing.JFrame {
             AddMenuItemRename(x, FileName);
             AddMenuItemSeparator(x);
             AddMenuItemRemove(x, FileName);
-        } else {
-            FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
-            FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - View, RightClick - Other actions");
-            AddMenuItemView(x, FileName);
-            AddMenuItemDump(x, FileName);
-            AddMenuItemEdit(x, FileName, size);
-            AddMenuItemDownload(x, FileName, size);
-            AddMenuItemRename(x, FileName);
-            AddMenuItemSeparator(x);
-            AddMenuItemRemove(x, FileName);
-        }
-
+        
        
          */
         // and connect the popup menu to the File button
@@ -14016,13 +14086,9 @@ public class ESPlorer extends javax.swing.JFrame {
         rx_data = "";
         rcvBuf = "";
         log("pyFileManager: Starting...");
-        // Q&D hack : create the 'runfile' function each time
-//        log("pyFileManager: Create runfile function");
-//        String runfile= "def dofile(script):\r\n" +
-//                        "exec(open(script).read(),globals())\r\n" +
-//                        "\r\n";
-//        btnSend(runfile);
         String cmd = "import os;os.listdir('" + pyFiler.pwd() + "')";
+        LocalEcho = false;
+        // todo : btnSend / SendESP
         btnSend(cmd);
         WatchDogPyListDir();
     } // PyListFiles
@@ -14032,7 +14098,7 @@ public class ESPlorer extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent evt) {
                 //StopSend();
                 Toolkit.getDefaultToolkit().beep();
-                TerminalAdd("Waiting answer from ESP - Timeout reached. Command aborted.");
+                TerminalAdd("Waiting answer from ESP - Timeout reached. Command aborted.\r\n");
                 log("Waiting answer from ESP - Timeout reached. Command aborted.");
                 try {
                     serialPort.removeEventListener();
