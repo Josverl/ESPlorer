@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="3">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="4">
         <file>
             <url>src/ESPlorer/ESPlorer.java</url>
             <bookmark id="2">
                 <name/>
-                <line>8550</line>
+                <line>8503</line>
+                <key/>
+            </bookmark>
+            <bookmark id="4">
+                <name/>
+                <line>8657</line>
                 <key/>
             </bookmark>
             <bookmark id="3">
                 <name/>
-                <line>13811</line>
+                <line>13762</line>
                 <key/>
             </bookmark>
         </file>
@@ -18,6 +23,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Dev/ESPlorer/ESPlorer/src/ESPlorer/ESPlorer.java</file>
+            <file>file:/C:/Dev/ESPlorer/ESPlorer/src/ESPlorer/Changes.md</file>
         </group>
     </open-files>
 </project-private>
