@@ -4364,8 +4364,8 @@
                                     <Property name="toolTipText" type="java.lang.String" value=""/>
                                   </Properties>
                                   <Events>
-                                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="OptionNodeMCUStateChanged"/>
                                     <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="OptionNodeMCUItemStateChanged"/>
+                                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="OptionNodeMCUStateChanged"/>
                                   </Events>
                                 </Component>
                                 <Component class="javax.swing.JRadioButton" name="OptionMicroPython">
@@ -4383,6 +4383,9 @@
                                     <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="OptionMicroPythonStateChanged"/>
                                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OptionMicroPythonActionPerformed"/>
                                   </Events>
+                                  <AuxValues>
+                                    <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ESPlorer_OptionMicroPython"/>
+                                  </AuxValues>
                                 </Component>
                               </SubComponents>
                             </Container>
@@ -4924,13 +4927,17 @@
                               <Properties>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                    <TitledBorder title="uPython machine module">
+                                    <TitledBorder title="MicroPython machine module">
                                       <Font PropertyName="font" name="Tahoma" size="10" style="0"/>
                                     </TitledBorder>
                                   </Border>
                                 </Property>
-                                <Property name="name" type="java.lang.String" value="uPython machine module" noResource="true"/>
+                                <Property name="name" type="java.lang.String" value="MicroPython machine module" noResource="true"/>
                               </Properties>
+                              <AccessibilityProperties>
+                                <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="MicroPython machine module"/>
+                                <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
+                              </AccessibilityProperties>
 
                               <Layout>
                                 <DimensionLayout dim="0">
@@ -8660,7 +8667,7 @@
                                       <Component id="ReScan" max="32767" attributes="0"/>
                                       <Group type="102" attributes="0">
                                           <Group type="103" groupAlignment="3" attributes="0">
-                                              <Component id="AutoScroll" alignment="3" pref="0" max="32767" attributes="0"/>
+                                              <Component id="AutoScroll" alignment="3" pref="19" max="32767" attributes="0"/>
                                               <Component id="CR" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="TerminalOnlyCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
@@ -9401,6 +9408,7 @@
                                     </Property>
                                     <Property name="text" type="java.lang.String" value="FS Info"/>
                                     <Property name="toolTipText" type="java.lang.String" value="Execute command file.fsinfo() and show total, used and remainig space on the ESP filesystem"/>
+                                    <Property name="actionCommand" type="java.lang.String" value="FS Inf0"/>
                                     <Property name="alignmentX" type="float" value="0.5"/>
                                     <Property name="horizontalAlignment" type="int" value="2"/>
                                     <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">

@@ -42,7 +42,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
     public static SerialPort serialPort;
     public static ArrayList<String> sendBuf;
-    public static boolean pasteMode = true; // for MicroPython only
+
 
     public static boolean pOpen = false;
     public static boolean sOpen = false;
@@ -52,8 +52,9 @@ public class ESPlorer extends javax.swing.JFrame {
     public static ArrayList<String> LAFclass;
     public static Preferences prefs;
     private static int FirmwareType;
+    
+    public static boolean pasteMode = true; // for MicroPython only
     private static String MachineModule = "machine";
-
     private static pyFiler pyFiler = new pyFiler();
 
     /**
@@ -1347,11 +1348,11 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
         TextEditor.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                TextEditorInputMethodTextChanged(evt);
-            }
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
                 TextEditorCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                TextEditorInputMethodTextChanged(evt);
             }
         });
         TextEditor.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -2794,7 +2795,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         .addComponent(SnippetRun, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Condensed)))
-                .addContainerGap(69, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         SnippetTopPaneLayout.setVerticalGroup(
             SnippetTopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2859,14 +2860,14 @@ public class ESPlorer extends javax.swing.JFrame {
         OptionNodeMCU.setSelected(true);
         OptionNodeMCU.setText("NodeMCU");
         OptionNodeMCU.setToolTipText("");
-        OptionNodeMCU.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                OptionNodeMCUStateChanged(evt);
-            }
-        });
         OptionNodeMCU.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 OptionNodeMCUItemStateChanged(evt);
+            }
+        });
+        OptionNodeMCU.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                OptionNodeMCUStateChanged(evt);
             }
         });
 
@@ -3306,8 +3307,8 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        OptionsMachineModule.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "uPython machine module", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
-        OptionsMachineModule.setName("uPython machine module"); // NOI18N
+        OptionsMachineModule.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "MicroPython machine module", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
+        OptionsMachineModule.setName("MicroPython machine module"); // NOI18N
 
         pyMachineModule.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "machine", "pyb" }));
         pyMachineModule.setToolTipText("uPython  machine library, select \"pyb\" for a pyboard");
@@ -3375,8 +3376,11 @@ public class ESPlorer extends javax.swing.JFrame {
                         .addComponent(OptionsOther, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(OptionsFileSendMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 106, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
+
+        OptionsMachineModule.getAccessibleContext().setAccessibleName("MicroPython machine module");
+        OptionsMachineModule.getAccessibleContext().setAccessibleDescription("");
 
         TextTab.addTab("Settings", new javax.swing.ImageIcon(getClass().getResource("/resources/settings2.png")), NodeMCUSettings, "Settings for file sending"); // NOI18N
 
@@ -4300,7 +4304,7 @@ public class ESPlorer extends javax.swing.JFrame {
                     .addGroup(TCPclientBottomPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(cmdCIPSEND, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cmdCIPSENDinteractive, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cmdSetCIPCLOSE, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
+                        .addComponent(cmdSetCIPCLOSE, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addComponent(cmdGetCIPSTART, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         TCPclientBottomPaneLayout.setVerticalGroup(
@@ -5256,7 +5260,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addComponent(cmdSysGetVer, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmdSysGetHwEui, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jLayeredPane1Layout.setVerticalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5413,7 +5417,7 @@ public class ESPlorer extends javax.swing.JFrame {
                     .addComponent(AppSKey))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmdMacGetDevAddr, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 10, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         ABPPaneLayout.setVerticalGroup(
             ABPPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5898,7 +5902,7 @@ public class ESPlorer extends javax.swing.JFrame {
                                     .addGroup(LEDPanelLayout.createSequentialGroup()
                                         .addComponent(LF)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(EditorOnlyCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
+                                        .addComponent(EditorOnlyCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
                                     .addGroup(LEDPanelLayout.createSequentialGroup()
                                         .addComponent(CR)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -6146,6 +6150,7 @@ public class ESPlorer extends javax.swing.JFrame {
         FileSystemInfo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file manager.png"))); // NOI18N
         FileSystemInfo.setText("FS Info");
         FileSystemInfo.setToolTipText("Execute command file.fsinfo() and show total, used and remainig space on the ESP filesystem");
+        FileSystemInfo.setActionCommand("FS Inf0");
         FileSystemInfo.setAlignmentX(0.5F);
         FileSystemInfo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         FileSystemInfo.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -8113,7 +8118,7 @@ public class ESPlorer extends javax.swing.JFrame {
         FileRenamePanel.setVisible(false);
         FileRenamePanel.setEnabled(false);
         NodeFileManagerPane.repaint();
-        FileAsButton = new ArrayList<javax.swing.JButton>();
+        FileAsButtonList = new ArrayList<javax.swing.JButton>();
     }
 
     private class PortNodeFilesReader implements SerialPortEventListener {
@@ -8180,7 +8185,7 @@ public class ESPlorer extends javax.swing.JFrame {
                                     log("FileManager found file " + parts[0].trim());
                                 }
                             }
-                            if (FileAsButton.size() == 0) {
+                            if (FileAsButtonList.size() == 0) {
                                 TerminalAdd("No files found.");
                                 TerminalAdd("\r\n----------------------------\r\n> ");
                             } else {
@@ -8192,7 +8197,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             NodeFileManagerPane.doLayout();
                             NodeFileManagerPane.repaint();
                             NodeFileManagerPane.requestFocusInWindow();
-                            log("FileManager: File list parsing done, found " + FileAsButton.size() + " file(s).");
+                            log("FileManager: File list parsing done, found " + FileAsButtonList.size() + " file(s).");
                         } catch (Exception e) {
                             log(e.toString());
                         }
@@ -10768,7 +10773,10 @@ public class ESPlorer extends javax.swing.JFrame {
 
     private void CommandsSetMicroPython() {
         Command.removeAllItems();
-        Command.addItem(new String("import sys; print(sys.version_info)"));
+        Command.addItem("import sys; print( sys.implementation.name, \".\".join(str(n) for n in sys.implementation.version) , \"on\", sys.platform )");
+        Command.addItem("import sys; print(sys.version_info)");
+
+
     }
 
     private void CommandsSetAT() {
@@ -11376,10 +11384,12 @@ public class ESPlorer extends javax.swing.JFrame {
     private ArrayList<File> iFile; // for files in tab
     private ArrayList<File> mFile; // for multifile op
     private ArrayList<Boolean> FileChanged;
-    private ArrayList<javax.swing.JButton> FileAsButton;
-    private ArrayList<javax.swing.JButton> PyFileAsButton;
-    private ArrayList<javax.swing.JPopupMenu> FilePopupMenu;
-    private ArrayList<javax.swing.JMenuItem> FilePopupMenuItem;
+    
+    private ArrayList<javax.swing.JButton> FileAsButtonList;        // list files on LUA 
+    private ArrayList<javax.swing.JButton> PyFileAsButtonList;      // list of files on uPython 
+    private ArrayList<javax.swing.JPopupMenu> FilePopupMenu;        // popup menu on files 
+    private ArrayList<javax.swing.JMenuItem> FilePopupMenuItem;     // popup menu items 
+    
     private int iTab = 0; // tab index
     private int mFileIndex = -1; // multifile index
     private String UploadFileName = "";
@@ -11991,9 +12001,11 @@ public class ESPlorer extends javax.swing.JFrame {
         iFile = new ArrayList<File>();
         FileChanged = new ArrayList<Boolean>();
 
-        FileAsButton = new ArrayList<javax.swing.JButton>();
-        PyFileAsButton = new ArrayList<javax.swing.JButton>();
+        // create file lists for LUA and uPython 
+        FileAsButtonList = new ArrayList<javax.swing.JButton>();
+        PyFileAsButtonList = new ArrayList<javax.swing.JButton>();
 
+        // Create popup menus 
         FilePopupMenu = new ArrayList<javax.swing.JPopupMenu>();
         FilePopupMenuItem = new ArrayList<javax.swing.JMenuItem>();
 
@@ -12001,7 +12013,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
         LoadPrefs();
         LoadSnippets();
-
+        
         if (OptionNodeMCU.isSelected()) {
             Terminal.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA);
         } else {
@@ -12106,17 +12118,21 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     private void AddNodeFileButton(String FileName, int size) {
-        FileAsButton.add(new javax.swing.JButton());
-        int i = FileAsButton.size() - 1;
-        FileAsButton.get(i).setText(FileName);
-        //FileAsButton.get(i).setFont(new java.awt.Font("Tahoma", 0, 12));
-        FileAsButton.get(i).setAlignmentX(0.5F);
-        FileAsButton.get(i).setMargin(new java.awt.Insets(2, 2, 2, 2));
-        FileAsButton.get(i).setMaximumSize(new java.awt.Dimension(130, 25));
-        FileAsButton.get(i).setPreferredSize(new java.awt.Dimension(130, 25));
-        FileAsButton.get(i).setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        //FileAsButton.get(i).setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        FileAsButton.get(i).addActionListener(new java.awt.event.ActionListener() {
+        FileAsButtonList.add(new javax.swing.JButton());
+        int i = FileAsButtonList.size() - 1;
+        
+        //get the new button
+        javax.swing.JButton Button = FileAsButtonList.get(i);
+        
+        FileAsButtonList.get(i).setText(FileName);
+        //FileAsButtonList.get(i).setFont(new java.awt.Font("Tahoma", 0, 12));
+        FileAsButtonList.get(i).setAlignmentX(0.5F);
+        FileAsButtonList.get(i).setMargin(new java.awt.Insets(2, 2, 2, 2));
+        FileAsButtonList.get(i).setMaximumSize(new java.awt.Dimension(130, 25));
+        FileAsButtonList.get(i).setPreferredSize(new java.awt.Dimension(130, 25));
+        FileAsButtonList.get(i).setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        //FileAsButtonList.get(i).setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        FileAsButtonList.get(i).addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 FileAsButton1ActionPerformed(evt);
             }
@@ -12127,8 +12143,8 @@ public class ESPlorer extends javax.swing.JFrame {
         int y;
         // PopUp menu items
         if (FileName.endsWith(".lua")) {
-            FileAsButton.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lua.png")));
-            FileAsButton.get(i).setToolTipText(FileAsButton.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
+            FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lua.png")));
+            FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
             AddMenuItemRun(x, FileName);
             AddMenuItemCompile(x, FileName);
             AddMenuItemSeparator(x);
@@ -12140,8 +12156,8 @@ public class ESPlorer extends javax.swing.JFrame {
             AddMenuItemSeparator(x);
             AddMenuItemRemove(x, FileName);
         } else if (FileName.endsWith(".lc")) {
-            FileAsButton.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lc.png")));
-            FileAsButton.get(i).setToolTipText(FileAsButton.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
+            FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lc.png")));
+            FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
             AddMenuItemRun(x, FileName);
             AddMenuItemSeparator(x);
             AddMenuItemDump(x, FileName);
@@ -12150,8 +12166,8 @@ public class ESPlorer extends javax.swing.JFrame {
             AddMenuItemSeparator(x);
             AddMenuItemRemove(x, FileName);
         } else {
-            FileAsButton.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
-            FileAsButton.get(i).setToolTipText(FileAsButton.get(i).getActionCommand() + ", LeftClick - View, RightClick - Other actions");
+            FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
+            FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - View, RightClick - Other actions");
             AddMenuItemView(x, FileName);
             AddMenuItemDump(x, FileName);
             AddMenuItemEdit(x, FileName, size);
@@ -12161,8 +12177,8 @@ public class ESPlorer extends javax.swing.JFrame {
             AddMenuItemRemove(x, FileName);
         }
 
-        FileAsButton.get(i).setComponentPopupMenu(FilePopupMenu.get(x));
-        NodeFileManagerPane.add(FileAsButton.get(i));
+        FileAsButtonList.get(i).setComponentPopupMenu(FilePopupMenu.get(x));
+        NodeFileManagerPane.add(FileAsButtonList.get(i));
     }
 
     private void AddMenuItemSeparator(int x) {
@@ -12204,6 +12220,7 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     private void AddMenuItemRun(int x, String FileName) {
+       
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12216,7 +12233,17 @@ public class ESPlorer extends javax.swing.JFrame {
                 btnSend("dofile(\"" + evt.getActionCommand() + "\")");
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+
+        // get uPython or LUA button 
+        if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
+            //get the new button
+            FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        } else { 
+            //get the new button
+            FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        }
+        
+
     }
 
     private void AddMenuItemCompile(int x, String FileName) {
@@ -12587,7 +12614,7 @@ public class ESPlorer extends javax.swing.JFrame {
             provider.addCompletion(new BasicCompletion(provider, "import network"));
             provider.addCompletion(new BasicCompletion(provider, "import time"));
             provider.addCompletion(new BasicCompletion(provider, "import Timer"));
-            // todo: - use MachineModule to asdd support for pyb 
+            // todo: - use MachineModule to add support for pyb 
             provider.addCompletion(new BasicCompletion(provider, "from machine import Pin"));
             provider.addCompletion(new BasicCompletion(provider, "from machine import Pin, PWM"));
             provider.addCompletion(new BasicCompletion(provider, "from machine import ADC"));
@@ -12752,7 +12779,8 @@ public class ESPlorer extends javax.swing.JFrame {
                         UpdateButtons();
                         if (data.contains("\r\n>>>")) {
                             TerminalAdd("\r\nMicroPython firmware detected, try get version...\r\n\r\n");
-                            btnSend("import sys; print(\"MicroPython ver:\",sys.version_info)");
+                            //Improved upython version 
+                            btnSend("import sys; print( sys.implementation.name, \".\".join(str(n) for n in sys.implementation.version) , \"on\", sys.platform )");
                             LeftTab.setSelectedIndex(0);
                             SetFirmwareType(FIRMWARE_MPYTHON);
                         } else if (data.contains("\r\n>")) {
@@ -13764,6 +13792,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 OptionMicroPython.setSelected(true);
                 CommandsMicroPython.setVisible(true);
                 CommandsNodeMCU.setVisible(false);
+                //todo: merge file managers ?
                 NodeFileManagerPane.setVisible(false);
                 PyFileManagerPane.setVisible(true);
                 DisablingNotImplemented();
@@ -13778,6 +13807,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 OptionNodeMCU.setSelected(true);
                 CommandsMicroPython.setVisible(false);
                 CommandsNodeMCU.setVisible(true);
+                //todo: merge file managers ?
                 NodeFileManagerPane.setVisible(true);
                 PyFileManagerPane.setVisible(false);
                 // disable uPython Machine Module Options
@@ -13863,8 +13893,8 @@ public class ESPlorer extends javax.swing.JFrame {
         btnSend(cmd);
     }
 
-    // simple save file , is handled in pyFiler.jave , 
-    // BUGBUG: but seems to have a problem 
+    // simple save file , is handled in pyFiler.java , 
+    // BUGBUG: but seems to have a problem if the file already exists 
     private boolean pySaveFileESP(String ft) {
         boolean success = false;
         log("pyFileSaveESP: Starting...");
@@ -13876,43 +13906,54 @@ public class ESPlorer extends javax.swing.JFrame {
         return success;
     } // pySaveFileESP
 
-    // generate list of all files on the board 
+    // add a new button for a file found on the uPython board 
+    // todo: add filesize , int size)
     private void AddPyFileButton(String FileName) {
-        PyFileAsButton.add(new javax.swing.JButton());
-        int i = PyFileAsButton.size() - 1;
-        PyFileAsButton.get(i).setText(FileName);
-        PyFileAsButton.get(i).setAlignmentX(0.5F);
-        PyFileAsButton.get(i).setMargin(new java.awt.Insets(2, 2, 2, 2));
-        PyFileAsButton.get(i).setMaximumSize(new java.awt.Dimension(130, 25));
-        PyFileAsButton.get(i).setPreferredSize(new java.awt.Dimension(130, 25));
-        PyFileAsButton.get(i).setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        PyFileAsButton.get(i).addActionListener(new java.awt.event.ActionListener() {
+        PyFileAsButtonList.add(new javax.swing.JButton());
+        int i = PyFileAsButtonList.size() - 1;
+        //get the new button
+        javax.swing.JButton Button = PyFileAsButtonList.get(i);
+
+        Button.setText(FileName);
+        Button.setAlignmentX(0.5F);
+        Button.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        Button.setMaximumSize(new java.awt.Dimension(130, 25));
+        Button.setPreferredSize(new java.awt.Dimension(130, 25));
+        Button.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        Button.addActionListener(new java.awt.event.ActionListener() {        
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 PyFileAsButton1ActionPerformed(evt);
             }
+
         });
-        // PopUp menu
+        // Create a new PopUp menu to add to the file node 
         FilePopupMenu.add(new javax.swing.JPopupMenu());
         int x = FilePopupMenu.size() - 1;
         int y;
-        // PopUp menu items
-        /*
+        // Now add the menu items to that popup menu
         if (FileName.endsWith(".py")) {
-            FileAsButton.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lua.png")));
-            FileAsButton.get(i).setToolTipText(FileAsButton.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
+            Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
+            Button.setToolTipText(Button.getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
             AddMenuItemRun(x, FileName);
-            AddMenuItemCompile(x, FileName);
+//            AddMenuItemCompile(x, FileName);
             AddMenuItemSeparator(x);
             AddMenuItemView(x, FileName);
-            AddMenuItemDump(x, FileName);
-            AddMenuItemEdit(x, FileName, size);
-            AddMenuItemDownload(x, FileName, size);
+//            AddMenuItemDump(x, FileName);
+//            AddMenuItemEdit(x, FileName, size);
+//            AddMenuItemDownload(x, FileName, size);
             AddMenuItemRename(x, FileName);
             AddMenuItemSeparator(x);
             AddMenuItemRemove(x, FileName);
+        }
+        /*
+        //todo: Add folder 
+        // - Change Directory
+        // - Rename 
+        // - Remove 
+        
         } else if (FileName.endsWith(".lc")) {
-            FileAsButton.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lc.png")));
-            FileAsButton.get(i).setToolTipText(FileAsButton.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
+            FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lc.png")));
+            FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
             AddMenuItemRun(x, FileName);
             AddMenuItemSeparator(x);
             AddMenuItemDump(x, FileName);
@@ -13921,8 +13962,8 @@ public class ESPlorer extends javax.swing.JFrame {
             AddMenuItemSeparator(x);
             AddMenuItemRemove(x, FileName);
         } else {
-            FileAsButton.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
-            FileAsButton.get(i).setToolTipText(FileAsButton.get(i).getActionCommand() + ", LeftClick - View, RightClick - Other actions");
+            FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
+            FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - View, RightClick - Other actions");
             AddMenuItemView(x, FileName);
             AddMenuItemDump(x, FileName);
             AddMenuItemEdit(x, FileName, size);
@@ -13932,9 +13973,11 @@ public class ESPlorer extends javax.swing.JFrame {
             AddMenuItemRemove(x, FileName);
         }
 
-        FileAsButton.get(i).setComponentPopupMenu(FilePopupMenu.get(x));
+       
          */
-        PyFileManagerPane.add(PyFileAsButton.get(i));
+        // and connect the popup menu to the File button
+        PyFileAsButtonList.get(i).setComponentPopupMenu(FilePopupMenu.get(x));
+        PyFileManagerPane.add(PyFileAsButtonList.get(i));
 
     } // AddPyFileButton
 
@@ -13945,7 +13988,7 @@ public class ESPlorer extends javax.swing.JFrame {
         PyFileManagerPane.removeAll();
         PyFileManagerPane.add(PyListDir);
         PyFileManagerPane.repaint();
-        PyFileAsButton = new ArrayList<javax.swing.JButton>();
+        PyFileAsButtonList = new ArrayList<javax.swing.JButton>();
     } // ClearPyFileManager
 
     //uPython : get a list of all files on the MCU for the current folder 
@@ -14048,7 +14091,7 @@ public class ESPlorer extends javax.swing.JFrame {
                                 log("FileManager found file " + subs);
                             }
                         }
-                        if (PyFileAsButton.size() == 0) {
+                        if (PyFileAsButtonList.size() == 0) {
                             TerminalAdd("No files found.");
                         }
                         TerminalAdd("\r\n----------------------------\r\n> ");
@@ -14056,7 +14099,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         PyFileManagerPane.doLayout();
                         PyFileManagerPane.repaint();
                         PyFileManagerPane.requestFocusInWindow();
-                        log("pyFileManager: File list parsing done, found " + PyFileAsButton.size() + " file(s).");
+                        log("pyFileManager: File list parsing done, found " + PyFileAsButtonList.size() + " file(s).");
                     } catch (Exception e) {
                         log(e.toString());
                     }

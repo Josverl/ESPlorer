@@ -23,7 +23,7 @@ public class pyFiler {
     }
 
     public boolean Put(String ft, String[] s) {
-
+        // Copy a file to the MCU by creating a script to write the file 
         boolean success = true;
         sendBuf = new ArrayList<String>();
 
@@ -32,7 +32,7 @@ public class pyFiler {
             sendBuf.add("f.write('" + escape(subs) + "\\n')");
         }
         sendBuf.add("f.close()");
-
+        // todo: check for actual success
         return success;
     }
 
@@ -64,6 +64,8 @@ public class pyFiler {
         return false;
     }
 
+    // escape a string to allow it to be printed in python 
+    // add a \ (\\ in java) before any \ or "
     public String escape(String str) {
         char ch;
         StringBuilder buf = new StringBuilder(str.length() * 2);
