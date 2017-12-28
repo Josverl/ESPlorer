@@ -7424,7 +7424,7 @@ public class ESPlorer extends javax.swing.JFrame {
             ButtonSnippet15.setEnabled(false);
         }
 
-        DisablingNotImplemented();
+        DisableNotImplemented();
 
     }
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -8521,7 +8521,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 "     print( dumpString( f.read()))" + 
                 "#-=-";
                 LocalEcho = false;
-                LocalEchoResumeString = "#-=-";
+//BUG                LocalEchoResumeString = "#-=-";
                 SendToESP(cmd);
         } else { 
         // LUA 
@@ -9960,15 +9960,20 @@ public class ESPlorer extends javax.swing.JFrame {
         UploadFiles();
     }//GEN-LAST:event_FilesUploadActionPerformed
 
+    // Run the file in the editor that is assumed already stored / copied to the MCU 
+    // todo: @@ Add Support for uPython 
+
     private void FileDoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileDoActionPerformed
         String cmd = "dofile('" + iFile.get(iTab).getName() + "')";
         btnSend(cmd);
     }//GEN-LAST:event_FileDoActionPerformed
 
+    // send the file in the editor to the MCU to run interactivly
+    // this should use the same code as already works for the snippets
     private void FileSendESPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileSendESPActionPerformed
         if (FileSendESP.isSelected()) {
             if (TextEditor1.get(iTab).getText().length() == 0) {
-                JOptionPane.showMessageDialog(null, "File empty.");
+                JOptionPane.showMessageDialog(null, "Cannot run an empty File.");
                 FileSendESP.setSelected(false);
                 return;
             }
@@ -9978,16 +9983,20 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_FileSendESPActionPerformed
 
+    // Save the file in the editer to the MCU 
     private void FileSaveESPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileSaveESPActionPerformed
         if (!FileSaveESP.isSelected()) {
+            // BUTTON IS ALSO A TOGGLE , NOT CLEAR WHAT IS INTENDED ?
             StopSend();
             return;
         }
+        // do not save an empty file // Why ?
         if (TextEditor1.get(iTab).getText().length() == 0) {
             FileSaveESP.setSelected(false);
-            JOptionPane.showMessageDialog(null, "File empty.");
+            JOptionPane.showMessageDialog(null, "Cannot save an empty file.");
             return;
         }
+        // filename is required
         String fName = iFile.get(iTab).getName();
         if (fName.length() == 0) {
             FileSaveESP.setSelected(false);
@@ -9996,6 +10005,7 @@ public class ESPlorer extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, msg);
             return;
         }
+        // save locally 
         if (FileAutoSaveDisk.isSelected()) {
             if (!SaveFile()) { // first save file
                 FileSaveESP.setSelected(false);
@@ -10007,8 +10017,8 @@ public class ESPlorer extends javax.swing.JFrame {
             FileSaveESP.setSelected(false);
             return;
         }
-        if (OptionMicroPython.isSelected()) {
-            pySaveFileESP(fName);
+        if (FirmwareType == FIRMWARE_MPYTHON) { 
+            pySaveFileESP(fName, TextEditor1.get(iTab).getText());
         } else {
             nodeSaveFileESP(fName);
         }
@@ -11514,6 +11524,13 @@ public class ESPlorer extends javax.swing.JFrame {
     private static final int FIRMWARE_NODEMCU = 0;
     private static final int FIRMWARE_MPYTHON = 1;
     private static final int FIRMWARE_AT = 2;
+    
+    // Used by uPython REPL 
+    private static final int ASCII_CTRL_A = 0x01 ;  // Start RAW Mode 
+    private static final int ASCII_CTRL_B = 0x02 ;  // End RAW mode 
+    private static final int ASCII_CTRL_C = 0x03 ;  // Break 
+    private static final int ASCII_CTRL_D = 0x04 ;  // End Paste Mode 
+    private static final int ASCII_CTRL_E = 0x05 ;  // Start Paste Mode
 
     // suppress Echo for a single line 
     private static boolean LocalEcho = true;
@@ -11737,24 +11754,27 @@ public class ESPlorer extends javax.swing.JFrame {
         ClearUnifiedFileManager();
     }
 
+    // Send the commandline entered into the Command field 
     public void SendCommand() {
         if (SendCommand.isEnabled() == false || pOpen == false || portJustOpen) {
             log("Port not open, operation FAILED.");
             return;
         }
         String cmd;
+        // Command is a JComboBox() / dropdown with the recent commands 
         try {
             cmd = Command.getSelectedItem().toString();
         } catch (Exception e) {
             cmd = "";
         }
-
+        //limit the number of items in the dropdown listbox 
         //Autoclean History --ADDED by Mike, DL2ZAP --
-        //if (Autoclean.isSelected()) {   // ToDo: create Checkbox "Autoclean & uncomment this line
+        //if (Autoclean.isSelected()) {   
+        // ToDo: create Checkbox "Autoclean & uncomment this line
         if (true) { // ToDo: After creating Checkbox delete this line
-            int eintraege = Command.getItemCount();
+            int Entries = Command.getItemCount();
             //System.out.println("Start cleaning");
-            for (int lv1 = 0; lv1 < eintraege; lv1++) {
+            for (int lv1 = 0; lv1 < Entries; lv1++) {
                 //System.out.print("Eintrag:" + lv1 +" : "+Command.getItemAt(lv1));
                 if (Command.getItemAt(lv1) == cmd) {
                     // System.out.println(" Doppelt, entfernt!");
@@ -11767,7 +11787,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
 
         // System.out.println("Adding Command:" + cmd );
-        int eintraege = Command.getItemCount();
+        int Entries = Command.getItemCount();
 
         Command.setSelectedIndex(Command.getItemCount() - 1); // Place Index on last Entry
         Command.addItem(cmd); // Add to History after last Position
@@ -11789,21 +11809,23 @@ public class ESPlorer extends javax.swing.JFrame {
         //Command.setSelectedIndex(Command.getItemCount()-1);
     }
 
+    //  Add a terminating CRLF to a string
+    // todo: clarify why LF is not addedd for uPython  
     public String addCRLF(String s) {
         String r = s;
-        r += (char) 13;
+        r += (char) 13; //CR 
         if (OptionNodeMCU.isSelected()) {
-            r += (char) 10;
+            r += (char) 10; //LF
         }
         return r;
     }
-
+    //  Add a terminating CR to a string   
     public String addCR(String s) {
         String r = s;
-        r += (char) 13;
+        r += (char) 13; //CR
         return r;
     }
-
+    // Send a command to the MCU 
     public void btnSend(String s) {
         send(addCRLF(s), true);
     }
@@ -13162,7 +13184,7 @@ public class ESPlorer extends javax.swing.JFrame {
                     public void actionPerformed(ActionEvent evt) {
                         if (j < sendBuf.size()) {
                             if ((j == 0) && pasteMode()) {
-                                sendStart();
+                                sendPasteModeStart();
                             }
                             send(addCRLF(sendBuf.get(j)), false);
                             inc_j();
@@ -13212,6 +13234,7 @@ public class ESPlorer extends javax.swing.JFrame {
         return true;
     }
 
+    // Send a string to serial 
     public void send(String s, boolean simple) {
         if (!pOpen) {
             log("DataSender: Serial port not open, operation FAILED.");
@@ -13242,7 +13265,7 @@ public class ESPlorer extends javax.swing.JFrame {
             SnippetsBusy.setIcon(LED_GREY);
         }
     }
-
+    // send a byte to serial
     public void sendBin(byte data) {
         if (!pOpen) {
             log("DataSender: Serial port not open, operation FAILED.");
@@ -13255,13 +13278,15 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
-    public void sendStart() {
-        byte data = 0x05;
+    public void sendPasteModeStart() {
+        // Ctrl-E - uPython Repl - Enter Paste mode  
+        byte data = ASCII_CTRL_E ; //0x05;
         sendBin(data);
     }
 
     public void sendEnd() {
-        byte data = 0x04;
+        // Ctrl-D - uPython Repl - Finish Paste mode  
+        byte data = ASCII_CTRL_D ;
         sendBin(data);
     }
 
@@ -13360,7 +13385,7 @@ public class ESPlorer extends javax.swing.JFrame {
         FileSaveESP.setSelected(false);
         FileSendESP.setSelected(false);
 
-        DisablingNotImplemented();
+        DisableNotImplemented();
 
     }
 
@@ -13778,7 +13803,7 @@ public class ESPlorer extends javax.swing.JFrame {
                     "print('------')\n" + 
                     "#-=-=-" ;
             LocalEcho = false;
-            LocalEchoResumeString = "#-=-=-" ; 
+//BUG            LocalEchoResumeString = "#-=-=-" ; 
             // execute
             SendToESP(cmd);
         } else {
@@ -13805,7 +13830,7 @@ public class ESPlorer extends javax.swing.JFrame {
         } 
     }
     
-    
+    // Set Firmware type and enable / disable UX elementds based on that
     private void SetFirmwareType(int ftype) {
         FirmwareType = ftype;
         switch (ftype) {
@@ -13821,7 +13846,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 //@@
                 UnifiedFileManagerPane.setVisible(true);
                 ClearUnifiedFileManager();
-                DisablingNotImplemented();
+                DisableNotImplemented();
                 // enable uPython Machine Module Options
                 pyMachineModule.setEnabled(true);
                 break;
@@ -13851,8 +13876,8 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         LoadSnippets(); // reloading needed
     }
-
-    private void DisablingNotImplemented() {
+    // temporay disabling not emplemented functions for MicroPython
+    private void DisableNotImplemented() {
         if (OptionMicroPython.isSelected()) {
             /* temporay disabling not emplemented functions */
             LineDelay.setValue(0); // micro python very fast :)
@@ -13880,8 +13905,9 @@ public class ESPlorer extends javax.swing.JFrame {
             MenuItemViewSnippets.setEnabled(true);
 
         }
-    } // DisablingNotImplemented
+    } // DisableNotImplemented
 
+    // Manipulate GPIO Pins Input and Output ( uPython pyb and generic )
     private void cmdButtonGPIO(int gpio, int value) {
         if (!OptionMicroPython.isSelected()) {
             return;
@@ -13896,12 +13922,11 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         log("Send command GPIO" + Integer.toString(gpio) + " : " + Integer.toString(value));
         
-        String cmd = "from machine import Pin;p=Pin(" + Integer.toString(gpio) + ",Pin.OUT);p.value(" + Integer.toString(value) + ")";
-        // replace machine by pyb module if needed 
-        cmd = cmd.replace("machine",MachineModule);
+        String cmd = "from " + MachineModule + " import Pin;p=Pin(" + Integer.toString(gpio) + ",Pin.OUT);p.value(" + Integer.toString(value) + ")";
         btnSend(cmd);
     } // cmdButtonGPIO
 
+    // Read GPIO input / output (uPython pyb and generic) 
     private void cmdButtonGetGPIO(int gpio) {
         if (!OptionMicroPython.isSelected()) {
             return;
@@ -13915,19 +13940,18 @@ public class ESPlorer extends javax.swing.JFrame {
             return;
         }
         log("Send command GET GPIO" + Integer.toString(gpio));
-        String cmd = "from machine import Pin;p=Pin(" + Integer.toString(gpio) + ",Pin.IN);p.value()";
-        // replace machine by pyb module if needed 
-        cmd = cmd.replace("machine",MachineModule);        
+        String cmd = "from "+ MachineModule + " import Pin;p=Pin(" + Integer.toString(gpio) + ",Pin.IN);p.value()";
+       
         btnSend(cmd);
     }
 
     // simple save file , is handled in pyFiler.java , 
-    // BUGBUG: but seems to have a problem if the file already exists 
-    private boolean pySaveFileESP(String ft) {
+    private boolean pySaveFileESP(String filename, String FileContent ) {
         boolean success = false;
         log("pyFileSaveESP: Starting...");
-        String[] content = TextEditor1.get(iTab).getText().split("\r?\n");
-        if (pyFiler.Put(ft, content)) {
+        //String[] content = FileContent.split("\r?\n");
+        if (pyFiler.Put(filename, FileContent)) {
+            // todo: refactor-- why is this not in the called function 
             pasteMode(false);
             success = SendTimerStart();
         }
@@ -13937,7 +13961,6 @@ public class ESPlorer extends javax.swing.JFrame {
     // add a new button for a file found on the uPython board 
     // todo: add filesize , int size)
     private void AddPyFileButton(String FileName) {
-        //@@
         FileAsButtonList.add(new javax.swing.JButton());
         int i = FileAsButtonList.size() - 1;
         //get the new button
@@ -14033,6 +14056,7 @@ public class ESPlorer extends javax.swing.JFrame {
         rx_data = "";
         rcvBuf = "";
         log("pyFileManager: Starting...");
+        //todo: add filesize 
         String cmd = "import os;os.listdir('" + pyFiler.pwd() + "')";
         LocalEcho = false;
         // todo : btnSend / SendESP
