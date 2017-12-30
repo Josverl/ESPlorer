@@ -18,14 +18,15 @@ Improved uPython support
     - Save file to uPython (uses Hexlify to transer contents with need for escaping)
         * Possible bug that causes ESPlorer not to stop 
     - Send file to uPuthon ( Executes script interactivly)
+    - Run File 
 
 
 ToDo:
-
-    uPython upload Text File ( to board) 
-        Copy file from editor to uPython 
-            Additional Refactoring is needed / recomended
-
+    Script Editor 
+        - AutoRun on Save
+        - Send Selected Block - BUG: send block does not use paste mode 
+        - Find / Find and replace 
+        
 Read file from uPython
 
             self.exec_("f = open('%s', 'rb')" % self._fqn(src))
@@ -198,5 +199,11 @@ Snippets editor
     Allow edit after saving 
     Rename Buttons for simpler editing 
     //todo: change snippets suffix to .py 
+    - BUG: send block does not use paste mode 
+    
 
+
+BUGs in original code 
+    - If [x] Use External Editor is checked
+        ESPlorer cannot be closed. The logic for closing files/scripts is flawed.
 

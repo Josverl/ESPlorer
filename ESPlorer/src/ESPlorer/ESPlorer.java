@@ -41,7 +41,7 @@ import jssc.SerialPortList;
 public class ESPlorer extends javax.swing.JFrame {
 
     public static SerialPort serialPort;
-    public static ArrayList<String> sendBuf;
+    public static ArrayList<String> sendBuffer;
 
 
     public static boolean pOpen = false;
@@ -7768,6 +7768,7 @@ public class ESPlorer extends javax.swing.JFrame {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
+                // bugbug: on windows this replaces CR\LF by LF only , which is a needless change of the file while reading it
                 sb.append(line).append('\n');
             }
             TextEditor1.get(iTab).setText(sb.toString());
@@ -7777,7 +7778,7 @@ public class ESPlorer extends javax.swing.JFrame {
 //                log(ex.getStackTrace().toString());
             log("Loading " + FileName + ": FAIL.");
             UpdateEditorButtons();
-            JOptionPane.showMessageDialog(null, "Error, file not load!");
+            JOptionPane.showMessageDialog(null, "Error, file not loaded!");
             return false;
         }
         try {
@@ -8035,16 +8036,16 @@ public class ESPlorer extends javax.swing.JFrame {
         ClearUnifiedFileManager();
         rx_data = "";
         rcvBuf = "";
-        sendBuf = cmdPrep(cmd);
+        sendBuffer = cmdPrep(cmd);
         log("FileManager: Starting...");
         SendLock();
         int delay = 10;
         j0();
         taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (j < sendBuf.size()) {
+                if (j < sendBuffer.size()) {
                     LocalEcho = false;
-                    send(addCR(sendBuf.get(j)), false);
+                    send(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
                 }
             }
@@ -8094,7 +8095,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         log(e.toString());
                     }
                     rcvBuf = "";
-                    if (j < sendBuf.size() - 1) {
+                    if (j < sendBuffer.size() - 1) {
                         if (timer.isRunning() || sendPending) {
                             //
                         } else {
@@ -8185,7 +8186,7 @@ public class ESPlorer extends javax.swing.JFrame {
         if (size % 1024 > 0) {
             packets++;
         }
-        sendBuf = new ArrayList<String>();
+        sendBuffer = new ArrayList<String>();
         rcvPackets = new ArrayList<String>();
         PacketsData = new ArrayList<String>();
         PacketsSize = new ArrayList<Integer>();
@@ -8220,7 +8221,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 + "_dl=nil\n";
         s = cmd.split("\r?\n");
         for (String subs : s) {
-            sendBuf.add(subs);
+            sendBuffer.add(subs);
         }
         log("Downloader: Starting...");
         startTime = System.currentTimeMillis();
@@ -8244,8 +8245,8 @@ public class ESPlorer extends javax.swing.JFrame {
         j0();
         taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (j < sendBuf.size()) {
-                    send(addCR(sendBuf.get(j)), false);
+                if (j < sendBuffer.size()) {
+                    send(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
                 }
             }
@@ -8324,7 +8325,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         log(e.toString());
                     }
                     rcvBuf = "";
-                    if (j < sendBuf.size() - 1) {
+                    if (j < sendBuffer.size() - 1) {
                         if (timer.isRunning() || sendPending) {
                             //
                         } else {
@@ -8660,7 +8661,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private void FileRemoveESP(String FileName) {
         if (FirmwareType == FIRMWARE_MPYTHON ) {
             //uPython   
-            btnSend("import os;os.remove('" + FileName + "')");
+            btnSend("import uos;uos.remove('" + FileName + "')");
         } else { 
             // LUA 
             btnSend("file.remove(\"" + FileName + "\")");
@@ -9961,11 +9962,20 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_FilesUploadActionPerformed
 
     // Run the file in the editor that is assumed already stored / copied to the MCU 
-    // todo: @@ Add Support for uPython 
-
+    // todo: @@1 Add Support for uPython 
     private void FileDoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileDoActionPerformed
-        String cmd = "dofile('" + iFile.get(iTab).getName() + "')";
-        btnSend(cmd);
+        String cmd;
+        
+        String FileName = iFile.get(iTab).getName();
+        if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
+            //todo: Refactor SendTimerStart(); 
+            pyFiler.Run(FileName); 
+            SendTimerStart();
+        } else { 
+             cmd = "dofile('" + FileName+ "')";
+              btnSend(cmd);
+        }
+       
     }//GEN-LAST:event_FileDoActionPerformed
 
     // send the file in the editor to the MCU to run interactivly
@@ -12230,6 +12240,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
         FilePopupMenuItem.get(y).setToolTipText("Run script file on the ESP");
         // prepare and store the command to be executed for the platform 
+        // @@2 dofile
         if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
             FilePopupMenuItem.get(y).setActionCommand( 
                 "exec(open('" + FileName + "').read(),globals())") ; 
@@ -12862,7 +12873,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 rcvBuf = rcvBuf + data;
                 log("recv:" + data.replace("\r\n", "<CR><LF>"));
                 TerminalAdd(data);
-                if (rcvBuf.contains(sendBuf.get(j).trim())) {
+                if (rcvBuf.contains(sendBuffer.get(j).trim())) {
                     // first, reset watchdog timer
                     try {
                         timeout.stop();
@@ -12875,13 +12886,13 @@ public class ESPlorer extends javax.swing.JFrame {
                     }
                      */
                     rcvBuf = "";
-                    if (j < sendBuf.size() - 1) {
+                    if (j < sendBuffer.size() - 1) {
                         if (timer.isRunning() || sendPending) {
                             // waiting
                         } else {
                             inc_j();
                             sendPending = true;
-                            int div = sendBuf.size() - 1;
+                            int div = sendBuffer.size() - 1;
                             if (div == 0) {
                                 div = 1;
                             }
@@ -12932,13 +12943,13 @@ public class ESPlorer extends javax.swing.JFrame {
                     } catch (Exception e) {
                     }
                     rcvBuf = "";
-                    if (j < sendBuf.size() - 1) {
+                    if (j < sendBuffer.size() - 1) {
                         if (timer.isRunning() || sendPending) {
                             // waiting
                         } else {
                             inc_j();
                             sendPending = true;
-                            int div = sendBuf.size() - 1;
+                            int div = sendBuffer.size() - 1;
                             if (div == 0) {
                                 div = 1;
                             }
@@ -12985,9 +12996,9 @@ public class ESPlorer extends javax.swing.JFrame {
             log("SendESP: Serial port not open. Canceled.");
             return success;
         }
-        sendBuf = new ArrayList<String>();
+        sendBuffer = new ArrayList<String>();
         s = str.split("\r?\n");
-        sendBuf.addAll(Arrays.asList(s));
+        sendBuffer.addAll(Arrays.asList(s));
         success = SendTimerStart();
         log("SendToESP: Starting...");
         return success;
@@ -12999,12 +13010,12 @@ public class ESPlorer extends javax.swing.JFrame {
             log("SendESP: Serial port not open. Cancel.");
             return success;
         }
-        sendBuf = new ArrayList<String>();
-        sendBuf.addAll(buf);
+        sendBuffer = new ArrayList<String>();
+        sendBuffer.addAll(buf);
         if (OptionMicroPython.isSelected()) {
-            sendBuf.add("");
-            sendBuf.add("");
-            sendBuf.add("");
+            sendBuffer.add("");
+            sendBuffer.add("");
+            sendBuffer.add("");
         }
         success = SendTimerStart();
         log("SendToESP: Starting...");
@@ -13036,20 +13047,20 @@ public class ESPlorer extends javax.swing.JFrame {
     private boolean nodeSaveFileESP(String ft) {
         boolean success = false;
         log("FileSaveESP: Try to save file to ESP...");
-        sendBuf = new ArrayList<String>();
+        sendBuffer = new ArrayList<String>();
         if (TurboMode.isSelected()) {
             return nodeSaveFileESPTurbo(ft);
         }
-        sendBuf.add("file.remove(\"" + ft + "\");");
-        sendBuf.add("file.open(\"" + ft + "\",\"w+\");");
-        sendBuf.add("w = file.writeline;\r\n");
+        sendBuffer.add("file.remove(\"" + ft + "\");");
+        sendBuffer.add("file.open(\"" + ft + "\",\"w+\");");
+        sendBuffer.add("w = file.writeline;\r\n");
         s = TextEditor1.get(iTab).getText().split("\r?\n");
         for (String subs : s) {
-            sendBuf.add("w([==[" + subs + "]==]);");
+            sendBuffer.add("w([==[" + subs + "]==]);");
         }
-        sendBuf.add("file.flush();file.close();");
+        sendBuffer.add("file.flush();file.close();");
         if (FileAutoRun.isSelected()) {
-            sendBuf.add("dofile(\"" + ft + "\");");
+            sendBuffer.add("dofile(\"" + ft + "\");");
         }
         // data ready
         success = SendTimerStart();
@@ -13060,9 +13071,9 @@ public class ESPlorer extends javax.swing.JFrame {
     private boolean nodeSaveFileESPTurbo(String ft) {
         boolean success = false;
         log("FileSaveESP-Turbo: Try to save file to ESP in Turbo Mode...");
-        sendBuf.add("local FILE=\"" + ft + "\" file.remove(FILE) file.open(FILE,\"w+\") uart.setup(0," + Integer.toString(nSpeed) + ",8,0,1,0)");
-        sendBuf.add("ESP_Receiver=function(rcvBuf) if string.match(rcvBuf,\"^ESP_cmd_close\")==nil then file.write(string.gsub(rcvBuf, \'\\r\', \'\')) uart.write(0, \"> \") else uart.on(\"data\") ");
-        sendBuf.add("file.flush() file.close() FILE=nil rcvBuf=nil ESP_Receiver=nil uart.setup(0," + Integer.toString(nSpeed) + ",8,0,1,1) str=\"\\r\\n--Done--\\r\\n> \" print(str) str=nil collectgarbage() end end uart.on(\"data\",'\\r',ESP_Receiver,0)");
+        sendBuffer.add("local FILE=\"" + ft + "\" file.remove(FILE) file.open(FILE,\"w+\") uart.setup(0," + Integer.toString(nSpeed) + ",8,0,1,0)");
+        sendBuffer.add("ESP_Receiver=function(rcvBuf) if string.match(rcvBuf,\"^ESP_cmd_close\")==nil then file.write(string.gsub(rcvBuf, \'\\r\', \'\')) uart.write(0, \"> \") else uart.on(\"data\") ");
+        sendBuffer.add("file.flush() file.close() FILE=nil rcvBuf=nil ESP_Receiver=nil uart.setup(0," + Integer.toString(nSpeed) + ",8,0,1,1) str=\"\\r\\n--Done--\\r\\n> \" print(str) str=nil collectgarbage() end end uart.on(\"data\",'\\r',ESP_Receiver,0)");
         int pos1 = 0;
         int pos2 = 0;
         int size = 254;
@@ -13074,13 +13085,13 @@ public class ESPlorer extends javax.swing.JFrame {
                 pos2 = l;
             }
             fragment = new String(TextEditor1.get(iTab).getText().substring(pos1, pos2));
-            sendBuf.add(fragment);
+            sendBuffer.add(fragment);
             pos1 += size;
         }
-        sendBuf.add("ESP_cmd_close");
-        sendBuf.add("\r\n");
+        sendBuffer.add("ESP_cmd_close");
+        sendBuffer.add("\r\n");
         if (FileAutoRun.isSelected()) {
-            sendBuf.add("dofile(\"" + ft + "\")");
+            sendBuffer.add("dofile(\"" + ft + "\")");
         }
         success = SendTurboTimerStart();
         log("FileSaveESP-Turbo: Starting...");
@@ -13109,8 +13120,8 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (j < sendBuf.size()) {
-                    send(addCR(sendBuf.get(j)), false);
+                if (j < sendBuffer.size()) {
+                    send(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
                 }
             }
@@ -13139,6 +13150,7 @@ public class ESPlorer extends javax.swing.JFrame {
         return pasteMode;
     }
 
+    
     public boolean SendTimerStart() {
         startTime = System.currentTimeMillis();
         SendLock();
@@ -13164,15 +13176,15 @@ public class ESPlorer extends javax.swing.JFrame {
             if (OptionNodeMCU.isSelected()) {
                 taskPerformer = new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        if (j < sendBuf.size()) {
-                            send(addCRLF(sendBuf.get(j).trim()), false);
+                        if (j < sendBuffer.size()) {
+                            send(addCRLF(sendBuffer.get(j).trim()), false);
                             inc_j();
-                            int div = sendBuf.size() - 1;
+                            int div = sendBuffer.size() - 1;
                             if (div == 0) {
                                 div = 1; // for non-zero divide
                             }
                             ProgressBar.setValue((j * 100) / div);
-                            if (j > sendBuf.size() - 1) {
+                            if (j > sendBuffer.size() - 1) {
                                 timer.stop();
                                 StopSend();
                             }
@@ -13182,21 +13194,22 @@ public class ESPlorer extends javax.swing.JFrame {
             } else { // MicroPython
                 taskPerformer = new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        if (j < sendBuf.size()) {
+                        if (j < sendBuffer.size()) {
+                            // legacy: send start pastmode on first line 
                             if ((j == 0) && pasteMode()) {
-                                sendPasteModeStart();
+                                //sendPasteModeStart();
                             }
-                            send(addCRLF(sendBuf.get(j)), false);
+                            send(addCRLF(sendBuffer.get(j)), false);
                             inc_j();
-                            if ((j == sendBuf.size()) && pasteMode()) {
+                            if ((j == sendBuffer.size()) && pasteMode()) {
                                 sendEnd();
                             }
-                            int div = sendBuf.size() - 1;
+                            int div = sendBuffer.size() - 1;
                             if (div == 0) {
                                 div = 1; // for non-zero divide
                             }
                             ProgressBar.setValue((j * 100) / div);
-                            if (j > sendBuf.size() - 1) {
+                            if (j > sendBuffer.size() - 1) {
                                 timer.stop();
                                 pasteMode(true);
                                 StopSend();
@@ -13217,9 +13230,9 @@ public class ESPlorer extends javax.swing.JFrame {
             }
             taskPerformer = new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
-                    if (j < sendBuf.size()) {
+                    if (j < sendBuffer.size()) {
                         log(Integer.toString(j));
-                        send(addCRLF(sendBuf.get(j).trim()), false);
+                        send(addCRLF(sendBuffer.get(j).trim()), false);
                         sendPending = false;
                     }
                 }
@@ -13278,16 +13291,19 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
+    // getting rid of old code 
     public void sendPasteModeStart() {
+        log("OLD CODE using uPython pastebuffer");
         // Ctrl-E - uPython Repl - Enter Paste mode  
-        byte data = ASCII_CTRL_E ; //0x05;
-        sendBin(data);
+//        byte data = ASCII_CTRL_E ; //0x05;
+//        sendBin(data);
     }
 
     public void sendEnd() {
+        log("OLD CODE using uPython pastebuffer");
         // Ctrl-D - uPython Repl - Finish Paste mode  
-        byte data = ASCII_CTRL_D ;
-        sendBin(data);
+//        byte data = ASCII_CTRL_D ;
+//        sendBin(data);
     }
 
     public void Busy() {
@@ -13500,7 +13516,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
     private void UploadFilesStart() {
         UploadFileName = mFile.get(mFileIndex).getName();
-        sendBuf = new ArrayList<String>();
+        sendBuffer = new ArrayList<String>();
         PacketsData = new ArrayList<String>();
         PacketsCRC = new ArrayList<Integer>();
         PacketsSize = new ArrayList<Integer>();
@@ -13544,14 +13560,14 @@ public class ESPlorer extends javax.swing.JFrame {
                 + "          end,0)\n"
                 + "end\n"
                 + "file.remove(\"" + UploadFileName + "\")\n";
-        sendBuf = cmdPrep(cmd);
+        sendBuffer = cmdPrep(cmd);
         int startPackets;
         if (packets == 1) { // small file
             startPackets = lastPacketSize;
         } else {
             startPackets = SendPacketSize;
         }
-        sendBuf.add("_up(" + Integer.toString(packets) + "," + Integer.toString(startPackets) + "," + Integer.toString(lastPacketSize) + ")");
+        sendBuffer.add("_up(" + Integer.toString(packets) + "," + Integer.toString(startPackets) + "," + Integer.toString(lastPacketSize) + ")");
         log("Uploader: Starting...");
         startTime = System.currentTimeMillis();
         SendLock();
@@ -13575,11 +13591,11 @@ public class ESPlorer extends javax.swing.JFrame {
         taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 //log("send j="+Integer.toString(j));
-                if (j < sendBuf.size()) {
-                    send(addCR(sendBuf.get(j)), false);
+                if (j < sendBuffer.size()) {
+                    send(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
-                } else if ((j - sendBuf.size()) < sendPackets.size()) {
-                    sendBytes(sendPackets.get(j - sendBuf.size()));
+                } else if ((j - sendBuffer.size()) < sendPackets.size()) {
+                    sendBytes(sendPackets.get(j - sendBuffer.size()));
                     sendPending = false;
                 } else {
                     log("Sorry, bug found: j overflow");
@@ -13689,14 +13705,14 @@ public class ESPlorer extends javax.swing.JFrame {
                     data = "";
                     log(e.toString());
                 }
-                if (rcvBuf.contains("> ") && j < sendBuf.size()) {
+                if (rcvBuf.contains("> ") && j < sendBuffer.size()) {
                     //log("got intepreter answer, j="+Integer.toString(j));
                     rcvBuf = "";
                     gotProperAnswer = true;
                 }
                 if (rx_data.contains("~~~CRC-END~~~")) {
                     gotProperAnswer = true;
-                    //log("Uploader: receiving packet checksum " + Integer.toString( j-sendBuf.size()  +1) + "/"
+                    //log("Uploader: receiving packet checksum " + Integer.toString( j-sendBuffer.size()  +1) + "/"
                     //                                           + Integer.toString( sendPackets.size() ) );
                     // parsing answer
                     int start = rx_data.indexOf("~~~CRC-START~~~");
@@ -13705,14 +13721,14 @@ public class ESPlorer extends javax.swing.JFrame {
                     rx_data = rx_data.substring(rx_data.indexOf("~~~CRC-END~~~") + 13);
                     //log("After  CRC parsing:"+crc_parsed);
                     int crc_received = Integer.parseInt(crc_parsed);
-                    int crc_expected = CRC(sendPackets.get(j - sendBuf.size()));
+                    int crc_expected = CRC(sendPackets.get(j - sendBuffer.size()));
                     if (crc_expected == crc_received) {
-                        log("Uploader: receiving checksum " + Integer.toString(j - sendBuf.size() + 1) + "/"
+                        log("Uploader: receiving checksum " + Integer.toString(j - sendBuffer.size() + 1) + "/"
                                 + Integer.toString(sendPackets.size())
                                 + " check: Success");
                         sendPacketsCRC.add(true);
                     } else {
-                        log("Uploader: receiving checksum " + Integer.toString(j - sendBuf.size() + 1) + "/"
+                        log("Uploader: receiving checksum " + Integer.toString(j - sendBuffer.size() + 1) + "/"
                                 + Integer.toString(sendPackets.size())
                                 + " check: Fail. Expected: " + Integer.toString(crc_expected)
                                 + ", but received: " + Integer.toString(crc_received));
@@ -13725,8 +13741,8 @@ public class ESPlorer extends javax.swing.JFrame {
                     } catch (Exception e) {
                         log(e.toString());
                     }
-                    ProgressBar.setValue(j * 100 / (sendBuf.size() + sendPackets.size() - 1));
-                    if (j < (sendBuf.size() + sendPackets.size())) {
+                    ProgressBar.setValue(j * 100 / (sendBuffer.size() + sendPackets.size() - 1));
+                    if (j < (sendBuffer.size() + sendPackets.size())) {
                         if (timer.isRunning() || sendPending) {
                             //
                         } else {
@@ -13741,7 +13757,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         }
                     }
                 }
-                if (j >= (sendBuf.size() + sendPackets.size())) {
+                if (j >= (sendBuffer.size() + sendPackets.size())) {
                     LocalEcho = false;
                     send(addCR("_up=nil"), false);
                     try {
@@ -13879,6 +13895,15 @@ public class ESPlorer extends javax.swing.JFrame {
     // temporay disabling not emplemented functions for MicroPython
     private void DisableNotImplemented() {
         if (OptionMicroPython.isSelected()) {
+
+            // Now implemented 
+            MenuItemFileDo.setEnabled(true);
+            FileDo.setEnabled(true);
+            MenuItemFileSaveESP.setEnabled(true);
+            FileSaveESP.setEnabled(true);
+
+            //FileAutoSaveESP.setSelected(false);
+
             /* temporay disabling not emplemented functions */
             LineDelay.setValue(0); // micro python very fast :)
             DumbMode.setSelected(true);
@@ -13887,16 +13912,12 @@ public class ESPlorer extends javax.swing.JFrame {
             //MenuItemViewFileManager.setSelected(false);
             MenuItemViewRightExtra.setSelected(false);
             MenuItemViewDonate.setSelected(false);
+
             //todo: 
-            MenuItemFileDo.setEnabled(false);
-            FileDo.setEnabled(false);
             MenuItemFileRemoveESP.setEnabled(false);
             MenuESP.setEnabled(false);
             FilesUpload.setEnabled(false);
-            //MenuItemFileSaveESP.setEnabled(false);
-            //FileSaveESP.setEnabled(false);
 
-            FileAutoSaveESP.setSelected(false);
             // no condensed scrip execution (LUA Only) 
             Condensed.setSelected(false);
             Condensed.setEnabled(false);
@@ -13950,9 +13971,8 @@ public class ESPlorer extends javax.swing.JFrame {
         boolean success = false;
         log("pyFileSaveESP: Starting...");
         //String[] content = FileContent.split("\r?\n");
-        if (pyFiler.Put(filename, FileContent)) {
+        if (pyFiler.UploadFile(filename, FileContent)) {
             // todo: refactor-- why is this not in the called function 
-            pasteMode(false);
             success = SendTimerStart();
         }
         return success;
@@ -14057,7 +14077,7 @@ public class ESPlorer extends javax.swing.JFrame {
         rcvBuf = "";
         log("pyFileManager: Starting...");
         //todo: add filesize 
-        String cmd = "import os;os.listdir('" + pyFiler.pwd() + "')";
+        String cmd = "import uos;uos.listdir('" + pyFiler.pwd() + "')";
         LocalEcho = false;
         // todo : btnSend / SendESP
         btnSend(cmd);

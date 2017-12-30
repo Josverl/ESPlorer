@@ -4,12 +4,12 @@
  */
 package ESPlorer;
 
-import static ESPlorer.ESPlorer.sendBuf;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.sql.rowset.BaseRowSet;
 import javax.xml.bind.DatatypeConverter;
+import static ESPlorer.ESPlorer.sendBuffer;
 
 public class pyFiler {
     //assume root folder
@@ -18,13 +18,21 @@ public class pyFiler {
     public static final int OK = 0;
     public static final int ERROR_COMMUNICATION = 1;
     
+    // use raw mode paste to hide the file transfers 
+    private boolean useRawMode = true;
+    
     // Used by uPython REPL 
     private static final int ASCII_CTRL_A = 0x01 ;  // Start RAW Mode 
     private static final int ASCII_CTRL_B = 0x02 ;  // End RAW mode 
     private static final int ASCII_CTRL_C = 0x03 ;  // Break 
     private static final int ASCII_CTRL_D = 0x04 ;  // End Paste Mode 
     private static final int ASCII_CTRL_E = 0x05 ;  // Start Paste Mode    
-    private static String StartPasteMode = ""+ (char)ASCII_CTRL_C + (char)ASCII_CTRL_C + (char)ASCII_CTRL_E; 
+    
+    private static String StartRawMode = ""+ (char)ASCII_CTRL_A; 
+    private static String EndRawMode = ""+ (char)ASCII_CTRL_B; 
+
+    private static String BreakBreak = ""+ (char)ASCII_CTRL_C + (char)ASCII_CTRL_C; 
+    private static String StartPasteMode = ""+ (char)ASCII_CTRL_E; 
     private static String EndPasteMode = ""+ (char)ASCII_CTRL_D; 
             
     public pyFiler() {
@@ -40,35 +48,59 @@ public class pyFiler {
     //      Java.printHexBinary --> uPython.unhexlify 
     // close the file 
     // todo: for binary files split the file in chunks 
-    public boolean Put(String FileName, String script) {
+    public boolean UploadFile(String FileName, String script) {
         // Copy a file to the MCU by creating a script to write the file 
         boolean success = true;
         String strHex;
-        sendBuf = new ArrayList<String>();
+        // SendBuffer is a clobal buffer 
+        sendBuffer = new ArrayList<String>();
         // split the script into chunks of 80 characters 
         // ref: https://stackoverflow.com/questions/3760152/split-string-to-equal-length-substrings-in-java
         // note the (?s) to support multiline
         String[] chunks = script.split("(?s)(?<=\\G.{200})");
 
-        // Enter Paste Mode 
-        sendBuf.add( StartPasteMode );
-        sendBuf.add("import ubinascii;_n=0;_f = open('" +FileName+ "', 'wb')");
+        // Enter Raw or Paste Mode 
+        sendBuffer.add( BreakBreak );
+        if (useRawMode) { 
+            sendBuffer.add( StartRawMode );
+        } else { 
+            sendBuffer.add( StartPasteMode );  
+        }
+        sendBuffer.add("import ubinascii;_n=0;_f = open('" +FileName+ "', 'wb')");
         for (String line : chunks) {
             strHex= Hexlify(line);
-            sendBuf.add("_n= _n+ _f.write(ubinascii.unhexlify('" + strHex + "'))");
+            sendBuffer.add("_n= _n+ _f.write(ubinascii.unhexlify('" + strHex + "'))");
         }
-        sendBuf.add("_f.close();print('File size : {}'.format(_n))");
-        sendBuf.add("del _f, _n");
+        sendBuffer.add("_f.close();print('File size : {}'.format(_n))");
+        sendBuffer.add("del _f, _n");
         // END Paste Mode 
-        sendBuf.add( EndPasteMode );
-
+        sendBuffer.add( EndPasteMode + EndRawMode);
+        //sendBuf.add( EndRawMode );
+        
         // todo: check for actual success
         return success;
     }
-    
-    
 
-    public boolean Get() {
+    public boolean Run(String FileName) {
+        String cmd;
+        sendBuffer = new ArrayList<String>();
+        cmd = "exec(open('" + FileName + "').read(),globals())";  
+        // Enter Raw or Paste Mode 
+        sendBuffer.add( BreakBreak );
+        if (useRawMode) { 
+            sendBuffer.add( StartRawMode );
+        } else { 
+            sendBuffer.add( StartPasteMode );  
+        }
+        sendBuffer.add(cmd);
+        // END Paste Mode 
+        sendBuffer.add( EndPasteMode );        
+        // todo: check for actual success
+        return true;
+    }
+
+
+    public boolean DownloadFile() {
         return false;
     }
 
