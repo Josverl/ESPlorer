@@ -8622,8 +8622,9 @@ public class ESPlorer extends javax.swing.JFrame {
         MenuItemEditSendSelected.doClick();
     }//GEN-LAST:event_MenuItemEditorSendSelectedActionPerformed
 
+// in Editor ; send the selected lines from the editor window to the MCU 
     private void MenuItemEditSendSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemEditSendSelectedActionPerformed
-        int l = 0;
+        int l;
         if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 0)) { // NodeMCU and Scripts
             try {
                 l = TextEditor1.get(iTab).getSelectedText().length();
@@ -12998,24 +12999,34 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         sendBuffer = new ArrayList<String>();
         s = str.split("\r?\n");
+        // Use Pastemode for multiline blocks 
+        if (s.length> 1 && FirmwareType == FIRMWARE_MPYTHON) {
+            sendBuffer.add(pyFiler.StartPasteMode);             
+        }
         sendBuffer.addAll(Arrays.asList(s));
+        if (s.length> 1 && FirmwareType == FIRMWARE_MPYTHON) {
+            sendBuffer.add(pyFiler.EndPasteMode); 
+        }
+
         success = SendTimerStart();
         log("SendToESP: Starting...");
         return success;
     }
 
-    private boolean SendToESP(ArrayList<String> buf) {
+    private boolean SendToESP(ArrayList<String> CommandBuffer) {
         boolean success = false;
         if (!pOpen || portJustOpen) {
             log("SendESP: Serial port not open. Cancel.");
             return success;
         }
         sendBuffer = new ArrayList<String>();
-        sendBuffer.addAll(buf);
-        if (OptionMicroPython.isSelected()) {
-            sendBuffer.add("");
-            sendBuffer.add("");
-            sendBuffer.add("");
+        // Use Pastemode for multiline blocks 
+        if (FirmwareType == FIRMWARE_MPYTHON) {
+            sendBuffer.add(pyFiler.StartPasteMode); 
+        }
+        sendBuffer.addAll(CommandBuffer);
+        if (FirmwareType == FIRMWARE_MPYTHON) {
+            sendBuffer.add(pyFiler.EndPasteMode); 
         }
         success = SendTimerStart();
         log("SendToESP: Starting...");
@@ -13195,15 +13206,9 @@ public class ESPlorer extends javax.swing.JFrame {
                 taskPerformer = new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         if (j < sendBuffer.size()) {
-                            // legacy: send start pastmode on first line 
-                            if ((j == 0) && pasteMode()) {
-                                //sendPasteModeStart();
-                            }
                             send(addCRLF(sendBuffer.get(j)), false);
                             inc_j();
-                            if ((j == sendBuffer.size()) && pasteMode()) {
-                                sendEnd();
-                            }
+
                             int div = sendBuffer.size() - 1;
                             if (div == 0) {
                                 div = 1; // for non-zero divide
@@ -13291,20 +13296,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
-    // getting rid of old code 
-    public void sendPasteModeStart() {
-        log("OLD CODE using uPython pastebuffer");
-        // Ctrl-E - uPython Repl - Enter Paste mode  
-//        byte data = ASCII_CTRL_E ; //0x05;
-//        sendBin(data);
-    }
 
-    public void sendEnd() {
-        log("OLD CODE using uPython pastebuffer");
-        // Ctrl-D - uPython Repl - Finish Paste mode  
-//        byte data = ASCII_CTRL_D ;
-//        sendBin(data);
-    }
 
     public void Busy() {
         Busy.setText("BUSY");
@@ -13892,7 +13884,8 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         LoadSnippets(); // reloading needed
     }
-    // temporay disabling not emplemented functions for MicroPython
+
+    // tempory disable ESPlorer functions not(yet) emplemented for MicroPython
     private void DisableNotImplemented() {
         if (OptionMicroPython.isSelected()) {
 
