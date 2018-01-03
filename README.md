@@ -1,44 +1,54 @@
-[![Stories in Ready](https://badge.waffle.io/4refr0nt/ESPlorer.png?label=ready&title=Ready)](https://waffle.io/4refr0nt/ESPlorer)
-ESPlorer
+
+ESPlorer - MT Fork
 ========
 
-[![Join the chat at https://gitter.im/4refr0nt/ESPlorer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/4refr0nt/ESPlorer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-#### Integrated Development Environment (IDE) for ESP8266 developers
+Hello all,
 
-### Package Description
-The essential multiplatforms tools for any ESP8266 developer from luatool author’s, including a LUA for NodeMCU and MicroPython. Also, all AT commands are supported.
+Over the last few weeks I have been adding new functionality to ESPlorer to make it work bteer with Micropython boards.
+I plan to submit these as a PR to the main repo, in order to faciliate testing  infrequent I'll host a beta release on my fork as well. I was inspired by a friend to look into fixing and extending the MicroPython functions offered in ESPlorer. 
+The main reason for doing so is that for new learners a GUI may be simpler to use than remembering the different text based syntaxes and idioms, and that I frequently found myself switching between 2 or 3 tools to accomplish simple tasks. Personally I prefer to have the choice between a text based and a GUI based IDE , s that I can pick what works best for me, for a specific project.
 
-Required [JAVA](http://java.com/download) (Standard Edition - SE ver 7 and above) installed.
+I have made the following additions and fixes and a few changes to improve uPython support:
+### Changes in v0.3.180103
 
-### Supported platforms
-- Windows(x86, x86-64)
-- Linux(x86, x86-64, ARM soft & hard float)
-- Solaris(x86, x86-64)
-- Mac OS X(x86, x86-64, PPC, PPC64)
+* ESP Firmware detection improvements (not perfect yet on ESP32)
+* Add support for generic uPython, by using machine module in addition to pyb
+  * Updates to Options UI and Preferences
+* Read GPIO input / output (uPython pyb and generic)
+    * the GPIO buttons use the machine module or the pyb module according to preferences.
+* Update sample snippets to machine module
 
-### Detailed features list
-- Syntax highlighting LUA and Python code
-- Code editor color themes: default, dark, Eclipse, IDEA, Visual Studio
-- Undo/Redo editors features
-- Code Autocomplete (Ctrl+Space)
-- Smart send data to ESP8266 (without dumb send with fixed line delay), check correct answer from ESP8266 after every lines.
-- Code snippets
-- Detailed logging
-- and more, more more…
+* Unified File-Managers between LUA and uPython to single file manager
+  * Fix list files in uPython
+  * Add PopUp Menu to uPython files (*.py, *.pyc)
+    * View file - View in Terminal
+    * Hexdump file - View in Terminal
+    * Remove file
+    * Rename File
+* Fix line number alignment in Script and Snippet editor 
+* Script Editor:
+    * Save file to uPython (uses Hexlify to transfer contents with need for escaping)
+    * Send file to uPython ( Executes script interactivly)
+    * Run File
+    * AutoRun on Save
+    * Send Selected Block from editor to ESP
+* Snippet Editor:
+    * Add Snippet names to buttons to simplify use
+    * Add Popup menu to the snippet editor:
+        * Send Line
+        * Send Selected Block
 
-### Required libraries for build
-* [jSSC](https://code.google.com/p/java-simple-serial-connector/)
-* [rSyntaxTextArea](http://bobbylight.github.io/RSyntaxTextArea/)
+### Todo
+There are more things that I want to do (as always), the main priorities after this are:
+* fix/create upload download of binary files
+* Integrate this into main branch (may need to be be quite a large PR)
+* further improve the file handling by adding folder navigation
+* connect via webrepl (but this will require a lot of refactoring of the existing code)
 
-### Discuss
-* [English esp8266.com](http://www.esp8266.com/viewtopic.php?f=22&t=882)
-* [Russian esp8266.ru](http://esp8266.ru/forum/threads/esplorer.34/)
+### Testing :
+    - Testing currently has been limited to :
+        ○ Windows 10 + ESP8622 running MicroPython 1.9.1 / 1.9.3
+        ○ Windows 10 + ESP32 running MicroPython 1.9.3
 
-### Home Page
-[http://esp8266.ru/ESPlorer/](http://esp8266.ru/esplorer/)
-
-### Latest binaries download
-[esp8266.ru](http://esp8266.ru/esplorer/#download)
-
-### How to build ESPlorer from sources
-[ESPlorer build from sources](https://github.com/devyte/nodemcu-platform/wiki/How-to-build-ESPlorer-from-sources), howto from devyte
+## My ask :
+    Could you please give this a try on other platforms and other micropython boards or firmware versions, and report both successes and failures ?
