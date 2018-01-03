@@ -3,7 +3,7 @@ ESPlorer - MT Fork
 
 Hello all,
 
-Over the last few weeks I have been adding new functionality to ESPlorer to make it work bteer with Micropython boards.
+Over the last few weeks I have been adding new functionality to ESPlorer to make it work better with MicroPython boards.
 I plan to submit these as a PR to the main repo, in order to faciliate testing  infrequent I'll host a beta release on my fork as well. I was inspired by a friend to look into fixing and extending the MicroPython functions offered in ESPlorer. 
 The main reason for doing so is that for new learners a GUI may be simpler to use than remembering the different text based syntaxes and idioms, and that I frequently found myself switching between 2 or 3 tools to accomplish simple tasks. Personally I prefer to have the choice between a text based and a GUI based IDE , so I can pick what works best for me, for a specific project.
 
