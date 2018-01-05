@@ -172,7 +172,7 @@ public class ESPlorer extends javax.swing.JFrame {
         LeftMainButtons = new javax.swing.JLayeredPane();
         FileSaveESP = new javax.swing.JToggleButton();
         FileSendESP = new javax.swing.JToggleButton();
-        FileDo = new javax.swing.JButton();
+        FileRun = new javax.swing.JButton();
         FilesUpload = new javax.swing.JButton();
         NodeMCUCommands = new javax.swing.JLayeredPane();
         CommandsNodeMCU = new javax.swing.JLayeredPane();
@@ -447,7 +447,7 @@ public class ESPlorer extends javax.swing.JFrame {
         AppKey = new javax.swing.JTextField();
         RightBasePane = new javax.swing.JLayeredPane();
         LEDPanel = new javax.swing.JLayeredPane();
-        PortOpenLabel = new javax.swing.JLabel();
+        PortOpen = new javax.swing.JLabel();
         PortCTS = new javax.swing.JLabel();
         PortDTR = new javax.swing.JToggleButton();
         PortRTS = new javax.swing.JToggleButton();
@@ -520,9 +520,9 @@ public class ESPlorer extends javax.swing.JFrame {
         MenuItemFileSaveESP = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         MenuItemFileSendESP = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
+        MenuItemUploadFiles = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
-        MenuItemFileDo = new javax.swing.JMenuItem();
+        MenuItemFileRun = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         MenuItemFileRemoveESP = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
@@ -1543,21 +1543,21 @@ public class ESPlorer extends javax.swing.JFrame {
         });
         LeftMainButtons.add(FileSendESP);
 
-        FileDo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/play.png"))); // NOI18N
-        FileDo.setText("Run");
-        FileDo.setToolTipText("Execute lua script via \"dofile\" command");
-        FileDo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        FileDo.setIconTextGap(8);
-        FileDo.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        FileDo.setMaximumSize(new java.awt.Dimension(127, 30));
-        FileDo.setMinimumSize(new java.awt.Dimension(127, 30));
-        FileDo.setPreferredSize(new java.awt.Dimension(127, 30));
-        FileDo.addActionListener(new java.awt.event.ActionListener() {
+        FileRun.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/play.png"))); // NOI18N
+        FileRun.setText("Run");
+        FileRun.setToolTipText("Execute lua script via \"dofile\" command");
+        FileRun.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        FileRun.setIconTextGap(8);
+        FileRun.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        FileRun.setMaximumSize(new java.awt.Dimension(127, 30));
+        FileRun.setMinimumSize(new java.awt.Dimension(127, 30));
+        FileRun.setPreferredSize(new java.awt.Dimension(127, 30));
+        FileRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                FileDoActionPerformed(evt);
+                FileRunActionPerformed(evt);
             }
         });
-        LeftMainButtons.add(FileDo);
+        LeftMainButtons.add(FileRun);
 
         FilesUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/uploadLUA.png"))); // NOI18N
         FilesUpload.setText("Upload ...");
@@ -5666,14 +5666,14 @@ public class ESPlorer extends javax.swing.JFrame {
         LEDPanel.setMinimumSize(new java.awt.Dimension(392, 25));
         LEDPanel.setOpaque(true);
 
-        PortOpenLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        PortOpenLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/led_grey.png"))); // NOI18N
-        PortOpenLabel.setText("Open");
-        PortOpenLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        PortOpenLabel.setMaximumSize(new java.awt.Dimension(50, 25));
-        PortOpenLabel.setMinimumSize(new java.awt.Dimension(50, 25));
-        PortOpenLabel.setPreferredSize(new java.awt.Dimension(50, 25));
-        PortOpenLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        PortOpen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        PortOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/led_grey.png"))); // NOI18N
+        PortOpen.setText("Open");
+        PortOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        PortOpen.setMaximumSize(new java.awt.Dimension(50, 25));
+        PortOpen.setMinimumSize(new java.awt.Dimension(50, 25));
+        PortOpen.setPreferredSize(new java.awt.Dimension(50, 25));
+        PortOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         PortCTS.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         PortCTS.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/led_grey.png"))); // NOI18N
@@ -5853,7 +5853,7 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
 
-        LEDPanel.setLayer(PortOpenLabel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        LEDPanel.setLayer(PortOpen, javax.swing.JLayeredPane.DEFAULT_LAYER);
         LEDPanel.setLayer(PortCTS, javax.swing.JLayeredPane.DEFAULT_LAYER);
         LEDPanel.setLayer(PortDTR, javax.swing.JLayeredPane.DEFAULT_LAYER);
         LEDPanel.setLayer(PortRTS, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -5882,7 +5882,7 @@ public class ESPlorer extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(PortRTS))
                             .addGroup(LEDPanelLayout.createSequentialGroup()
-                                .addComponent(PortOpenLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(PortOpen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(PortCTS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -5937,7 +5937,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             .addComponent(DonateSmall, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LEDPanelLayout.createSequentialGroup()
                         .addGroup(LEDPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(PortOpenLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PortOpen, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(PortCTS, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(LEDPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -6530,6 +6530,8 @@ public class ESPlorer extends javax.swing.JFrame {
         });
 
         FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/ESP8266-96x96.png"))); // NOI18N
+        FirmwareIcon.setEnabled(true);
+        FirmwareIcon.setFocusable(false);
         FirmwareIcon.setMaximumSize(new java.awt.Dimension(150, 150));
         FirmwareIcon.setMinimumSize(new java.awt.Dimension(150, 150));
 
@@ -6691,21 +6693,22 @@ public class ESPlorer extends javax.swing.JFrame {
         });
         MenuFile.add(MenuItemFileSendESP);
 
-        jMenuItem7.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_MASK));
-        jMenuItem7.setText("<html><u>U</u>pload file to ESP");
-        jMenuItem7.setEnabled(false);
-        MenuFile.add(jMenuItem7);
+        MenuItemUploadFiles.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_MASK));
+        MenuItemUploadFiles.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/uploadLUA.png"))); // NOI18N
+        MenuItemUploadFiles.setText("<html><u>U</u>pload file(s) to ESP");
+        MenuItemUploadFiles.setEnabled(false);
+        MenuFile.add(MenuItemUploadFiles);
         MenuFile.add(jSeparator4);
 
-        MenuItemFileDo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
-        MenuItemFileDo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/play.png"))); // NOI18N
-        MenuItemFileDo.setText("<html><u>D</u>oFile on ESP");
-        MenuItemFileDo.addActionListener(new java.awt.event.ActionListener() {
+        MenuItemFileRun.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
+        MenuItemFileRun.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/play.png"))); // NOI18N
+        MenuItemFileRun.setText("<html><u>D</u>oFile (Run) on ESP");
+        MenuItemFileRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                MenuItemFileDoActionPerformed(evt);
+                MenuItemFileRunActionPerformed(evt);
             }
         });
-        MenuFile.add(MenuItemFileDo);
+        MenuFile.add(MenuItemFileRun);
         MenuFile.add(jSeparator3);
 
         MenuItemFileRemoveESP.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_MASK));
@@ -7346,113 +7349,72 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_OpenActionPerformed
     private void UpdateButtons() {
         pOpen = Open.isSelected();
-        if (pOpen && !portJustOpen) {
-            UpdateLED();
-            Port.setEnabled(false);
-            //Speed.setEnabled(false);
-            ReScan.setEnabled(false);
-            SendCommand.setEnabled(true);
-            Command.setEnabled(true);
-            CR.setEnabled(true);
-            LF.setEnabled(true);
-            
-            // Save Script 
-            FileSaveESP.setEnabled(true);               // Button: Save 
-            MenuItemFileSaveESP.setEnabled(true);       // Menu: File > Save 
-            // Send Script to ESP 
-            FileSendESP.setEnabled(true);               // Script Editor Button : Send 
-            MenuItemFileSendESP.setEnabled(true);       // Menu: File > Send
-            // Run Script on ESP 
-            FileDo.setEnabled(true);                    // Script Editor Button : Run 
-            MenuItemFileDo.setEnabled(true);            // Menu: File> DO 
+        UpdateLED();
+        
+        Port.setEnabled(true);
+        //Speed.setEnabled(true);
+        ReScan.setEnabled(true);
 
-            // Remove from ESP 
-            MenuItemFileRemoveESP.setEnabled(true);     // Menu: File > Remove from ESP 
-            
-            // Send Line 
-            MenuItemEditorSendLine.setEnabled(true);    // Popup menu>Send Line 
-            MenuItemEditSendLine.setEnabled(true);      // Menu : Edit > Send Line 
-            ButtonSendLine.setEnabled(true);            // Script Editor Button : Send line button on top 
+        SendCommand.setEnabled(pOpen);
+        Command.setEnabled(pOpen);
+        CR.setEnabled(pOpen);
+        LF.setEnabled(pOpen);
 
-            //Send Block is enabled / disabled in the CheckSelected method
-            
-            // Reset ESP 
-            ESPReset.setEnabled(true);                 // Right bottom Button: Reset
-            MenuItemTerminalReset.setEnabled(true);     // PopupMenu: Terminal > Reset ESP module
-            MenuItemESPReset.setEnabled(true);          // Menu: ESP > Reset 
-            
-            // Format ESP 
-            MenuItemTerminalFormat.setEnabled(true);    // PopupMenu: Terminal > Format ESP Module
-            MenuItemESPFormat.setEnabled(true);         // Menu: ESP > Format 
-            
-            SnippetRun.setEnabled(true);                // Snippet Button: Run 
-            
-            ButtonSnippet0.setEnabled(true);
-            ButtonSnippet1.setEnabled(true);
-            ButtonSnippet2.setEnabled(true);
-            ButtonSnippet3.setEnabled(true);
-            ButtonSnippet4.setEnabled(true);
-            ButtonSnippet5.setEnabled(true);
-            ButtonSnippet6.setEnabled(true);
-            ButtonSnippet7.setEnabled(true);
-            ButtonSnippet8.setEnabled(true);
-            ButtonSnippet9.setEnabled(true);
-            ButtonSnippet10.setEnabled(true);
-            ButtonSnippet11.setEnabled(true);
-            ButtonSnippet12.setEnabled(true);
-            ButtonSnippet13.setEnabled(true);
-            ButtonSnippet14.setEnabled(true);
-            ButtonSnippet15.setEnabled(true);
+        // Save Script 
+        FileSaveESP.setEnabled(pOpen);               // Button: Save 
+        MenuItemFileSaveESP.setEnabled(pOpen);       // Menu: File > Save 
+        // Send Script to ESP 
+        FileSendESP.setEnabled(pOpen);               // Script Editor Button : Send 
+        MenuItemFileSendESP.setEnabled(pOpen);       // Menu: File > Send
+        // Run Script on ESP 
+        FileRun.setEnabled(pOpen);                    // Script Editor Button : Run 
+        MenuItemFileRun.setEnabled(pOpen);            // Menu: File> DO 
 
-        } else {
-            UpdateLED();
-            Port.setEnabled(true);
-            //Speed.setEnabled(true);
-            ReScan.setEnabled(true);
-            SendCommand.setEnabled(false);
-            Command.setEnabled(false);
-            CR.setEnabled(false);
-            LF.setEnabled(false);
-            // left panel
-            FileSaveESP.setEnabled(false);
-            FileSaveESP.setSelected(false);
-            MenuItemFileSaveESP.setEnabled(false);
-            FileSendESP.setEnabled(false);
-            FileSendESP.setSelected(false);
-            MenuItemFileSendESP.setEnabled(false);
-            MenuItemFileRemoveESP.setEnabled(false);
-            FileDo.setEnabled(false);
-            MenuItemFileDo.setEnabled(false);
-            MenuItemEditorSendLine.setEnabled(false);       // Popup menu>Send Line 
-            MenuItemEditSendLine.setEnabled(false);
-            ButtonSendLine.setEnabled(false);
-            ESPReset.setEnabled(false);
-            MenuItemTerminalReset.setEnabled(false);
-            MenuItemTerminalFormat.setEnabled(false);
-            MenuItemESPReset.setEnabled(false);
-            MenuItemESPFormat.setEnabled(false);
-            SnippetRun.setEnabled(false);
-            ButtonSnippet0.setEnabled(false);
-            ButtonSnippet1.setEnabled(false);
-            ButtonSnippet2.setEnabled(false);
-            ButtonSnippet3.setEnabled(false);
-            ButtonSnippet4.setEnabled(false);
-            ButtonSnippet5.setEnabled(false);
-            ButtonSnippet6.setEnabled(false);
-            ButtonSnippet7.setEnabled(false);
-            ButtonSnippet8.setEnabled(false);
-            ButtonSnippet9.setEnabled(false);
-            ButtonSnippet10.setEnabled(false);
-            ButtonSnippet11.setEnabled(false);
-            ButtonSnippet12.setEnabled(false);
-            ButtonSnippet13.setEnabled(false);
-            ButtonSnippet14.setEnabled(false);
-            ButtonSnippet15.setEnabled(false);
-        }
+        // Files Upload
+        MenuItemUploadFiles.setEnabled(pOpen);      // Menu : UploadFiles 
+        FilesUpload.setEnabled(pOpen);               // Button
 
+        // Remove from ESP 
+        MenuItemFileRemoveESP.setEnabled(pOpen);    // Menu: File > Remove from ESP 
+
+        // Send Line 
+        MenuItemEditorSendLine.setEnabled(pOpen);   // Popup menu>Send Line 
+        MenuItemEditSendLine.setEnabled(pOpen);     // Menu : Edit > Send Line 
+        ButtonSendLine.setEnabled(pOpen);           // Script Editor Button : Send line button on top 
+
+        //Send Block is enabled / disabled in the CheckSelected method
+
+        // Reset ESP 
+        ESPReset.setEnabled(pOpen);                 // Right bottom Button: Reset
+        MenuItemTerminalReset.setEnabled(pOpen);    // PopupMenu: Terminal > Reset ESP module
+        MenuItemESPReset.setEnabled(pOpen);         // Menu: ESP > Reset 
+
+        // Format ESP 
+        MenuItemTerminalFormat.setEnabled(pOpen);   // PopupMenu: Terminal > Format ESP Module
+        MenuItemESPFormat.setEnabled(pOpen);        // Menu: ESP > Format 
+
+        SnippetRun.setEnabled(pOpen);               // Snippet Button: Run 
+
+        ButtonSnippet0.setEnabled(pOpen);
+        ButtonSnippet1.setEnabled(pOpen);
+        ButtonSnippet2.setEnabled(pOpen);
+        ButtonSnippet3.setEnabled(pOpen);
+        ButtonSnippet4.setEnabled(pOpen);
+        ButtonSnippet5.setEnabled(pOpen);
+        ButtonSnippet6.setEnabled(pOpen);
+        ButtonSnippet7.setEnabled(pOpen);
+        ButtonSnippet8.setEnabled(pOpen);
+        ButtonSnippet9.setEnabled(pOpen);
+        ButtonSnippet10.setEnabled(pOpen);
+        ButtonSnippet11.setEnabled(pOpen);
+        ButtonSnippet12.setEnabled(pOpen);
+        ButtonSnippet13.setEnabled(pOpen);
+        ButtonSnippet14.setEnabled(pOpen);
+        ButtonSnippet15.setEnabled(pOpen);
+        // disable ESPlorer functions that are not implemented or don't make sense
         DisableNotImplemented();
-
     }
+    
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         PortFinder();
         this.setTitle("ESPlorer " + VERSION );
@@ -8109,7 +8071,7 @@ public class ESPlorer extends javax.swing.JFrame {
         UnifiedFileManagerPane.repaint();
         FileAsButtonList = new ArrayList<javax.swing.JButton>();
     }
-
+    // eventreciever used to download files from NodeMCU LUA
     private class PortNodeFilesReader implements SerialPortEventListener {
 
         public void serialEvent(SerialPortEvent event) {
@@ -8209,7 +8171,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
-    // Initiate a file download from a LUA board 
+    // Initiate a file download from a NodeMCU LUA board 
     private void LUAFileDownload(String param) {
         if (portJustOpen) {
             log("Downloader: Communication with MCU not yet established.");
@@ -8539,6 +8501,7 @@ public class ESPlorer extends javax.swing.JFrame {
         return cs;
     }
 
+    // Create a hexdump of a file on the MCU
     private void HexDump(String FileName) {
         String cmd;
         if (FirmwareType == FIRMWARE_MPYTHON ) {
@@ -8556,10 +8519,8 @@ public class ESPlorer extends javax.swing.JFrame {
                 "    return ''.join(result)\n" +
                 "print('---- :" +FileName+ "')\n" +
                 "with open('" +FileName+ "', 'r') as f:\n" +
-                "     print( dumpString( f.read()))" + 
-                "#-=-";
+                "     print( dumpString( f.read()))" ;
                 LocalEcho = false;
-//BUG                LocalEchoResumeString = "#-=-";
                 SendToESP(cmd);
         } else { 
         // LUA 
@@ -8619,7 +8580,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         return s256;
     }
-
+    // display the recieved state of the serial port CTS 
     private void UpdateLedCTS() {
         try {
             if (serialPort.isCTS()) {
@@ -8956,9 +8917,9 @@ public class ESPlorer extends javax.swing.JFrame {
 
     }//GEN-LAST:event_MenuFileActionPerformed
 
-    private void MenuItemFileDoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemFileDoActionPerformed
-        FileDo.doClick();
-    }//GEN-LAST:event_MenuItemFileDoActionPerformed
+    private void MenuItemFileRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemFileRunActionPerformed
+        FileRun.doClick();
+    }//GEN-LAST:event_MenuItemFileRunActionPerformed
 
     private void MenuItemTerminalFontDecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemTerminalFontDecActionPerformed
         MenuItemViewTermFontDec.doClick();
@@ -10030,7 +9991,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
     // Run the file in the editor that is assumed already stored / copied to the MCU 
     // todo: @@1 Add Support for uPython 
-    private void FileDoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileDoActionPerformed
+    private void FileRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileRunActionPerformed
         String cmd;
         
         String FileName = iFile.get(iTab).getName();
@@ -10043,7 +10004,7 @@ public class ESPlorer extends javax.swing.JFrame {
               btnSend(cmd);
         }
        
-    }//GEN-LAST:event_FileDoActionPerformed
+    }//GEN-LAST:event_FileRunActionPerformed
 
     // send the file in the editor to the MCU to run interactivly
     // this should use the same code as already works for the snippets
@@ -11037,7 +10998,6 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JButton FileCompileDoLC;
     private javax.swing.JButton FileCompileDoLC2;
     private javax.swing.JButton FileCompileDoLC3;
-    private javax.swing.JButton FileDo;
     private javax.swing.JButton FileDo1;
     private javax.swing.JButton FileFormat;
     private javax.swing.JLayeredPane FileLayeredPane;
@@ -11048,6 +11008,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JTextField FileRename;
     private javax.swing.JLabel FileRenameLabel;
     private javax.swing.JLayeredPane FileRenamePanel;
+    private javax.swing.JButton FileRun;
     private javax.swing.JButton FileSaveCompileDoLC;
     private javax.swing.JToggleButton FileSaveESP;
     private javax.swing.JToggleButton FileSendESP;
@@ -11111,12 +11072,12 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JMenuItem MenuItemEditorSendSelected;
     private javax.swing.JMenuItem MenuItemEditorUndo;
     private javax.swing.JMenuItem MenuItemFileClose;
-    private javax.swing.JMenuItem MenuItemFileDo;
     private javax.swing.JMenuItem MenuItemFileExit;
     private javax.swing.JMenuItem MenuItemFileNew;
     private javax.swing.JMenuItem MenuItemFileOpen;
     private javax.swing.JMenuItem MenuItemFileReload;
     private javax.swing.JMenuItem MenuItemFileRemoveESP;
+    private javax.swing.JMenuItem MenuItemFileRun;
     private javax.swing.JMenuItem MenuItemFileSave;
     private javax.swing.JMenuItem MenuItemFileSaveAll;
     private javax.swing.JMenuItem MenuItemFileSaveAs;
@@ -11146,6 +11107,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JMenuItem MenuItemTerminalFontInc;
     private javax.swing.JMenuItem MenuItemTerminalFormat;
     private javax.swing.JMenuItem MenuItemTerminalReset;
+    private javax.swing.JMenuItem MenuItemUploadFiles;
     private javax.swing.JMenuItem MenuItemViewClearLog;
     private javax.swing.JMenuItem MenuItemViewClearTerminal;
     private javax.swing.JCheckBoxMenuItem MenuItemViewDonate;
@@ -11231,7 +11193,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JComboBox Port;
     private javax.swing.JLabel PortCTS;
     private javax.swing.JToggleButton PortDTR;
-    private javax.swing.JLabel PortOpenLabel;
+    private javax.swing.JLabel PortOpen;
     private javax.swing.JToggleButton PortRTS;
     private javax.swing.JProgressBar ProgressBar;
     private javax.swing.JLayeredPane RN2483;
@@ -11417,7 +11379,6 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JLayeredPane jLayeredPane2;
     private javax.swing.JLayeredPane jLayeredPane3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JScrollPane jScrollData;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
@@ -12875,6 +12836,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
+    // this serial eventlistenr is used in 'Dumb mode'
     private class PortReader implements SerialPortEventListener {
 
         public void serialEvent(SerialPortEvent event) {
@@ -12912,14 +12874,17 @@ public class ESPlorer extends javax.swing.JFrame {
                             UnifiedFileManagerPane.setVisible(false);
                             FirmwareType = FIRMWARE_AT;
                         } else {
-                            TerminalAdd("\r\nCan't autodetect firmware, because proper answer not received (may be unknown firmware).\r\nUsing configured firmware type\r\nPlease continue or reset module.\r\n");
+                            TerminalAdd("\r\nCan't autodetect firmware, because proper answer not received (may be unknown firmware).\r\n");
                             //use configured firmware type if set 
                             if (OptionMicroPython.isSelected()) {
                                 SetFirmwareType(FIRMWARE_MPYTHON);
+                                TerminalAdd("Using configured firmware type : MicroPython\r\n" );
                             }
                             if( OptionNodeMCU.isSelected()) { 
                                 SetFirmwareType(FIRMWARE_NODEMCU);
+                                TerminalAdd("Using configured firmware type : NodeMCU\r\n" );
                             }
+                            TerminalAdd("Please continue or reset module to retry detection.\r\n");
                         }
                     } else if (LocalEcho) {
                         TerminalAdd(data);
@@ -13240,13 +13205,17 @@ public class ESPlorer extends javax.swing.JFrame {
         timer.start();
         return true;
     }
-
+/*
+    // Add a backspace to the passed in string
+    // never used in code 
     private String addBS(String s) {
         String bs = "" + (char) java.awt.event.KeyEvent.VK_BACK_SPACE + s;
         log("bs = '" + bs + "'");
         return bs;
     }
-    
+*/     
+    // todo : refactor and clean up code duplication 
+    // todo : mycropython is only called in Dumb mode 
     public boolean SendTimerStart() {
         startTime = System.currentTimeMillis();
         SendLock();
@@ -13397,8 +13366,8 @@ public class ESPlorer extends javax.swing.JFrame {
         MenuItemFileSendESP.setEnabled(false);
         MenuItemFileRemoveESP.setEnabled(false);
         ESPReset.setEnabled(false);
-        FileDo.setEnabled(false);
-        MenuItemFileDo.setEnabled(false);
+        FileRun.setEnabled(false);
+        MenuItemFileRun.setEnabled(false);
         MenuItemEditSendSelected.setEnabled(false);
         MenuItemEditorSendSelected.setEnabled(false);
         ButtonSendSelected.setEnabled(false);
@@ -13451,18 +13420,20 @@ public class ESPlorer extends javax.swing.JFrame {
 
     public void UpdateLED() {
         pOpen = Open.isSelected();
+        FirmwareIcon.setEnabled(pOpen && (!portJustOpen)); // Dim the firmware icon if the port is open
         if (!pOpen) {
+            
             PortDTR.setIcon(LED_GREY);
             PortRTS.setIcon(LED_GREY);
             PortCTS.setIcon(LED_GREY);
             Open.setText("Open");
             Open.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/connect1.png")));
-            PortOpenLabel.setIcon(LED_GREY);
+            PortOpen.setIcon(LED_GREY);
             return;
         }
         Open.setText("Close");
         Open.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/disconnect1.png")));
-        PortOpenLabel.setIcon(LED_GREEN);
+        PortOpen.setIcon(LED_GREEN);
         UpdateLedCTS();
         if (PortDTR.isSelected()) {
             PortDTR.setIcon(LED_GREEN);
@@ -13475,7 +13446,7 @@ public class ESPlorer extends javax.swing.JFrame {
             PortRTS.setIcon(LED_GREY);
         }
         if (portJustOpen) {
-            PortOpenLabel.setIcon(LED_RED);
+            PortOpen.setIcon(LED_RED);
         }
     }
 
@@ -13564,7 +13535,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         return success;
     }
-
+    // todo : Add uPython Support 
     private void UploadFiles() {
         if (!pOpen) {
             log("Uploader: Serial port not open, operation FAILED.");
@@ -13963,7 +13934,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 OptionNodeMCU.setSelected(true);
 
                 CommandsNodeMCU.setVisible(true);
-                //todo: merge file managers ?
+                //merged file managers
                 UnifiedFileManagerPane.setVisible(true);
                 ClearUnifiedFileManager();
                 // disable uPython Machine Module Options
@@ -13980,6 +13951,8 @@ public class ESPlorer extends javax.swing.JFrame {
                 CommandsSetAT();
                 // disable uPython Machine Module Options
                 pyMachineModule.setEnabled(false);
+                FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/ESP8266-96x96.png")));
+                FirmwareIcon.setEnabled(true);                    
                 break;
         }
         LoadSnippets(); // reloading needed
@@ -13989,12 +13962,9 @@ public class ESPlorer extends javax.swing.JFrame {
     private void DisableNotImplemented() {
         if (OptionMicroPython.isSelected()) {
 
-            // Now implemented 
-            MenuItemFileDo.setEnabled(true);
-            FileDo.setEnabled(true);
-            MenuItemFileSaveESP.setEnabled(true);
-            FileSaveESP.setEnabled(true);
-
+            // File Upload
+//            FilesUpload.setEnabled(true);
+            
             //FileAutoSaveESP.setSelected(false);
 
             /* temporay disabling not emplemented functions */
@@ -14009,7 +13979,7 @@ public class ESPlorer extends javax.swing.JFrame {
             //todo: 
             MenuItemFileRemoveESP.setEnabled(false);
             MenuESP.setEnabled(false);
-            FilesUpload.setEnabled(false);
+
 
             // no condensed scrip execution (LUA Only) 
             Condensed.setSelected(false);
