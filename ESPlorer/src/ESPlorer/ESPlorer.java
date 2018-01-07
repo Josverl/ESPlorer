@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.prefs.*;
 
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.*;
 import javax.swing.filechooser.*;
@@ -39,13 +41,14 @@ import jssc.SerialPortList;
 public class ESPlorer extends javax.swing.JFrame {
 
     public static SerialPort serialPort;
-    public static ArrayList<String> sendBuffer;
+    // inititialize the sendbuffer so that lines can be added to it 
+    public static ArrayList<String> sendBuffer = new ArrayList<>();
 
 
     public static boolean pOpen = false;
     public static boolean sOpen = false;
     public static boolean portJustOpen = false;
-    public static final String VERSION = "v0.3.180103";
+    public static final String VERSION = "v0.3.180107";
     public static ArrayList<String> LAF;
     public static ArrayList<String> LAFclass;
     public static Preferences prefs;
@@ -7676,10 +7679,11 @@ public class ESPlorer extends javax.swing.JFrame {
         TextEditor1.get(iTab).paste();
         FileChanged.set(iTab, true);
     }//GEN-LAST:event_MenuItemEditPasteActionPerformed
-// File open
+    // File open
     private void MenuItemFileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemFileOpenActionPerformed
         OpenFile();
     }//GEN-LAST:event_MenuItemFileOpenActionPerformed
+    // save the current path in the preferences
     private void SavePath() {
         workDir = chooser.getCurrentDirectory().toString();
         prefs.put(PATH, workDir);
@@ -8157,7 +8161,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         } catch (Exception e) {
                         }
                         serialPort.addEventListener(new PortReader(), portMask);
-                        SendUnLock();
+                        SendUnLock();                         // (re)enable the send button 
                         NodeFileSystemInfo();
                     }
                 } catch (SerialPortException ex) {
@@ -10024,7 +10028,6 @@ public class ESPlorer extends javax.swing.JFrame {
     // Save the file in the editer to the MCU 
     private void FileSaveESPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileSaveESPActionPerformed
         if (!FileSaveESP.isSelected()) {
-            // BUTTON IS ALSO A TOGGLE , NOT CLEAR WHAT IS INTENDED ?
             StopSend();
             return;
         }
@@ -11422,7 +11425,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private ArrayList<CompletionProvider> provider;
     private ArrayList<AutoCompletion> ac;
     private ArrayList<File> iFile; // for files in tab
-    private ArrayList<File> mFile; // for multifile op
+    private ArrayList<File> alFilesToUpload; // for multifile op
     private ArrayList<Boolean> FileChanged;
     
     private ArrayList<javax.swing.JButton> FileAsButtonList;        // list files on LUA 
@@ -13029,24 +13032,36 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
+    // is called when the end of the sendbuffer is reached
     private void StopSend() {
         try {
-            serialPort.removeEventListener();
-        } catch (Exception e) {
-        }
-        try {
+            // Stop the Send Timer 
             timer.stop();
         } catch (Exception e) {
         }
         try {
+            // Stop the TimeOut timer 
             timeout.stop();
+        } catch (Exception e) {
+        }
+
+        try {
+            // remove any special event listners 
+            serialPort.removeEventListener();
+            // note : slight risk of missed responses coming in at this point,
+            // add new eventlistner ASAP 
         } catch (Exception e) {
         }
         try {
             serialPort.addEventListener(new PortReader(), portMask);
         } catch (SerialPortException e) {
         }
-        SendUnLock();
+        // clear the send buffer 
+        // todo : clear the sendbuffer while it is beeing transmitted
+        // todo: then the senddbuffer does not need to be re-initialised each time ( 
+        sendBuffer.clear();
+        
+        SendUnLock(); // (re)enable the send button 
         long duration = System.currentTimeMillis() - startTime;
         log("Operation done. Duration = " + Long.toString(duration) + " ms");
     }
@@ -13239,6 +13254,8 @@ public class ESPlorer extends javax.swing.JFrame {
         if (DumbMode.isSelected()) { // DumbMode
             delay = LineDelay.getValue();
             if (OptionNodeMCU.isSelected()) {
+                // no delay 
+                // trim each line 
                 taskPerformer = new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         if (j < sendBuffer.size()) {
@@ -13257,18 +13274,25 @@ public class ESPlorer extends javax.swing.JFrame {
                     }
                 };
             } else { // MicroPython
+                // No delay 
+                // cmdlines are not trimmed
+                // progress bar is advanced 
                 taskPerformer = new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
+                        String line;
                         if (j < sendBuffer.size()) {
-                            send(addCRLF(sendBuffer.get(j)), false);
+                            line = sendBuffer.get(j);
+                            send(addCRLF(line), false);
                             inc_j();
-
+                            
                             int div = sendBuffer.size() - 1;
                             if (div == 0) {
                                 div = 1; // for non-zero divide
                             }
                             ProgressBar.setValue((j * 100) / div);
+                            // if last line has been sent 
                             if (j > sendBuffer.size() - 1) {
+                                // stop the timer that triggers this
                                 timer.stop();
                                 StopSend();
                             }
@@ -13288,6 +13312,9 @@ public class ESPlorer extends javax.swing.JFrame {
             }
             taskPerformer = new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
+                    // smart mode : delay = 10 or greater 
+                    // send only one line 
+                    // do not set progress bar 
                     if (j < sendBuffer.size()) {
                         log(Integer.toString(j));
                         send(addCRLF(sendBuffer.get(j).trim()), false);
@@ -13450,13 +13477,13 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
+    // (re)enable the send button 
     public void SendUnLock() {
         Idle();
         FileSaveESP.setText("Save to ESP");
         FileSaveESP.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/move.png")));
         FileSaveESP.setSelected(false);
-        FileSendESP.setSelected(false);
-
+        // disable any ESPfunction to relevant for uPython (likely redundant as this has been called before) 
         DisableNotImplemented();
 
     }
@@ -13546,33 +13573,77 @@ public class ESPlorer extends javax.swing.JFrame {
             return;
         }
         chooser.rescanCurrentDirectory();
+        // save the current file filter nad allow selection of all files 
         javax.swing.filechooser.FileFilter flt = chooser.getFileFilter();
         chooser.resetChoosableFileFilters();
-        chooser.setDialogTitle("Select file to upload to ESP");
-        chooser.setMultiSelectionEnabled(true);
-        int returnVal = chooser.showOpenDialog(LeftBasePane);
-        mFile = new ArrayList<File>();
+        chooser.setDialogTitle("Select file(s) to upload to ESP");
+        // currently Mutliselect is enabled only for NodeMCU as the send code looses characters in multi-file uploads 
+        chooser.setMultiSelectionEnabled( FirmwareType == FIRMWARE_NODEMCU);
+        // Change Dialog to Upload instead of Open 
+        // Set the text
+        chooser.setApproveButtonText("Upload");
+        chooser.setApproveButtonMnemonic('u');
+        //chooser.setApproveButtonToolTipText("New Approve Tool Tip");        
+        int returnVal = chooser.showOpenDialog(LeftBasePane );
+
+        
+        alFilesToUpload = new ArrayList<File>();
         log("Uploader: chooser selected file:" + chooser.getSelectedFiles().length);
-        if (mFile.addAll(Arrays.asList(chooser.getSelectedFiles()))) {
-//        if ( mFile.add(chooser.getSelectedFile()) ) {
+        if (alFilesToUpload.addAll(Arrays.asList(chooser.getSelectedFiles()))) {
+            // Multifile selection returned one or more files 
+            mFileIndex = 0;
+        } else if ( alFilesToUpload.add(chooser.getSelectedFile()) ) {
+            // single file selection 
             mFileIndex = 0;
         } else {
+            //no file selected 
             mFileIndex = -1;
             log("Uploader: no file selected");
             return;
         }
+        // reset the original file filter 
         chooser.setFileFilter(flt);
+        // reset the Dialog to Open 
+        chooser.setApproveButtonText("Open");
+        chooser.setApproveButtonMnemonic('o');        
 //        chooser.setMultiSelectionEnabled(false);
         if (!(returnVal == JFileChooser.APPROVE_OPTION)) {
             log("Uploader: canceled by user");
             return;
         }
+        // save the current path in the preferences
         SavePath();
-        UploadFilesStart();
+        // 
+        if (FirmwareType == FIRMWARE_NODEMCU) {
+            NodeMCUUploadFilesStart();
+        } else {
+            //uPython
+            byte[] fileData;
+            boolean success ;
+            //for each file 
+            // currently only one file due to lost characters during multi-file transfers
+            for( File CurrentFile : alFilesToUpload ) {
+                //open file 
+                //Path p = FileSystems.getDefault().getPath("", "myFile");
+                log("Uploader: " + CurrentFile.toPath().getFileName().toString());
+                try {
+                    fileData = Files.readAllBytes(CurrentFile.toPath());
+                    // todo: include full path and errorcheck 
+                    pyFiler.UploadFile(CurrentFile.toPath().getFileName().toString(), fileData);
+                    success = SendTimerStart();
+                } catch (IOException ex) {
+                    Logger.getLogger(ESPlorer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+            // todo: refactor-- why is this not in the called function/method     
+            
+            
+        }
     }
 
-    private void UploadFilesStart() {
-        UploadFileName = mFile.get(mFileIndex).getName();
+    private void NodeMCUUploadFilesStart() {
+        UploadFileName = alFilesToUpload.get(mFileIndex).getName();
         sendBuffer = new ArrayList<String>();
         PacketsData = new ArrayList<String>();
         PacketsCRC = new ArrayList<Integer>();
@@ -13584,7 +13655,7 @@ public class ESPlorer extends javax.swing.JFrame {
         rx_byte = new byte[0];
         tx_byte = new byte[0];
 
-        if (!LoadBinaryFile(mFile.get(mFileIndex))) {
+        if (!NodeMCUUploadBinaryFile(alFilesToUpload.get(mFileIndex))) {
             log("Uploader: loaded fail!");
             return;
         }
@@ -13640,7 +13711,7 @@ public class ESPlorer extends javax.swing.JFrame {
             log("Uploader: Add EventListener: Success.");
         } catch (SerialPortException e) {
             log("Uploader: Add EventListener Error. Canceled.");
-            SendUnLock();
+            SendUnLock(); // (re)enable the send button 
             return;
         }
         int delay = 10;
@@ -13668,7 +13739,7 @@ public class ESPlorer extends javax.swing.JFrame {
         timer.start();
     }
 
-    private boolean LoadBinaryFile(File f) {
+    private boolean NodeMCUUploadBinaryFile(File f) {
         boolean success = false;
         try {
             log("BinaryFileLoader: Try to load file " + f.getName() + " ...");
@@ -13851,8 +13922,8 @@ public class ESPlorer extends javax.swing.JFrame {
                         log(e.toString());
                     }
                     StopSend();
-                    if (mFileIndex != -1 && mFileIndex++ < mFile.size()) {
-                        UploadFilesStart();
+                    if (mFileIndex != -1 && mFileIndex++ < alFilesToUpload.size()) {
+                        NodeMCUUploadFilesStart();
                     }
                 }
             } else if (event.isCTS()) {
@@ -14032,11 +14103,12 @@ public class ESPlorer extends javax.swing.JFrame {
     // simple save file , is handled in pyFiler.java , 
     private boolean pySaveFileESP(String filename, String FileContent ) {
         boolean success = false;
-        log("pyFileSaveESP: Starting...");
+        log("pyFileSaveESP: Starting file upload ...");
         //String[] content = FileContent.split("\r?\n");
         if (pyFiler.UploadFile(filename, FileContent)) {
             // todo: refactor-- why is this not in the called function 
             success = SendTimerStart();
+            log("pyFileSaveESP: Finished file upload ...");
         }
         return success;
     } // pySaveFileESP
@@ -14172,7 +14244,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 } catch (Exception e) {
                     log(e.toString());
                 }
-                SendUnLock();
+                SendUnLock(); // (re)enable the send button 
             }
         };
         int delay = AnswerDelay.getValue() * 1000;

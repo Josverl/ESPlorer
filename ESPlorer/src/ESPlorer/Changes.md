@@ -28,8 +28,23 @@ Improved uPython support
         - Send Selected Block
    
 
-
+-----------------------------------------------------------------------------
 ToDo:
+    BUG: SEND to uPython is dropping characters under load 
+        Repro : Send several files at once 
+
+        
+    Related: Send Logic
+        simplify code by using a send queue to replace the ArrayList 
+        this will 
+            simplify the send code 
+            allow some code duplication to be removed 
+            prevents clearing of the send buffer if the application logic or user is quicker than the send logic (ie BUGs)
+        // clear the send buffer 
+            // todo : clear the sendbuffer while it is beeing transmitted
+            // todo: then the senddbuffer does not need to be re-initialised each time ( 
+
+
     Script Editor 
         - Find / Find and replace        
         - Download Read file from uPython
@@ -45,19 +60,6 @@ ToDo:
         f.write(binascii.unhexlify(ret))
         f.close()
 
-Java version of Unhexlify 
-    plain = javax.xml.bind.DatatypeConverter.parseHexBinary(hexString)
-/* 
-    public static byte[] parseHexBinary(String lexicalXSDHexBinary)
-    Converts the string argument into an array of bytes.
-    Parameters:
-    lexicalXSDHexBinary - A string containing lexical representation of xsd:hexBinary.
-    Returns:
-    An array of bytes represented by the string argument.
-*/
-
-
-
     * BUG: TimeOut in ListDir 
     // todo: add filesize , int size)
     private void AddPyFileButton(String FileName) {
@@ -67,7 +69,7 @@ Java version of Unhexlify
 
     uPython Download Text File (from board) 
     uPython Edit Text File 
-    uPython download Binary File 
+    uPython download Binary File to filesystem ?
     Add uPython FileSystem Info 
 
     Refactor all the different ways to implement DoFile / Exec(open into a single method to get consistency 
@@ -80,16 +82,6 @@ Java version of Unhexlify
         btnSend(cmd);
     }   
 
-        String fn = evt.getActionCommand();
-        if (fn.endsWith(".py") || fn.endsWith(".pyc")) {
-            LocalEcho = false;
-            String cmd = "exec(open(\"" + fn + "\").read(),globals())";
-            btnSend(cmd);
-        } else if (fn.endsWith(".bin") || fn.endsWith(".dat")) {
-            //HexDump(fn);
-        } else {
-            //ViewFile(fn);
-        }
     Add Icon for .py / .pyc files 
 
 
@@ -105,14 +97,16 @@ Snippets editor
     - Current directory 
     - Detect Folders 
     - File Sizes ?
+    - Tree view 
 
-* uPython Folder navigation
-    CD folder & List 
-    Remove folder 
-    Up Folder 
+        * uPython Folder navigation
+            CD folder & List 
+            Remove folder 
+            Up Folder 
 
     // remove a file from the MCU - LUA and uPython
     // todo : use PWD on uPython 
+
 
 Connect to board 
     * autodetect detect pyboard / generic module 
@@ -128,9 +122,6 @@ Terminal
 Syntax
     Add more relevant uPython support / samples 
     Read this from an input file , rather than hardcoded ?
-
-  
-
 
 BUGs in original code 
     - If [x] Use External Editor is checked

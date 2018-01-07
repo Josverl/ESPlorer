@@ -7,12 +7,14 @@ package ESPlorer;
 import java.util.ArrayList;
 import javax.xml.bind.DatatypeConverter;
 import static ESPlorer.ESPlorer.sendBuffer;
+import java.util.Arrays;
 
 public class pyFiler {
     //assume root folder
     private static String ESPWorkingDirectory = "/"; 
 
     public static final int OK = 0;
+    public static final int CHUNKSIZE = 80;
     public static final int ERROR_COMMUNICATION = 1;
     
     // use raw mode paste to hide the file transfers 
@@ -44,27 +46,27 @@ public class pyFiler {
         ESPWorkingDirectory = "/"; 
     }
 
-
     /**
-     * upload a file to the MCU 
-     * create and transmit a script to create / overwrite a file 
-     *      convert each line to hexstring to avoid escaping 
-     *      Java.printHexBinary --> uPython.unhexlify 
+     * upload a binary (or scriptfile)  to the MCU 
+     * create and transmit a ScriptContent to create / overwrite a file 
+     * convert each line to hexstring to avoid escaping 
+     *  Java.printHexBinary --> uPython.unhexlify 
      * close the file 
      * @param FileName
-     * @param script
+     * @param ScriptContent
      * @return
      */
-    public boolean UploadFile(String FileName, String script) {
-        // Copy a file to the MCU by creating a script to write the file 
+    public boolean UploadFile(String FileName, byte[] ScriptContent) {
+        // Copy a file to the MCU by creating a ScriptContent to write the file 
         boolean success = true;
         String strHex;
-        // SendBuffer is a clobal buffer 
-        sendBuffer = new ArrayList<String>();
-        // split the script into chunks of 80 characters 
+        // SendBuffer is a global buffer 
+        // do NOT clear/re-init the sendBuffer
+        //sendBuffer = new ArrayList<>();
+        // split the ScriptContent into chunks of 80 characters 
         // ref: https://stackoverflow.com/questions/3760152/split-string-to-equal-length-substrings-in-java
         // note the (?s) to support multiline
-        String[] chunks = script.split("(?s)(?<=\\G.{80})");
+        byte[][] chunks = splitBytes(ScriptContent, CHUNKSIZE);
 
         // Enter Raw or Paste Mode 
         sendBuffer.add( BreakBreak );
@@ -74,8 +76,8 @@ public class pyFiler {
             sendBuffer.add( StartPasteMode );  
         }
         sendBuffer.add("import ubinascii;_n=0;_f = open('" +FileName+ "', 'wb')");
-        for (String line : chunks) {
-            strHex= Hexlify(line);
+        for (byte[] chunk : chunks) {
+            strHex= Hexlify(chunk);
             sendBuffer.add("_n= _n+ _f.write(ubinascii.unhexlify('" + strHex + "'))");
         }
         sendBuffer.add("_f.close();print('');print('Saved file "+FileName+" with size : {}'.format(_n))");
@@ -90,13 +92,25 @@ public class pyFiler {
     }
 
     /**
-     * Run the provided scriptname on the uPython board in the global environment
+     * upload a scriptfile to the MCU 
+     * 
+     * @param FileName
+     * @param ScriptContent
+     * @return
+     */
+    public boolean UploadFile(String FileName, String ScriptContent) {
+        //Convert string to bytearray 
+        return UploadFile( FileName, ScriptContent.getBytes());
+    }
+
+    /**
+     * Run the provided script (filename) on the uPython board in the global environment
      * @param FileName
      * @return success
      */
     public boolean Run(String FileName) {
         String cmd;
-        sendBuffer = new ArrayList<String>();
+        sendBuffer = new ArrayList<>();
         cmd = "exec(open('" + FileName + "').read(),globals())";  
         // Enter Raw or Paste Mode 
         sendBuffer.add( BreakBreak );
@@ -147,7 +161,7 @@ public class pyFiler {
     }
 
     /**
-     * convert a file (bytearray) into a string of hex characters for transmission to the uPython board
+     * convert a file (String) into a string of hex characters for transmission to the uPython board
      * @param strPlain
      * @return
      */
@@ -157,6 +171,15 @@ public class pyFiler {
     }
 
     /**
+     * convert a file (bytearray) into a string of hex characters for transmission to the uPython board
+     * @param byteArrPlain
+     * @return
+     */
+    public static String Hexlify(byte[] byteArrPlain){
+        return DatatypeConverter.printHexBinary(byteArrPlain);            
+    }
+    
+    /**
      * convert a string of hex character received from the uPython board back into a bytearray to save to a file.
      * @param strHexlified
      * @return
@@ -165,5 +188,30 @@ public class pyFiler {
         byte[] bytesRecieved = DatatypeConverter.parseHexBinary(strHexlified);
         return new String(bytesRecieved);
     }    
- 
+
+    /**
+     * Split array into pieces of X length
+     * @param data
+     * @param chunkSize
+     * @return
+     */
+    public byte[][] splitBytes(final byte[] data, final int chunkSize)
+    {
+      final int length = data.length;
+      final byte[][] dest = new byte[(length + chunkSize - 1)/chunkSize][];
+      int destIndex = 0;
+      int stopIndex = 0;
+
+      for (int startIndex = 0; startIndex + chunkSize <= length; startIndex += chunkSize)
+      {
+        stopIndex += chunkSize;
+        dest[destIndex++] = Arrays.copyOfRange(data, startIndex, stopIndex);
+      }
+
+      if (stopIndex < length)
+        dest[destIndex] = Arrays.copyOfRange(data, stopIndex, length);
+
+      return dest;
+    }
+    
 } // pyFiler
