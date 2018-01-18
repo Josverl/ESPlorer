@@ -5624,7 +5624,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addComponent(cmdMacSave, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(OTAAPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 300, Short.MAX_VALUE))
+                .addGap(0, 218, Short.MAX_VALUE))
         );
 
         ActivationScrollPane.setViewportView(ActivationPane);
@@ -5637,7 +5637,7 @@ public class ESPlorer extends javax.swing.JFrame {
         RN2483.setLayout(RN2483Layout);
         RN2483Layout.setHorizontalGroup(
             RN2483Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(RN2483jTab, javax.swing.GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
+            .addComponent(RN2483jTab, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
         );
         RN2483Layout.setVerticalGroup(
             RN2483Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5652,11 +5652,11 @@ public class ESPlorer extends javax.swing.JFrame {
         LeftBasePane.setLayout(LeftBasePaneLayout);
         LeftBasePaneLayout.setHorizontalGroup(
             LeftBasePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(LeftTab, javax.swing.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
+            .addComponent(LeftTab, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
         );
         LeftBasePaneLayout.setVerticalGroup(
             LeftBasePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(LeftTab, javax.swing.GroupLayout.DEFAULT_SIZE, 744, Short.MAX_VALUE)
+            .addComponent(LeftTab, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         LeftTab.getAccessibleContext().setAccessibleName("LeftTab");
@@ -5926,7 +5926,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             .addComponent(ReScan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(LEDPanelLayout.createSequentialGroup()
                                 .addGroup(LEDPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(AutoScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 19, Short.MAX_VALUE)
+                                    .addComponent(AutoScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                                     .addComponent(CR)
                                     .addComponent(TerminalOnlyCheckBox))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -6533,7 +6533,6 @@ public class ESPlorer extends javax.swing.JFrame {
         });
 
         FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/ESP8266-96x96.png"))); // NOI18N
-        FirmwareIcon.setEnabled(true);
         FirmwareIcon.setFocusable(false);
         FirmwareIcon.setMaximumSize(new java.awt.Dimension(150, 150));
         FirmwareIcon.setMinimumSize(new java.awt.Dimension(150, 150));
@@ -7273,7 +7272,7 @@ public class ESPlorer extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(HorizontSplit, javax.swing.GroupLayout.DEFAULT_SIZE, 1092, Short.MAX_VALUE)
+            .addComponent(HorizontSplit, javax.swing.GroupLayout.DEFAULT_SIZE, 1068, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -7555,9 +7554,15 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_MenuItemViewLogActionPerformed
 
     private void MenuItemFileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemFileSaveActionPerformed
-        SaveFile();
-        if (FileAutoSaveESP.isSelected() && !FileSaveESP.isSelected()) {
-            FileSaveESP.doClick();
+        if (InEditor()){
+            //SaveCurrent file in Editor
+            SaveFile();
+            // Validate: What does this logic do exactly ?
+            if (FileAutoSaveESP.isSelected() && !FileSaveESP.isSelected()) {
+                FileSaveESP.doClick();
+            }
+        } else if (InSnippets()) {
+            // todo : Save Snippet
         }
     }//GEN-LAST:event_MenuItemFileSaveActionPerformed
     boolean isFileNew() {
@@ -7570,7 +7575,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         return false;
     }
-
+    // save the current active file in the editor 
     boolean SaveFile() {
         boolean success = false;
         if (isFileNew()) { // we saving new file
@@ -7612,7 +7617,7 @@ public class ESPlorer extends javax.swing.JFrame {
             fos = new FileOutputStream(iFile.get(iTab));
             osw = new OutputStreamWriter(fos, "UTF-8");
             bw = new BufferedWriter(osw);
-            bw.write(TextEditor1.get(iTab).getText());
+            bw.write(CurrentEditor().getText());
             bw.flush();
             osw.flush();
             fos.flush();
@@ -7641,7 +7646,7 @@ public class ESPlorer extends javax.swing.JFrame {
             log(ex.toString());
 //            log(ex.getStackTrace().toString());
         }
-        TextEditor1.get(iTab).discardAllEdits();
+        CurrentEditor().discardAllEdits();
         FileChanged.set(iTab, false);
         UpdateEditorButtons();
         return success;
@@ -7664,19 +7669,19 @@ public class ESPlorer extends javax.swing.JFrame {
         if (UseExternalEditor.isSelected()) {
             return;
         }
-        TextEditor1.get(iTab).cut();
+        CurrentEditor().cut();
         FileChanged.set(iTab, true);
     }//GEN-LAST:event_MenuItemEditCutActionPerformed
 
     private void MenuItemEditCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemEditCopyActionPerformed
-        TextEditor1.get(iTab).copy();
+        CurrentEditor().copy();
     }//GEN-LAST:event_MenuItemEditCopyActionPerformed
 
     private void MenuItemEditPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemEditPasteActionPerformed
         if (UseExternalEditor.isSelected()) {
             return;
         }
-        TextEditor1.get(iTab).paste();
+        CurrentEditor().paste();
         FileChanged.set(iTab, true);
     }//GEN-LAST:event_MenuItemEditPasteActionPerformed
     // File open
@@ -7763,7 +7768,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 // bugbug: on windows this replaces CR\LF by LF only , which is a needless change of the file while reading it
                 sb.append(line).append('\n');
             }
-            TextEditor1.get(iTab).setText(sb.toString());
+            CurrentEditor().setText(sb.toString());
             success = true;
         } catch (Exception ex) {
             log(ex.toString());
@@ -7789,13 +7794,13 @@ public class ESPlorer extends javax.swing.JFrame {
             log("Internal error 103: can't close stream.");
         }
         if (success) {
-            TextEditor1.get(iTab).setCaretPosition(0);
+            CurrentEditor().setCaretPosition(0);
             FileChanged.set(iTab, false);
-            TextEditor1.get(iTab).discardAllEdits();
+            CurrentEditor().discardAllEdits();
             UpdateEditorButtons();
             FileLabelUpdate();
             if (UseExternalEditor.isSelected()) {
-                TextEditor1.get(iTab).setEditable(false);
+                CurrentEditor().setEditable(false);
             }
             log("Loading " + FileName + ": Success.");
         }
@@ -7834,28 +7839,27 @@ public class ESPlorer extends javax.swing.JFrame {
     private void CheckSelected() {
 
         // determine the enabledstate based on the selected text 
-        boolean OnOff = false;
+        boolean ButtonEnable = false;
         
-        // LeftTab.getSelectedIndex() == 0 -->  NodeMCU & MicroPython 
-        // TextTab.getSelectedIndex() == 0 --> Script Editor , 2 = Snippets
-        if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 0)) { // Scripts        
-            OnOff = (TextEditor1.get(iTab).getSelectedText() != null) ; 
-        } else 
-            if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 2)) { // Snippets
-            OnOff = (SnippetText.getSelectedText() != null) ; 
+        if (InEditor()) { 
+            // Scripts        
+            ButtonEnable = (CurrentEditor().getSelectedText() != null) ; 
+        } else if (InSnippets()) { 
+            // Snippets
+            ButtonEnable = (SnippetText.getSelectedText() != null) ; 
         } 
 
         // Set them all to the determined state 
-        MenuItemEditorCut.setEnabled(OnOff);
-        MenuItemEditCut.setEnabled(OnOff);
-        MenuItemEditorCopy.setEnabled(OnOff);
-        MenuItemEditCopy.setEnabled(OnOff);
-        ButtonCut.setEnabled(OnOff);
-        ButtonCopy.setEnabled(OnOff);
+        MenuItemEditorCut.setEnabled(ButtonEnable);
+        MenuItemEditCut.setEnabled(ButtonEnable);
+        MenuItemEditorCopy.setEnabled(ButtonEnable);
+        MenuItemEditCopy.setEnabled(ButtonEnable);
+        ButtonCut.setEnabled(ButtonEnable);
+        ButtonCopy.setEnabled(ButtonEnable);
         // if enabled and port open 
-        MenuItemEditSendSelected.setEnabled(OnOff & pOpen);
-        MenuItemEditorSendSelected.setEnabled(OnOff & pOpen);
-        ButtonSendSelected.setEnabled(OnOff & pOpen);
+        MenuItemEditSendSelected.setEnabled(ButtonEnable & pOpen);
+        MenuItemEditorSendSelected.setEnabled(ButtonEnable & pOpen);
+        ButtonSendSelected.setEnabled(ButtonEnable & pOpen);
 
         // Set Clipboard 
         try {
@@ -7913,7 +7917,7 @@ public class ESPlorer extends javax.swing.JFrame {
         } catch (Exception e) {
             return;
         }
-        if (TextEditor1.get(iTab).canUndo()) {
+        if (CurrentEditor().canUndo()) {
             MenuItemEditUndo.setEnabled(true);
             MenuItemEditorUndo.setEnabled(true);
             ButtonUndo.setEnabled(true);
@@ -7923,7 +7927,7 @@ public class ESPlorer extends javax.swing.JFrame {
             ButtonUndo.setEnabled(false);
         }
         // CanRedo
-        if (TextEditor1.get(iTab).canRedo()) {
+        if (CurrentEditor().canRedo()) {
             MenuItemEditRedo.setEnabled(true);
             MenuItemEditorRedo.setEnabled(true);
             ButtonRedo.setEnabled(true);
@@ -7987,14 +7991,14 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_AlwaysOnTopItemStateChanged
 
     private void MenuItemEditUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemEditUndoActionPerformed
-        if (TextEditor1.get(iTab).canUndo()) {
-            TextEditor1.get(iTab).undoLastAction();
+        if (CurrentEditor().canUndo()) {
+            CurrentEditor().undoLastAction();
         }
     }//GEN-LAST:event_MenuItemEditUndoActionPerformed
 
     private void MenuItemEditRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemEditRedoActionPerformed
-        if (TextEditor1.get(iTab).canRedo()) {
-            TextEditor1.get(iTab).redoLastAction();
+        if (CurrentEditor().canRedo()) {
+            CurrentEditor().redoLastAction();
         }
     }//GEN-LAST:event_MenuItemEditRedoActionPerformed
 
@@ -8046,7 +8050,7 @@ public class ESPlorer extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (j < sendBuffer.size()) {
                     LocalEcho = false;
-                    send(addCR(sendBuffer.get(j)), false);
+                    sendSerial(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
                 }
             }
@@ -8104,7 +8108,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             sendPending = true;
                             timer.start();
                         }
-                    } else { // send done
+                    } else { // sendSerial done
                         try {
                             timer.stop();
                         } catch (Exception e) {
@@ -8161,7 +8165,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         } catch (Exception e) {
                         }
                         serialPort.addEventListener(new PortReader(), portMask);
-                        SendUnLock();                         // (re)enable the send button 
+                        SendUnLock();                         // (re)enable the sendSerial button 
                         NodeFileSystemInfo();
                     }
                 } catch (SerialPortException ex) {
@@ -8248,7 +8252,7 @@ public class ESPlorer extends javax.swing.JFrame {
         taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 if (j < sendBuffer.size()) {
-                    send(addCR(sendBuffer.get(j)), false);
+                    sendSerial(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
                 }
             }
@@ -8336,7 +8340,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             sendPending = true;
                             timer.start();
                         }
-                    } else { // send done
+                    } else { // sendSerial done
                         try {
                             timer.stop();
                         } catch (Exception e) {
@@ -8627,22 +8631,17 @@ public class ESPlorer extends javax.swing.JFrame {
 // in Editor ; send the selected lines / block from the editor window to the MCU 
     private void MenuItemEditSendSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemEditSendSelectedActionPerformed
         int l;
-        // Get the index of the currently selected tab
-        // LeftTab.getSelectedIndex() == 0 -->  NodeMCU & MicroPython 
-        // TextTab.getSelectedIndex() == 0 --> Script Editor , 2 = Snippets
-        if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 0)) { // Scripts
+        if (InEditor()) { // Script Editor
             try {
-                l = TextEditor1.get(iTab).getSelectedText().length();
+                l = CurrentEditor().getSelectedText().length();
             } catch (Exception e) {
                 log("Can't send: nothing selected.");
                 return;
             }
             if (l > 0) {
-                SendToESP(TextEditor1.get(iTab).getSelectedText());
+                SendToESP(CurrentEditor().getSelectedText());
             }
-        } else if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 2)) { // Snippets
-            // LeftTab.getSelectedIndex() == 0 -->  NodeMCU & MicroPython 
-            // TextTab.getSelectedIndex() == 2 --> Snippets Editor
+        } else if (InSnippets()) { // Snippets
             try {
                 l = SnippetText.getSelectedText().length();
             } catch (Exception e) {
@@ -8796,7 +8795,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 }
             }
         }
-        SetSnippetEditButtonsTooltip();
+        SetSnippetEditButtonsNames();
         log("Snippets load: Success.");
     }
 
@@ -8897,11 +8896,11 @@ public class ESPlorer extends javax.swing.JFrame {
 
     private void MenuItemEditSendLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemEditSendLineActionPerformed
         int nLine;
-        if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 0)) { // NodeMCU and Scripts
-            nLine = TextEditor1.get(iTab).getCaretLineNumber();
-            String cmd = TextEditor1.get(iTab).getText().split("\r?\n")[nLine];
+        if (InEditor()) { // NodeMCU and Scripts
+            nLine = CurrentEditor().getCaretLineNumber();
+            String cmd = CurrentEditor().getText().split("\r?\n")[nLine];
             btnSend(cmd);
-        } else if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 2)) { // NodeMCU and Snippets
+        } else if (InSnippets()) { // NodeMCU and Snippets
             nLine = SnippetText.getCaretLineNumber();
             String cmd = SnippetText.getText().split("\r?\n")[nLine];
             btnSend(cmd);
@@ -8956,25 +8955,25 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_MenuItemViewTermFontDecActionPerformed
 
     private void MenuItemViewEditorFontIncActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemViewEditorFontIncActionPerformed
-        int size = TextEditor1.get(iTab).getFont().getSize();
+        int size = CurrentEditor().getFont().getSize();
         if (size < EDITOR_FONT_SIZE_MAX) {
-            TextEditor1.get(iTab).setFont(TextEditor1.get(iTab).getFont().deriveFont(TextEditor1.get(iTab).getFont().getSize() + 1f));
+            CurrentEditor().setFont(CurrentEditor().getFont().deriveFont(CurrentEditor().getFont().getSize() + 1f));
         } else {
-            TextEditor1.get(iTab).setFont(TextEditor1.get(iTab).getFont().deriveFont(EDITOR_FONT_SIZE_MAX));
+            CurrentEditor().setFont(CurrentEditor().getFont().deriveFont(EDITOR_FONT_SIZE_MAX));
         }
-        prefs.putFloat(EDITOR_FONT_SIZE, TextEditor1.get(iTab).getFont().getSize());
+        prefs.putFloat(EDITOR_FONT_SIZE, CurrentEditor().getFont().getSize());
         PrefsFlush();
         SetTheme(prefs.getInt(COLOR_THEME, 0), true); // for all
     }//GEN-LAST:event_MenuItemViewEditorFontIncActionPerformed
 
     private void MenuItemViewEditorFontDecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuItemViewEditorFontDecActionPerformed
-        int size = TextEditor1.get(iTab).getFont().getSize();
+        int size = CurrentEditor().getFont().getSize();
         if (size > EDITOR_FONT_SIZE_MIN) {
-            TextEditor1.get(iTab).setFont(TextEditor1.get(iTab).getFont().deriveFont(TextEditor1.get(iTab).getFont().getSize() - 1f));
+            CurrentEditor().setFont(CurrentEditor().getFont().deriveFont(CurrentEditor().getFont().getSize() - 1f));
         } else {
-            TextEditor1.get(iTab).setFont(TextEditor1.get(iTab).getFont().deriveFont(EDITOR_FONT_SIZE_MIN));
+            CurrentEditor().setFont(CurrentEditor().getFont().deriveFont(EDITOR_FONT_SIZE_MIN));
         }
-        prefs.putFloat(EDITOR_FONT_SIZE, TextEditor1.get(iTab).getFont().getSize());
+        prefs.putFloat(EDITOR_FONT_SIZE, CurrentEditor().getFont().getSize());
         PrefsFlush();
         SetTheme(prefs.getInt(COLOR_THEME, 0), true); // for all
     }//GEN-LAST:event_MenuItemViewEditorFontDecActionPerformed
@@ -9740,11 +9739,14 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_NodeMCUFocusGained
 
     private void TextTabStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TextTabStateChanged
+    /*    
+        // this code does not do anything 
         if (TextTab.getSelectedIndex() == 2) { // snippets
         } else if (TextTab.getSelectedIndex() == 3) { // Settings
         } else if (TextTab.getSelectedIndex() == 1) { // Commands
         } else if (TextTab.getSelectedIndex() == 0) { // Scripts
         }
+    */
     }//GEN-LAST:event_TextTabStateChanged
 
     private void CondensedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CondensedItemStateChanged
@@ -9822,7 +9824,7 @@ public class ESPlorer extends javax.swing.JFrame {
             ButtonSnippet15.setText(SnippetName.getText());
             iSnippets = 15;
         }
-        SetSnippetEditButtonsTooltip();
+        SetSnippetEditButtonsNames();
         Snippets[iSnippets] = SnippetText.getText();
         String suffix;
         if (OptionNodeMCU.isSelected()) {
@@ -10010,29 +10012,58 @@ public class ESPlorer extends javax.swing.JFrame {
        
     }//GEN-LAST:event_FileRunActionPerformed
 
-    // send the file in the editor to the MCU to run interactivly
+    // sendSerial the file in the editor to the MCU to run interactivly
     // this should use the same code as already works for the snippets
     private void FileSendESPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileSendESPActionPerformed
-        if (FileSendESP.isSelected()) {
-            if (TextEditor1.get(iTab).getText().length() == 0) {
+        if (InEditor()) {
+            if (CurrentEditor().getText().length() == 0) {
                 JOptionPane.showMessageDialog(null, "Cannot run an empty File.");
                 FileSendESP.setSelected(false);
                 return;
             }
-            SendToESP(TextEditor1.get(iTab).getText());
+            SendToESP(CurrentEditor().getText());
         } else {
             StopSend();
         }
     }//GEN-LAST:event_FileSendESPActionPerformed
+    // get the current seleted editor, iTab is the Tab Index of the editors 
+    private RSyntaxTextArea CurrentEditor() {
+        return TextEditor1.get(iTab);
+    }
 
-    // Save the file in the editer to the MCU 
+    // Base ineditor state on the active tab 
+    private boolean InEditor() {
+        // Get the index of the currently selected tab
+        // LeftTab.getSelectedIndex() == 0 -->  NodeMCU & MicroPython 
+        // TextTab.getSelectedIndex() == 0 --> Script Editor , 2 = Snippets
+        if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 0)) { // Scripts
+            return true;
+        } else {
+            return false;
+        }
+//        return FileSendESP.isSelected();
+    }
+    // Base ineditor state on the active tab 
+    private boolean InSnippets() {
+        // Get the index of the currently selected tab
+        // LeftTab.getSelectedIndex() == 0 -->  NodeMCU & MicroPython 
+        // TextTab.getSelectedIndex() == 0 --> Script Editor , 2 = Snippets
+        if ((LeftTab.getSelectedIndex() == 0) && (TextTab.getSelectedIndex() == 2)) { // Snippets
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    
+// Save the file in the editer to the MCU 
     private void FileSaveESPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FileSaveESPActionPerformed
         if (!FileSaveESP.isSelected()) {
             StopSend();
             return;
         }
-        // do not save an empty file // Why ?
-        if (TextEditor1.get(iTab).getText().length() == 0) {
+        // do not save an empty file 
+        if (CurrentEditor().getText().length() == 0) {
             FileSaveESP.setSelected(false);
             JOptionPane.showMessageDialog(null, "Cannot save an empty file.");
             return;
@@ -10059,7 +10090,7 @@ public class ESPlorer extends javax.swing.JFrame {
             return;
         }
         if (FirmwareType == FIRMWARE_MPYTHON) { 
-            pySaveFileESP(fName, TextEditor1.get(iTab).getText());
+            pySaveFileESP(fName, CurrentEditor().getText());
         } else {
             nodeSaveFileESP(fName);
         }
@@ -10776,7 +10807,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private void NodeFileSystemInfo() {
         String cmd = "r,u,t=file.fsinfo() print(\"Total : \"..t..\" bytes\\r\\nUsed  : \"..u..\" bytes\\r\\nRemain: \"..r..\" bytes\\r\\n\") r=nil u=nil t=nil";
         LocalEcho = false;
-        send(addCRLF(cmd), true);
+        sendSerial(addCRLF(cmd), true);
     }
 
     private void goLink(URI link) {
@@ -11766,7 +11797,7 @@ public class ESPlorer extends javax.swing.JFrame {
         checker = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 if (portJustOpen) {
-                    btnSend("");  // only CR+LF
+                    btnSend("");  // Send a CR+LF to the MCU to get a response
                     TerminalAdd(".");
                     if (Terminal.getCaretOffsetFromLineStart() >= 10) {
                         TerminalAdd("\r\n");
@@ -11862,7 +11893,7 @@ public class ESPlorer extends javax.swing.JFrame {
         if (LF.isSelected()) {
             cmd += (char) 10;
         }
-        send(cmd, true);
+        sendSerial(cmd, true);
         // History trim
         if (Command.getItemCount() > 20) {
             Command.removeItemAt(0);
@@ -11871,10 +11902,13 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     //  Add a terminating CRLF to a string
-    // todo: clarify why LF is not addedd for uPython  
+    // todo: clarify why LF is not added for uPython  
     public String addCRLF(String s) {
         String r = s;
         r += (char) 13; //CR 
+        // FIRMWARE_AT  --> CR LF 
+        // FIRMWARE NODEMCU --> CR LF
+        
         if (OptionNodeMCU.isSelected()) {
             r += (char) 10; //LF
         }
@@ -11888,7 +11922,7 @@ public class ESPlorer extends javax.swing.JFrame {
     }
     // Send a command to the MCU 
     public void btnSend(String s) {
-        send(addCRLF(s), true);
+        sendSerial(addCRLF(s), true);
     }
 
     public void btnSendEcho(String s) {
@@ -12535,8 +12569,8 @@ public class ESPlorer extends javax.swing.JFrame {
                 //SnippetText.setBackground(SnippetTopPane.getBackground());
                 log("Set new color theme: Success.");
             } else {
-                theme.apply(TextEditor1.get(iTab));
-                TextEditor1.get(iTab).setFont(TextEditor1.get(iTab).getFont().deriveFont(prefs.getFloat(EDITOR_FONT_SIZE, EDITOR_FONT_SIZE_DEFAULT)));
+                theme.apply(CurrentEditor());
+                CurrentEditor().setFont(CurrentEditor().getFont().deriveFont(prefs.getFloat(EDITOR_FONT_SIZE, EDITOR_FONT_SIZE_DEFAULT)));
             }
         } catch (IOException e) {
             log(e.toString());
@@ -12547,8 +12581,8 @@ public class ESPlorer extends javax.swing.JFrame {
     private void RemoveTab() {
         if (FilesTabbedPane.getTabCount() <= 1) {
             iTab = 0;
-            TextEditor1.get(iTab).setText("");
-            TextEditor1.get(iTab).discardAllEdits();
+            CurrentEditor().setText("");
+            CurrentEditor().discardAllEdits();
             FilesTabbedPane.setTitleAt(iTab, NewFile);
             iFile.set(iTab, new File(""));
             FileLabelUpdate();
@@ -12582,10 +12616,10 @@ public class ESPlorer extends javax.swing.JFrame {
         } catch (Exception e) {
             return false;
         }
-        if (TextEditor1.get(iTab).canUndo()) {
+        if (CurrentEditor().canUndo()) {
             return true;
         }
-        if (TextEditor1.get(iTab).canRedo()) {
+        if (CurrentEditor().canRedo()) {
             return true;
         }
         return false;
@@ -12875,7 +12909,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             RightExtraButtons.setVisible(false);
                             RightSnippetsPane.setVisible(false);
                             UnifiedFileManagerPane.setVisible(false);
-                            FirmwareType = FIRMWARE_AT;
+                            SetFirmwareType(FIRMWARE_AT);
                         } else {
                             TerminalAdd("\r\nCan't autodetect firmware, because proper answer not received (may be unknown firmware).\r\n");
                             //use configured firmware type if set 
@@ -12963,7 +12997,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             ProgressBar.setValue((j * 100) / div);
                             timer.start();
                         }
-                    } else {  // send done
+                    } else {  // sendSerial done
                         StopSend();
                     }
                 }
@@ -13020,7 +13054,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             ProgressBar.setValue((j * 100) / div);
                             timer.start();
                         }
-                    } else { // send done
+                    } else { // sendSerial done
                         StopSend();
                     }
                 }
@@ -13056,36 +13090,20 @@ public class ESPlorer extends javax.swing.JFrame {
             serialPort.addEventListener(new PortReader(), portMask);
         } catch (SerialPortException e) {
         }
-        // clear the send buffer 
+        // clear the sendSerial buffer 
         // todo : clear the sendbuffer while it is beeing transmitted
         // todo: then the senddbuffer does not need to be re-initialised each time ( 
         sendBuffer.clear();
         
-        SendUnLock(); // (re)enable the send button 
+        SendUnLock(); // (re)enable the sendSerial button 
         long duration = System.currentTimeMillis() - startTime;
         log("Operation done. Duration = " + Long.toString(duration) + " ms");
     }
 
+    // Refactored to avoid code duplication
     private boolean SendToESP(String str) {
-        boolean success = false;
-        if (!pOpen || portJustOpen) {
-            log("SendESP: Serial port not open. Canceled.");
-            return success;
-        }
-        sendBuffer = new ArrayList<String>();
-        s = str.split("\r?\n");
-        // Use Pastemode for multiline blocks 
-        if (s.length> 1 && FirmwareType == FIRMWARE_MPYTHON) {
-            sendBuffer.add(pyFiler.StartPasteMode);             
-        }
-        sendBuffer.addAll(Arrays.asList(s));
-        if (s.length> 1 && FirmwareType == FIRMWARE_MPYTHON) {
-            sendBuffer.add(pyFiler.EndPasteMode); 
-        }
-
-        success = SendTimerStart();
-        log("SendToESP: Starting...");
-        return success;
+        // split and convert to ArrayList, then Send via SendToESP ArrayList<String>
+        return SendToESP(new ArrayList (Arrays.asList(str.split("\r?\n")))); 
     }
 
     private boolean SendToESP(ArrayList<String> CommandBuffer) {
@@ -13094,9 +13112,12 @@ public class ESPlorer extends javax.swing.JFrame {
             log("SendESP: Serial port not open. Cancel.");
             return success;
         }
+        //todo: this will remove all still queued up information in the send buffer
+        // that might actually be undesarable in most cases
         sendBuffer = new ArrayList<String>();
         // Use Pastemode for multiline blocks 
         if (FirmwareType == FIRMWARE_MPYTHON) {
+            // todo : paste mode / raw mode ?
             sendBuffer.add(pyFiler.StartPasteMode); 
         }
         sendBuffer.addAll(CommandBuffer);
@@ -13120,6 +13141,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 log("Waiting answer from ESP - Timeout reached. Command aborted.");
             }
         };
+        // Delay from Seconds to miliseconds
         int delay = AnswerDelay.getValue() * 1000;
         if (delay == 0) {
             delay = 300;
@@ -13140,7 +13162,7 @@ public class ESPlorer extends javax.swing.JFrame {
         sendBuffer.add("file.remove(\"" + ft + "\");");
         sendBuffer.add("file.open(\"" + ft + "\",\"w+\");");
         sendBuffer.add("w = file.writeline;\r\n");
-        s = TextEditor1.get(iTab).getText().split("\r?\n");
+        s = CurrentEditor().getText().split("\r?\n");
         for (String subs : s) {
             sendBuffer.add("w([==[" + subs + "]==]);");
         }
@@ -13163,14 +13185,14 @@ public class ESPlorer extends javax.swing.JFrame {
         int pos1 = 0;
         int pos2 = 0;
         int size = 254;
-        int l = TextEditor1.get(iTab).getText().length();
+        int l = CurrentEditor().getText().length();
         String fragment;
         while (pos1 <= l) {
             pos2 = pos1 + size;
             if (pos2 > l) {
                 pos2 = l;
             }
-            fragment = new String(TextEditor1.get(iTab).getText().substring(pos1, pos2));
+            fragment = new String(CurrentEditor().getText().substring(pos1, pos2));
             sendBuffer.add(fragment);
             pos1 += size;
         }
@@ -13207,7 +13229,7 @@ public class ESPlorer extends javax.swing.JFrame {
         taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 if (j < sendBuffer.size()) {
-                    send(addCR(sendBuffer.get(j)), false);
+                    sendSerial(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
                 }
             }
@@ -13259,7 +13281,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 taskPerformer = new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         if (j < sendBuffer.size()) {
-                            send(addCRLF(sendBuffer.get(j).trim()), false);
+                            sendSerial(addCRLF(sendBuffer.get(j).trim()), false);
                             inc_j();
                             int div = sendBuffer.size() - 1;
                             if (div == 0) {
@@ -13282,7 +13304,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         String line;
                         if (j < sendBuffer.size()) {
                             line = sendBuffer.get(j);
-                            send(addCRLF(line), false);
+                            sendSerial(addCRLF(line), false);
                             inc_j();
                             
                             int div = sendBuffer.size() - 1;
@@ -13313,11 +13335,11 @@ public class ESPlorer extends javax.swing.JFrame {
             taskPerformer = new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     // smart mode : delay = 10 or greater 
-                    // send only one line 
+                    // sendSerial only one line 
                     // do not set progress bar 
                     if (j < sendBuffer.size()) {
                         log(Integer.toString(j));
-                        send(addCRLF(sendBuffer.get(j).trim()), false);
+                        sendSerial(addCRLF(sendBuffer.get(j).trim()), false);
                         sendPending = false;
                     }
                 }
@@ -13333,7 +13355,7 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     // Send a string to serial 
-    public void send(String s, boolean simple) {
+    public void sendSerial(String s, boolean simple) {
         if (!pOpen) {
             log("DataSender: Serial port not open, operation FAILED.");
             return;
@@ -13363,20 +13385,6 @@ public class ESPlorer extends javax.swing.JFrame {
             SnippetsBusy.setIcon(LED_GREY);
         }
     }
-    // send a byte to serial
-    public void sendBin(byte data) {
-        if (!pOpen) {
-            log("DataSender: Serial port not open, operation FAILED.");
-            return;
-        }
-        try {
-            serialPort.writeByte(data);
-        } catch (SerialPortException ex) {
-            log("send FAIL:" + (char) data);
-        }
-    }
-
-
 
     public void Busy() {
         // Busy in Script Editor 
@@ -13440,7 +13448,7 @@ public class ESPlorer extends javax.swing.JFrame {
         SnippetsBusy.setIcon(LED_GREY);
         // Hide Progress bar 
         ProgressBar.setVisible(false);
-        FileSendESP.setSelected(true);
+        FileSendESP.setSelected(false); //reenble sending the file to the MCU
         UpdateButtons();
         UpdateEditorButtons();
     }
@@ -13477,7 +13485,7 @@ public class ESPlorer extends javax.swing.JFrame {
         }
     }
 
-    // (re)enable the send button 
+    // (re)enable the sendSerial button 
     public void SendUnLock() {
         Idle();
         FileSaveESP.setText("Save to ESP");
@@ -13488,7 +13496,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
     }
 
-    public void SetSnippetEditButtonsTooltip() {
+    public void SetSnippetEditButtonsNames() {
         // should be called after loading, setting or editing any of the Snippet-Names
         // eg after SnippetSaveActionPerformed() and LoadSnippets ()
         // Mike, DL2ZAP 2015-01-04
@@ -13505,7 +13513,7 @@ public class ESPlorer extends javax.swing.JFrame {
         SnippetEdit9.setText(ButtonSnippet9.getText());
         SnippetEdit10.setText(ButtonSnippet10.getText());
         SnippetEdit11.setText(ButtonSnippet11.getText());
-        SnippetEdit13.setText(ButtonSnippet13.getText());
+        SnippetEdit12.setText(ButtonSnippet12.getText());
         SnippetEdit13.setText(ButtonSnippet13.getText());
         SnippetEdit14.setText(ButtonSnippet14.getText());
         SnippetEdit15.setText(ButtonSnippet15.getText());
@@ -13562,7 +13570,8 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         return success;
     }
-    // todo : Add uPython Support 
+    
+    // Added uPython Support for upload of txt / binary file (current : single file only) 
     private void UploadFiles() {
         if (!pOpen) {
             log("Uploader: Serial port not open, operation FAILED.");
@@ -13577,7 +13586,7 @@ public class ESPlorer extends javax.swing.JFrame {
         javax.swing.filechooser.FileFilter flt = chooser.getFileFilter();
         chooser.resetChoosableFileFilters();
         chooser.setDialogTitle("Select file(s) to upload to ESP");
-        // currently Mutliselect is enabled only for NodeMCU as the send code looses characters in multi-file uploads 
+        // currently Mutliselect is enabled only for NodeMCU as the sendSerial code looses characters in multi-file uploads 
         chooser.setMultiSelectionEnabled( FirmwareType == FIRMWARE_NODEMCU);
         // Change Dialog to Upload instead of Open 
         // Set the text
@@ -13636,9 +13645,6 @@ public class ESPlorer extends javax.swing.JFrame {
                 }
                 
             }
-            // todo: refactor-- why is this not in the called function/method     
-            
-            
         }
     }
 
@@ -13711,16 +13717,16 @@ public class ESPlorer extends javax.swing.JFrame {
             log("Uploader: Add EventListener: Success.");
         } catch (SerialPortException e) {
             log("Uploader: Add EventListener Error. Canceled.");
-            SendUnLock(); // (re)enable the send button 
+            SendUnLock(); // (re)enable the sendSerial button 
             return;
         }
         int delay = 10;
         j0();
         taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                //log("send j="+Integer.toString(j));
+                //log("sendSerial j="+Integer.toString(j));
                 if (j < sendBuffer.size()) {
-                    send(addCR(sendBuffer.get(j)), false);
+                    sendSerial(addCR(sendBuffer.get(j)), false);
                     sendPending = false;
                 } else if ((j - sendBuffer.size()) < sendPackets.size()) {
                     sendBytes(sendPackets.get(j - sendBuffer.size()));
@@ -13887,7 +13893,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 }
                 if (j >= (sendBuffer.size() + sendPackets.size())) {
                     LocalEcho = false;
-                    send(addCR("_up=nil"), false);
+                    sendSerial(addCR("_up=nil"), false);
                     try {
                         timer.stop();
                     } catch (Exception e) {
@@ -13897,7 +13903,7 @@ public class ESPlorer extends javax.swing.JFrame {
                     } catch (Exception e) {
                         log(e.toString());
                     }
-                    //log("Uploader: send all data, finishing...");
+                    //log("Uploader: sendSerial all data, finishing...");
                     boolean success = true;
                     for (int i = 0; i < sendPacketsCRC.size(); i++) {
                         if (!sendPacketsCRC.get(i)) {
@@ -13944,10 +13950,8 @@ public class ESPlorer extends javax.swing.JFrame {
                     "with open('" +FileName+ "') as f: \n" + 
                     "     s = f.read()\n" +
                     "     print(s)\n" +
-                    "print('------')\n" + 
-                    "#-=-=-" ;
+                    "print('------')\n";
             LocalEcho = false;
-//BUG            LocalEchoResumeString = "#-=-=-" ; 
             // execute
             SendToESP(cmd);
         } else {
@@ -14109,6 +14113,9 @@ public class ESPlorer extends javax.swing.JFrame {
             // todo: refactor-- why is this not in the called function 
             success = SendTimerStart();
             log("pyFileSaveESP: Finished file upload ...");
+            
+            // TODO : Add AutoRun
+            
         }
         return success;
     } // pySaveFileESP
@@ -14199,7 +14206,7 @@ public class ESPlorer extends javax.swing.JFrame {
     } // AddPyFileButton
    
     //uPython : get a list of all files on the MCU for the current folder 
-    // send os.listdir for current folder 
+    // sendSerial os.listdir for current folder 
     // eventhandler picks up response , and adds it to the file list 
     private void PyListFiles() {
         if (portJustOpen) {
@@ -14228,9 +14235,11 @@ public class ESPlorer extends javax.swing.JFrame {
         LocalEcho = false;
         // todo : btnSend / SendESP
         btnSend(cmd);
+        // Start timeout watchdog 
         WatchDogPyListDir();
     } // PyListFiles
 
+    // Start 3 second timeout 
     private void WatchDogPyListDir() {
         watchDog = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -14244,15 +14253,11 @@ public class ESPlorer extends javax.swing.JFrame {
                 } catch (Exception e) {
                     log(e.toString());
                 }
-                SendUnLock(); // (re)enable the send button 
+                SendUnLock(); // (re)enable the sendSerial button 
             }
         };
-        int delay = AnswerDelay.getValue() * 1000;
-        if (delay == 0) {
-            delay = 300;
-        }
-
-        delay = 3000;
+        // fixed delay of 3 seconds to list the directory 
+        int delay = 3000;
 
         timeout = new Timer(delay, watchDog);
         timeout.setRepeats(false);

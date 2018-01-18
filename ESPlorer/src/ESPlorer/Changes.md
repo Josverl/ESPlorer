@@ -5,22 +5,25 @@ Improved uPython support
     Updates to Options UI and Preferences 
 * Read GPIO input / output (uPython pyb and generic) 
 * Update sample snippets to machine module
-* Fix list files in uPython
+
 * Unified File-Managers between LUA and uPython to single file manager 
+    * Fix list files in uPython
     * Add PopUp Menu to uPython files (*.py, *.pyc)
         - View file - View in Terminal 
         - Hexdump file - View in Terminal 
         - Remove file 
         - Rename File 
+    * Start
 * Fix line number alignment in Script and Snippet editor 
     Issue : font sizes do not match 
 * Script Editor 
     - Save file to uPython (uses Hexlify to transfer contents with need for escaping)
         * Possible bug that causes ESPlorer not to stop 
-    - Send file to uPython ( Executes script interactivly)
+    - Send file to uPython ( Executes script interactively)
     - Run File 
     - AutoRun on Save
     - Send Selected Block
+    - Added uPython Support for upload of txt / binary file (current : single file only) 
 *Snippet Editor 
     - Add Snippet names to buttons    
     - Add Popup menu to editor:
@@ -29,10 +32,6 @@ Improved uPython support
    
 
 -----------------------------------------------------------------------------
-ToDo:
-    BUG: SEND to uPython is dropping characters under load 
-        Repro : Send several files at once 
-
         
     Related: Send Logic
         simplify code by using a send queue to replace the ArrayList 
@@ -47,7 +46,7 @@ ToDo:
 
     Script Editor 
         - Find / Find and replace        
-        - Download Read file from uPython
+        - Download Read file from uPython MCU
         
 - Python filehandling : Handle non-existing files or filelocks etc 
         f = open('test.py', 'wb')
@@ -125,5 +124,14 @@ Syntax
 
 BUGs in original code 
     - If [x] Use External Editor is checked
-        ESPlorer cannot be closed. The logic for closing files/scripts is flawed.
+        ESPlorer cannot be closed. 
+        The logic for closing files/scripts appears flawed.
 
+Bug : 
+    - Press Ctrl-S in Snippit window activates Save Editor , 
+    ( Which may throw an Error if that is a blank file ) 
+
+    BUG: SEND to uPython is dropping characters under load 
+        Repro : Send several files at once 
+
+    

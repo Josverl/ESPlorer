@@ -10,8 +10,7 @@ import static ESPlorer.ESPlorer.sendBuffer;
 import java.util.Arrays;
 
 public class pyFiler {
-    //assume root folder
-    private static String ESPWorkingDirectory = "/"; 
+
 
     public static final int OK = 0;
     public static final int CHUNKSIZE = 80;
@@ -38,13 +37,19 @@ public class pyFiler {
     public static String StartPasteMode = ""+ (char)ASCII_CTRL_E; 
     //uPython End multiline paste mode 
     public static String EndPasteMode = ""+ (char)ASCII_CTRL_D; 
+
+    private static String ESPWorkingDirectory; 
             
     /**
      * Default constructor
      */
     public pyFiler() {
-        ESPWorkingDirectory = "/"; 
+        //assume current folder until we have better
+        // todo: retrieve current folder on refresh
+        ESPWorkingDirectory = "."; 
     }
+
+
 
     /**
      * upload a binary (or scriptfile)  to the MCU 
@@ -85,7 +90,6 @@ public class pyFiler {
         sendBuffer.add("del _f, _n");
         // END Paste Mode 
         sendBuffer.add( EndPasteMode + EndRawMode);
-        //sendBuf.add( EndRawMode );
         
         // todo: check for actual success
         return success;
@@ -143,13 +147,14 @@ public class pyFiler {
     public int Length() {
         return 0;
     }
-    // stub created but not implemented 
+    // stub created but not implemented, not used 
     public String cd() {
         return ESPWorkingDirectory;
     }
-    // stub created but not implemented 
+    // partly implemented 
+    // todo: retrieve the actual folder on connection 
     public String pwd() {
-        return ESPWorkingDirectory;
+        return ESPWorkingDirectory ;
     }
     // stub created but not implemented 
     public String GetParent() {
