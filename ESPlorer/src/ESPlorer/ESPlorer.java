@@ -14,6 +14,7 @@ import java.io.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 
 import java.util.logging.*;
 import java.util.ArrayList;
@@ -41,8 +42,8 @@ import jssc.SerialPortList;
 public class ESPlorer extends javax.swing.JFrame {
 
     public static SerialPort serialPort;
-    // inititialize the sendbuffer so that lines can be added to it 
-    public static ArrayList<String> sendBuffer = new ArrayList<>();
+    // inititialize the sendbuffer so that lines can be added to it
+    public ArrayList<String> sendBuffer;
 
 
     public static boolean pOpen = false;
@@ -61,6 +62,7 @@ public class ESPlorer extends javax.swing.JFrame {
      * Creates new form MainWindows
      */
     public ESPlorer() {
+        this.sendBuffer = new ArrayList<>();
         try {
             FileHandler fh = new FileHandler("ESPlorer.Log");
             LOGGER.addHandler(fh);
@@ -277,21 +279,23 @@ public class ESPlorer extends javax.swing.JFrame {
         LineDelayLabel = new javax.swing.JLabel();
         LineDelay = new javax.swing.JSlider();
         TurboMode = new javax.swing.JCheckBox();
-        jLayeredPane2 = new javax.swing.JLayeredPane();
+        DataScrollPane = new javax.swing.JLayeredPane();
         jLabel1 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         TerminalMaxSize = new javax.swing.JTextField();
         LogMaxSize = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jLayeredPane3 = new javax.swing.JLayeredPane();
+        SerialPortPane = new javax.swing.JLayeredPane();
         CustomPortName = new javax.swing.JTextField();
         UseCustomPortName = new javax.swing.JCheckBox();
         jLabel10 = new javax.swing.JLabel();
         AutodetectFirmware = new javax.swing.JCheckBox();
         CommandEcho = new javax.swing.JCheckBox();
-        OptionsMachineModule = new javax.swing.JLayeredPane();
+        MicroPythonPane = new javax.swing.JLayeredPane();
+        jLabel14 = new javax.swing.JLabel();
         pyMachineModule = new javax.swing.JComboBox<>();
+        OptionsShowRaw = new javax.swing.JCheckBox();
         ATvXX = new javax.swing.JLayeredPane();
         BasicATcommandsPane = new javax.swing.JLayeredPane();
         cmdAT = new javax.swing.JButton();
@@ -510,6 +514,12 @@ public class ESPlorer extends javax.swing.JFrame {
         ESPReset = new javax.swing.JButton();
         SendCommand = new javax.swing.JButton();
         FirmwareIcon = new javax.swing.JLabel();
+        REPLCtrl = new javax.swing.JLayeredPane();
+        btnCtrlA = new javax.swing.JButton();
+        btnCtrlB = new javax.swing.JButton();
+        btnCtrlC = new javax.swing.JButton();
+        btnCtrlD = new javax.swing.JButton();
+        btnCtrlE = new javax.swing.JButton();
         MainMenuBar = new javax.swing.JMenuBar();
         MenuFile = new javax.swing.JMenu();
         MenuItemFileNew = new javax.swing.JMenuItem();
@@ -1508,7 +1518,6 @@ public class ESPlorer extends javax.swing.JFrame {
         FilePathLabel.setText("jLabel1");
 
         ProgressBar.setToolTipText("");
-        ProgressBar.setOpaque(true);
         ProgressBar.setStringPainted(true);
 
         LeftMainButtons.setOpaque(true);
@@ -1755,7 +1764,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addGroup(CommandsNodeMCULayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmdListFiles, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmdTimerStop, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(TimerNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
+                    .addComponent(TimerNumber))
                 .addContainerGap())
         );
 
@@ -3124,7 +3133,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             .addComponent(DelayLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, OptionsFileSendModeLayout.createSequentialGroup()
-                        .addGap(0, 101, Short.MAX_VALUE)
+                        .addGap(0, 111, Short.MAX_VALUE)
                         .addGroup(OptionsFileSendModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(DumbMode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Delay, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3155,7 +3164,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLayeredPane2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Data scrollback", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
+        DataScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Data scrollback", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel1.setText("Terminal");
@@ -3192,46 +3201,46 @@ public class ESPlorer extends javax.swing.JFrame {
 
         jLabel9.setText("kb");
 
-        jLayeredPane2.setLayer(jLabel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane2.setLayer(jLabel7, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane2.setLayer(TerminalMaxSize, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane2.setLayer(LogMaxSize, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane2.setLayer(jLabel8, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane2.setLayer(jLabel9, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        DataScrollPane.setLayer(jLabel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        DataScrollPane.setLayer(jLabel7, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        DataScrollPane.setLayer(TerminalMaxSize, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        DataScrollPane.setLayer(LogMaxSize, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        DataScrollPane.setLayer(jLabel8, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        DataScrollPane.setLayer(jLabel9, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
-        javax.swing.GroupLayout jLayeredPane2Layout = new javax.swing.GroupLayout(jLayeredPane2);
-        jLayeredPane2.setLayout(jLayeredPane2Layout);
-        jLayeredPane2Layout.setHorizontalGroup(
-            jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jLayeredPane2Layout.createSequentialGroup()
-                .addGroup(jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+        javax.swing.GroupLayout DataScrollPaneLayout = new javax.swing.GroupLayout(DataScrollPane);
+        DataScrollPane.setLayout(DataScrollPaneLayout);
+        DataScrollPaneLayout.setHorizontalGroup(
+            DataScrollPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DataScrollPaneLayout.createSequentialGroup()
+                .addGroup(DataScrollPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(DataScrollPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(TerminalMaxSize, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
                     .addComponent(LogMaxSize))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(DataScrollPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
                     .addComponent(jLabel9))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jLayeredPane2Layout.setVerticalGroup(
-            jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jLayeredPane2Layout.createSequentialGroup()
-                .addGroup(jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        DataScrollPaneLayout.setVerticalGroup(
+            DataScrollPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DataScrollPaneLayout.createSequentialGroup()
+                .addGroup(DataScrollPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(TerminalMaxSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(DataScrollPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(LogMaxSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9)))
         );
 
-        jLayeredPane3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SerialPort", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
+        SerialPortPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SerialPort", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
 
         CustomPortName.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         CustomPortName.setHorizontalAlignment(javax.swing.JTextField.LEFT);
@@ -3278,25 +3287,25 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
 
-        jLayeredPane3.setLayer(CustomPortName, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane3.setLayer(UseCustomPortName, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane3.setLayer(jLabel10, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane3.setLayer(AutodetectFirmware, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane3.setLayer(CommandEcho, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        SerialPortPane.setLayer(CustomPortName, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        SerialPortPane.setLayer(UseCustomPortName, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        SerialPortPane.setLayer(jLabel10, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        SerialPortPane.setLayer(AutodetectFirmware, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        SerialPortPane.setLayer(CommandEcho, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
-        javax.swing.GroupLayout jLayeredPane3Layout = new javax.swing.GroupLayout(jLayeredPane3);
-        jLayeredPane3.setLayout(jLayeredPane3Layout);
-        jLayeredPane3Layout.setHorizontalGroup(
-            jLayeredPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout SerialPortPaneLayout = new javax.swing.GroupLayout(SerialPortPane);
+        SerialPortPane.setLayout(SerialPortPaneLayout);
+        SerialPortPaneLayout.setHorizontalGroup(
+            SerialPortPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(UseCustomPortName, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
             .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(CustomPortName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(AutodetectFirmware, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(CommandEcho, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        jLayeredPane3Layout.setVerticalGroup(
-            jLayeredPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jLayeredPane3Layout.createSequentialGroup()
+        SerialPortPaneLayout.setVerticalGroup(
+            SerialPortPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(SerialPortPaneLayout.createSequentialGroup()
                 .addComponent(UseCustomPortName)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -3309,8 +3318,10 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        OptionsMachineModule.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "MicroPython machine module", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 10))); // NOI18N
-        OptionsMachineModule.setName("MicroPython machine module"); // NOI18N
+        MicroPythonPane.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "MicroPython", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 10))); // NOI18N
+
+        jLabel14.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        jLabel14.setText("Machine Module");
 
         pyMachineModule.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "machine", "pyb" }));
         pyMachineModule.setToolTipText("uPython  machine library, select \"pyb\" for a pyboard");
@@ -3321,30 +3332,48 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
 
-        OptionsMachineModule.setLayer(pyMachineModule, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        OptionsShowRaw.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        OptionsShowRaw.setText("Show internal scriptlets while executing");
+        OptionsShowRaw.setToolTipText("Switches between RAW repl and Paste Mode");
+        OptionsShowRaw.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OptionsShowRawActionPerformed(evt);
+            }
+        });
 
-        javax.swing.GroupLayout OptionsMachineModuleLayout = new javax.swing.GroupLayout(OptionsMachineModule);
-        OptionsMachineModule.setLayout(OptionsMachineModuleLayout);
-        OptionsMachineModuleLayout.setHorizontalGroup(
-            OptionsMachineModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(OptionsMachineModuleLayout.createSequentialGroup()
-                .addComponent(pyMachineModule, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        OptionsMachineModuleLayout.setVerticalGroup(
-            OptionsMachineModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(OptionsMachineModuleLayout.createSequentialGroup()
+        MicroPythonPane.setLayer(jLabel14, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        MicroPythonPane.setLayer(pyMachineModule, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        MicroPythonPane.setLayer(OptionsShowRaw, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout MicroPythonPaneLayout = new javax.swing.GroupLayout(MicroPythonPane);
+        MicroPythonPane.setLayout(MicroPythonPaneLayout);
+        MicroPythonPaneLayout.setHorizontalGroup(
+            MicroPythonPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(MicroPythonPaneLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pyMachineModule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(MicroPythonPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(OptionsShowRaw)
+                    .addComponent(pyMachineModule, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        MicroPythonPaneLayout.setVerticalGroup(
+            MicroPythonPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(MicroPythonPaneLayout.createSequentialGroup()
+                .addComponent(jLabel14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pyMachineModule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(OptionsShowRaw)
+                .addGap(18, 18, 18))
         );
 
         NodeMCUSettings.setLayer(OptionsFirmware, javax.swing.JLayeredPane.DEFAULT_LAYER);
         NodeMCUSettings.setLayer(OptionsOther, javax.swing.JLayeredPane.DEFAULT_LAYER);
         NodeMCUSettings.setLayer(OptionsFileSendMode, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        NodeMCUSettings.setLayer(jLayeredPane2, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        NodeMCUSettings.setLayer(jLayeredPane3, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        NodeMCUSettings.setLayer(OptionsMachineModule, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        NodeMCUSettings.setLayer(DataScrollPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        NodeMCUSettings.setLayer(SerialPortPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        NodeMCUSettings.setLayer(MicroPythonPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout NodeMCUSettingsLayout = new javax.swing.GroupLayout(NodeMCUSettings);
         NodeMCUSettings.setLayout(NodeMCUSettingsLayout);
@@ -3354,12 +3383,12 @@ public class ESPlorer extends javax.swing.JFrame {
                 .addGroup(NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(OptionsFirmware)
                     .addComponent(OptionsFileSendMode)
-                    .addComponent(OptionsMachineModule)
-                    .addComponent(OptionsOther, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(OptionsOther, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(MicroPythonPane))
+                .addGap(18, 18, 18)
                 .addGroup(NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLayeredPane2)
-                    .addComponent(jLayeredPane3))
+                    .addComponent(DataScrollPane)
+                    .addComponent(SerialPortPane))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         NodeMCUSettingsLayout.setVerticalGroup(
@@ -3367,21 +3396,19 @@ public class ESPlorer extends javax.swing.JFrame {
             .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
                 .addGroup(NodeMCUSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
-                        .addComponent(jLayeredPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(SerialPortPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLayeredPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(DataScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(NodeMCUSettingsLayout.createSequentialGroup()
                         .addComponent(OptionsFirmware, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(OptionsMachineModule, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
+                        .addComponent(MicroPythonPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(OptionsOther, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(OptionsFileSendMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 80, Short.MAX_VALUE))
         );
-
-        OptionsMachineModule.getAccessibleContext().setAccessibleDescription("");
 
         TextTab.addTab("Settings", new javax.swing.ImageIcon(getClass().getResource("/resources/settings2.png")), NodeMCUSettings, "Settings for file sending"); // NOI18N
 
@@ -5637,7 +5664,7 @@ public class ESPlorer extends javax.swing.JFrame {
         RN2483.setLayout(RN2483Layout);
         RN2483Layout.setHorizontalGroup(
             RN2483Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(RN2483jTab, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+            .addComponent(RN2483jTab, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
         );
         RN2483Layout.setVerticalGroup(
             RN2483Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5652,7 +5679,7 @@ public class ESPlorer extends javax.swing.JFrame {
         LeftBasePane.setLayout(LeftBasePaneLayout);
         LeftBasePaneLayout.setHorizontalGroup(
             LeftBasePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(LeftTab, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
+            .addComponent(LeftTab, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
         );
         LeftBasePaneLayout.setVerticalGroup(
             LeftBasePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -5911,7 +5938,7 @@ public class ESPlorer extends javax.swing.JFrame {
                             .addGroup(LEDPanelLayout.createSequentialGroup()
                                 .addComponent(Speed, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(DonateSmall, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addComponent(DonateSmall, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))))
                     .addComponent(Port, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -6086,7 +6113,6 @@ public class ESPlorer extends javax.swing.JFrame {
         Log.setBorder(Terminal.getBorder());
         Log.setComponentPopupMenu(ContextMenuLog);
         Log.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Log.setMargin(new java.awt.Insets(0, 0, 0, 0));
         Log.setName("Log"); // NOI18N
         Log.setNextFocusableComponent(SendCommand);
         Log.setSelectionColor(new java.awt.Color(204, 0, 0));
@@ -6113,9 +6139,9 @@ public class ESPlorer extends javax.swing.JFrame {
         );
         TerminalLogPaneLayout.setVerticalGroup(
             TerminalLogPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 416, Short.MAX_VALUE)
+            .addGap(0, 408, Short.MAX_VALUE)
             .addGroup(TerminalLogPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(RightSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE))
+                .addComponent(RightSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
         );
 
         RightFilesSplitPane.setLeftComponent(TerminalLogPane);
@@ -6442,7 +6468,7 @@ public class ESPlorer extends javax.swing.JFrame {
         RightBigPaneLayout.setVerticalGroup(
             RightBigPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(RightBigPaneLayout.createSequentialGroup()
-                .addComponent(RightFilesSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+                .addComponent(RightFilesSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(RightSnippetsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -6537,12 +6563,94 @@ public class ESPlorer extends javax.swing.JFrame {
         FirmwareIcon.setMaximumSize(new java.awt.Dimension(150, 150));
         FirmwareIcon.setMinimumSize(new java.awt.Dimension(150, 150));
 
+        btnCtrlA.setText("Ctrl-A");
+        btnCtrlA.setToolTipText("Start Raw REPL");
+        btnCtrlA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCtrlAActionPerformed(evt);
+            }
+        });
+
+        btnCtrlB.setText("Ctrl-B");
+        btnCtrlB.setToolTipText("End Raw REPL");
+        btnCtrlB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCtrlBActionPerformed(evt);
+            }
+        });
+
+        btnCtrlC.setText("Ctrl-C");
+        btnCtrlC.setToolTipText("Break");
+        btnCtrlC.setDefaultCapable(false);
+        btnCtrlC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCtrlCActionPerformed(evt);
+            }
+        });
+
+        btnCtrlD.setText("Ctrl-D");
+        btnCtrlD.setToolTipText("Soft Reboot -or- End Paste Mode ");
+        btnCtrlD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCtrlDActionPerformed(evt);
+            }
+        });
+
+        btnCtrlE.setText("Ctrl-E");
+        btnCtrlE.setToolTipText("Start Paste Mode");
+        btnCtrlE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCtrlEActionPerformed(evt);
+            }
+        });
+
+        REPLCtrl.setLayer(btnCtrlA, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        REPLCtrl.setLayer(btnCtrlB, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        REPLCtrl.setLayer(btnCtrlC, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        REPLCtrl.setLayer(btnCtrlD, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        REPLCtrl.setLayer(btnCtrlE, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout REPLCtrlLayout = new javax.swing.GroupLayout(REPLCtrl);
+        REPLCtrl.setLayout(REPLCtrlLayout);
+        REPLCtrlLayout.setHorizontalGroup(
+            REPLCtrlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(REPLCtrlLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(REPLCtrlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(REPLCtrlLayout.createSequentialGroup()
+                        .addComponent(btnCtrlC)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCtrlD))
+                    .addGroup(REPLCtrlLayout.createSequentialGroup()
+                        .addComponent(btnCtrlB)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCtrlE))
+                    .addComponent(btnCtrlA))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        REPLCtrlLayout.setVerticalGroup(
+            REPLCtrlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, REPLCtrlLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnCtrlA)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addGroup(REPLCtrlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCtrlB)
+                    .addComponent(btnCtrlE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(REPLCtrlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCtrlC)
+                    .addComponent(btnCtrlD))
+                .addContainerGap())
+        );
+
         RightBasePane.setLayer(LEDPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
         RightBasePane.setLayer(RightBottomPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
         RightBasePane.setLayer(RightBigPane, javax.swing.JLayeredPane.DEFAULT_LAYER);
         RightBasePane.setLayer(RightExtraButtons, javax.swing.JLayeredPane.DEFAULT_LAYER);
         RightBasePane.setLayer(SendCommand, javax.swing.JLayeredPane.DEFAULT_LAYER);
         RightBasePane.setLayer(FirmwareIcon, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        RightBasePane.setLayer(REPLCtrl, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout RightBasePaneLayout = new javax.swing.GroupLayout(RightBasePane);
         RightBasePane.setLayout(RightBasePaneLayout);
@@ -6561,6 +6669,8 @@ public class ESPlorer extends javax.swing.JFrame {
                             .addGroup(RightBasePaneLayout.createSequentialGroup()
                                 .addComponent(LEDPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(REPLCtrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(FirmwareIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -6568,10 +6678,12 @@ public class ESPlorer extends javax.swing.JFrame {
         RightBasePaneLayout.setVerticalGroup(
             RightBasePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(RightBasePaneLayout.createSequentialGroup()
-                .addGap(1, 1, 1)
                 .addGroup(RightBasePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(LEDPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(FirmwareIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(RightBasePaneLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(LEDPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(REPLCtrl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(FirmwareIcon, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(RightBigPane)
                 .addGap(5, 5, 5)
@@ -7272,7 +7384,7 @@ public class ESPlorer extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(HorizontSplit, javax.swing.GroupLayout.DEFAULT_SIZE, 1068, Short.MAX_VALUE)
+            .addComponent(HorizontSplit, javax.swing.GroupLayout.DEFAULT_SIZE, 1038, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -8589,7 +8701,7 @@ public class ESPlorer extends javax.swing.JFrame {
         return s256;
     }
     // display the recieved state of the serial port CTS 
-    private void UpdateLedCTS() {
+    void UpdateLedCTS() {
         try {
             if (serialPort.isCTS()) {
                 PortCTS.setIcon(LED_GREEN);
@@ -8602,7 +8714,7 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     //write output to terminal window
-    private void TerminalAdd(String s) {
+    void TerminalAdd(String s) {
         Document doc = Terminal.getDocument();
         if (doc.getLength() > TerminalMax) {
             try {
@@ -10394,7 +10506,7 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_cmdMicroPythonSendToHostActionPerformed
 
     private void cmdMicroPythonScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdMicroPythonScanActionPerformed
-        btnSend("import network;nic = network.WLAN(network.STA_IF);nic.scan()");
+        btnSend("import network;nic = network.WLAN(network.STA_IF);nic.active(True);nic.scan()");
     }//GEN-LAST:event_cmdMicroPythonScanActionPerformed
 
     private void EditorOnlyCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EditorOnlyCheckBoxItemStateChanged
@@ -10804,6 +10916,37 @@ public class ESPlorer extends javax.swing.JFrame {
         UpdateEditorButtons();
     }//GEN-LAST:event_SnippetTextKeyTyped
 
+    private void OptionsShowRawActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OptionsShowRawActionPerformed
+        // UseRaw is the Inverse of ShowRaw 
+        pyFiler.useRawMode = !(OptionsShowRaw.isSelected());
+        // TODO Persist in settings ?
+    }//GEN-LAST:event_OptionsShowRawActionPerformed
+
+    private void btnCtrlCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCtrlCActionPerformed
+        // MicroPython: Send Break signal : Ctrl-C 
+        sendSerial(pyFiler.Break,false);
+    }//GEN-LAST:event_btnCtrlCActionPerformed
+
+    private void btnCtrlAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCtrlAActionPerformed
+        // MicroPython: Start Raw Mode : Ctrl-A
+        sendSerial(pyFiler.StartRawMode ,false);
+    }//GEN-LAST:event_btnCtrlAActionPerformed
+
+    private void btnCtrlBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCtrlBActionPerformed
+        // MicroPython: END Raw Mode : Ctrl-B
+        sendSerial(pyFiler.EndRawMode ,false);
+    }//GEN-LAST:event_btnCtrlBActionPerformed
+
+    private void btnCtrlDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCtrlDActionPerformed
+        // MicroPython: END Paste Mode : Ctrl-D
+        sendSerial(pyFiler.EndPasteMode ,false);
+    }//GEN-LAST:event_btnCtrlDActionPerformed
+
+    private void btnCtrlEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCtrlEActionPerformed
+        // MicroPython: START Paste Mode : Ctrl-E
+        sendSerial(pyFiler.StartPasteMode ,false);
+    }//GEN-LAST:event_btnCtrlEActionPerformed
+
     private void NodeFileSystemInfo() {
         String cmd = "r,u,t=file.fsinfo() print(\"Total : \"..t..\" bytes\\r\\nUsed  : \"..u..\" bytes\\r\\nRemain: \"..r..\" bytes\\r\\n\") r=nil u=nil t=nil";
         LocalEcho = false;
@@ -10850,9 +10993,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
     private void CommandsSetMicroPython() {
         Command.removeAllItems();
-        Command.addItem("import sys; print( sys.implementation.name, \".\".join(str(n) for n in sys.implementation.version) , \"on\", sys.platform )");
         Command.addItem("import sys; print(sys.version_info)");
-
 
     }
 
@@ -10866,8 +11007,9 @@ public class ESPlorer extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
+    public static ESPlorer mainwindow;
     public static void main(String args[]) {
-
+        
         /* Set the Nimbus look and feel */
 //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -10920,7 +11062,8 @@ public class ESPlorer extends javax.swing.JFrame {
             java.awt.EventQueue.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    new ESPlorer().setVisible(true);
+                    mainwindow = new ESPlorer();
+                    mainwindow.setVisible(true);
                 }
             });
 
@@ -11008,6 +11151,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JTextField CustomPortName;
     private javax.swing.JComboBox DHCP;
     private javax.swing.JComboBox DHCPmode;
+    private javax.swing.JLayeredPane DataScrollPane;
     private javax.swing.JSlider Delay;
     private javax.swing.JLabel DelayLabel;
     private javax.swing.JTextField DevAddr;
@@ -11200,6 +11344,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JButton MicroPythonGPIO9_0;
     private javax.swing.JButton MicroPythonGPIO9_1;
     private javax.swing.JTextField MicroPythonPASS;
+    private javax.swing.JLayeredPane MicroPythonPane;
     private javax.swing.JTextField MicroPythonRemoteData;
     private javax.swing.JTextField MicroPythonRemoteHost;
     private javax.swing.JTextField MicroPythonRemotePort;
@@ -11219,8 +11364,8 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JRadioButton OptionNodeMCU;
     private javax.swing.JLayeredPane OptionsFileSendMode;
     private javax.swing.JLayeredPane OptionsFirmware;
-    private javax.swing.JLayeredPane OptionsMachineModule;
     private javax.swing.JLayeredPane OptionsOther;
+    private javax.swing.JCheckBox OptionsShowRaw;
     private javax.swing.JTextField PASS;
     private javax.swing.JTextField PASSsoftAP;
     private javax.swing.JTextField PingIP;
@@ -11230,6 +11375,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JLabel PortOpen;
     private javax.swing.JToggleButton PortRTS;
     private javax.swing.JProgressBar ProgressBar;
+    private javax.swing.JLayeredPane REPLCtrl;
     private javax.swing.JLayeredPane RN2483;
     private javax.swing.JTabbedPane RN2483jTab;
     private javax.swing.JTextField RadioFreq;
@@ -11248,6 +11394,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JScrollPane ScrollLog;
     private javax.swing.JButton SendCommand;
     private javax.swing.JLayeredPane SendUnconfirmed;
+    private javax.swing.JLayeredPane SerialPortPane;
     private javax.swing.JComboBox ServerMode;
     private javax.swing.JTextField ServerPort;
     private javax.swing.JTextField ServerTimeout;
@@ -11310,6 +11457,11 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JLayeredPane WiFiStationPane;
     private javax.swing.JLayeredPane WiFi_common;
     private javax.swing.JLayeredPane WiFisoftAPPane;
+    private javax.swing.JButton btnCtrlA;
+    private javax.swing.JButton btnCtrlB;
+    private javax.swing.JButton btnCtrlC;
+    private javax.swing.JButton btnCtrlD;
+    private javax.swing.JButton btnCtrlE;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroupLF;
     private javax.swing.JComboBox channel;
@@ -11401,6 +11553,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -11410,8 +11563,6 @@ public class ESPlorer extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
-    private javax.swing.JLayeredPane jLayeredPane2;
-    private javax.swing.JLayeredPane jLayeredPane3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JScrollPane jScrollData;
     private javax.swing.JToolBar.Separator jSeparator1;
@@ -11469,8 +11620,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private String UploadFileName = "";
     /* Files tab end */
     public int nSpeed = 9600;
-    public static final Logger LOGGER = Logger.getLogger(ESPlorer.class
-            .getName());
+    public final Logger LOGGER = Logger.getLogger(ESPlorer.class.getName());
     //  String s = new String();
     int save; // editor var
     String FileName = "script"; // without ext
@@ -11491,6 +11641,7 @@ public class ESPlorer extends javax.swing.JFrame {
     OutputStreamWriter osw = null;
     BufferedReader br = null;
     BufferedWriter bw = null;
+    // ToDo: see if these need to be changed from static to 
     public static int j = 0;
     public static int pyLevel = 0;
     public static boolean sendPending = false;
@@ -11607,7 +11758,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private static String[] Snippets = new String[16];
     private static int iSnippets = 0;
 
-    private static final int portMask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS;
+    public static final int portMask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS;
     private static javax.swing.ImageIcon LED_GREY;
     private static javax.swing.ImageIcon LED_GREEN;
     private static javax.swing.ImageIcon LED_RED;
@@ -12332,7 +12483,6 @@ public class ESPlorer extends javax.swing.JFrame {
 
         FilePopupMenuItem.get(y).setToolTipText("Run script file on the ESP");
         // prepare and store the command to be executed for the platform 
-        // @@2 dofile
         if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
             FilePopupMenuItem.get(y).setActionCommand( 
                 "exec(open('" + FileName + "').read(),globals())") ; 
@@ -13981,39 +14131,40 @@ public class ESPlorer extends javax.swing.JFrame {
     // Set Firmware type and enable / disable UX elementds based on that
     private void SetFirmwareType(int ftype) {
         FirmwareType = ftype;
+        // direct logic Node 
+        OptionNodeMCU.setSelected(ftype == FIRMWARE_NODEMCU);
+        CommandsNodeMCU.setVisible(ftype == FIRMWARE_NODEMCU);
+
+        // works for all but AT 
+        UnifiedFileManagerPane.setVisible(ftype != FIRMWARE_AT);
+        
+        // direct logic MicroPython
+        pyMachineModule.setEnabled(ftype == FIRMWARE_MPYTHON);
+        OptionMicroPython.setSelected(ftype == FIRMWARE_MPYTHON);
+        OptionsShowRaw.setEnabled(ftype == FIRMWARE_MPYTHON);
+        REPLCtrl.setVisible(ftype == FIRMWARE_MPYTHON);
+        
         switch (ftype) {
             case FIRMWARE_MPYTHON:
                 prefs.put(FIRMWARE, "MicroPython");
                 PrefsFlush();
                 chooser.setFileFilter(FILTER_PYTHON);
                 CommandsSetMicroPython();
-                OptionMicroPython.setSelected(true);
-                CommandsNodeMCU.setVisible(false);
-                //todo: merge file managers ?
-                //@@
-                UnifiedFileManagerPane.setVisible(true);
+//                CommandsNodeMCU.setVisible(false);
                 ClearUnifiedFileManager();
                 DisableNotImplemented();
-                // enable uPython Machine Module Options
-                pyMachineModule.setEnabled(true);
-                
                 //Set Icon 
                 FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Micropython-logo.png")));
                 FirmwareIcon.setEnabled(true);
+                
                 break;
             case FIRMWARE_NODEMCU:
                 prefs.put(FIRMWARE, "NodeMCU");
                 PrefsFlush();
                 chooser.setFileFilter(FILTER_LUA);
                 CommandsSetNodeMCU();
-                OptionNodeMCU.setSelected(true);
-
-                CommandsNodeMCU.setVisible(true);
                 //merged file managers
-                UnifiedFileManagerPane.setVisible(true);
                 ClearUnifiedFileManager();
-                // disable uPython Machine Module Options
-                pyMachineModule.setEnabled(false);
                 //Set Icon 
                 FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/NodeMCU-logo.png")));
                 FirmwareIcon.setEnabled(true);                
@@ -14025,7 +14176,6 @@ public class ESPlorer extends javax.swing.JFrame {
                 chooser.setFileFilter(FILTER_ALL);
                 CommandsSetAT();
                 // disable uPython Machine Module Options
-                pyMachineModule.setEnabled(false);
                 FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/ESP8266-96x96.png")));
                 FirmwareIcon.setEnabled(true);                    
                 break;
@@ -14213,32 +14363,41 @@ public class ESPlorer extends javax.swing.JFrame {
             log("ERROR: Communication with MCU not yet established.");
             return;
         }
+        // refresh file listing from MCU 
+        pyFiler.refreshDirectoryList();
+        ClearUnifiedFileManager();
+        try {
+            sleep(10);    
+        } catch (Exception e) {}
+        MCUFile[] filelist =  pyFiler.getDirectoryList();
+
+        if (filelist == null || filelist.length == 0) {
+            TerminalAdd("No files found.");
+        } else { 
+            TerminalAdd("\r\n>>----------------------------");
+            for (MCUFile item : filelist) {
+                TerminalAdd("\r\n" + item.Fullname);
+                AddPyFileButton(item.Fullname);
+            }
+            TerminalAdd("\r\n----------------------------\r\n> ");
+        }
+        UnifiedFileManagerPane.invalidate();
+        UnifiedFileManagerPane.doLayout();
+        UnifiedFileManagerPane.repaint();
+        UnifiedFileManagerPane.requestFocusInWindow();
+        
+        // todo: re-establish the default eventhandler 
         try {
             serialPort.removeEventListener();
+            serialPort.addEventListener(new PortReader(), portMask);
         } catch (Exception e) {
             log(e.toString());
-            return;
         }
-        try {
-            serialPort.addEventListener(new PortPyFilesReader(), portMask);
-            log("pyFileManager: Add EventListener: Success.");
-        } catch (SerialPortException e) {
-            log("pyFileManager: Add EventListener Error. Canceled.");
-            return;
-        }
-        ClearUnifiedFileManager();
-        rx_data = "";
-        rcvBuf = "";
-        log("pyFileManager: Starting...");
-        //todo: add filesize 
-        String cmd = "import uos;uos.listdir('" + pyFiler.pwd() + "')";
-        LocalEcho = false;
-        // todo : btnSend / SendESP
-        btnSend(cmd);
-        // Start timeout watchdog 
-        WatchDogPyListDir();
+        // todo: is this all that needs to be done, refresh does not work
+        SendUnLock(); // (re)enable the sendSerial button 
     } // PyListFiles
 
+/*    
     // Start 3 second timeout 
     private void WatchDogPyListDir() {
         watchDog = new ActionListener() {
@@ -14253,7 +14412,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 } catch (Exception e) {
                     log(e.toString());
                 }
-                SendUnLock(); // (re)enable the sendSerial button 
+                
             }
         };
         // fixed delay of 3 seconds to list the directory 
@@ -14264,9 +14423,8 @@ public class ESPlorer extends javax.swing.JFrame {
         timeout.setInitialDelay(delay);
         timeout.start();
     } // WatchDogPyListDir
-
+/*
     private class PortPyFilesReader implements SerialPortEventListener {
-
         public void serialEvent(SerialPortEvent event) {
             String data;
             if (event.isRXCHAR() && event.getEventValue() > 0) {
@@ -14327,4 +14485,6 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         } // serialEvent
     } // PortPyFilesReader
+*/    
+    
 } // ESPlorer

@@ -1395,7 +1395,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="HorizontSplit" alignment="0" pref="1068" max="32767" attributes="0"/>
+          <Component id="HorizontSplit" alignment="0" pref="1038" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -1431,7 +1431,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="LeftTab" alignment="0" pref="390" max="32767" attributes="0"/>
+                  <Component id="LeftTab" alignment="0" pref="273" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -2336,7 +2336,6 @@
                             <Component class="javax.swing.JProgressBar" name="ProgressBar">
                               <Properties>
                                 <Property name="toolTipText" type="java.lang.String" value=""/>
-                                <Property name="opaque" type="boolean" value="true"/>
                                 <Property name="stringPainted" type="boolean" value="true"/>
                               </Properties>
                             </Component>
@@ -2542,7 +2541,7 @@
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="cmdListFiles" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                               <Component id="cmdTimerStop" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="TimerNumber" pref="30" max="32767" attributes="0"/>
+                                              <Component id="TimerNumber" max="32767" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
                                       </Group>
@@ -4264,13 +4263,13 @@
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="OptionsFirmware" max="32767" attributes="0"/>
                                           <Component id="OptionsFileSendMode" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="OptionsMachineModule" max="32767" attributes="0"/>
                                           <Component id="OptionsOther" alignment="1" max="32767" attributes="0"/>
+                                          <Component id="MicroPythonPane" alignment="0" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="jLayeredPane2" max="32767" attributes="0"/>
-                                          <Component id="jLayeredPane3" max="32767" attributes="0"/>
+                                          <Component id="DataScrollPane" max="32767" attributes="0"/>
+                                          <Component id="SerialPortPane" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="32767" attributes="0"/>
                                   </Group>
@@ -4281,21 +4280,21 @@
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Component id="jLayeredPane3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="SerialPortPane" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="jLayeredPane2" min="-2" max="-2" attributes="0"/>
+                                              <Component id="DataScrollPane" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="OptionsFirmware" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="OptionsMachineModule" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                                              <Component id="MicroPythonPane" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="OptionsOther" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="OptionsFileSendMode" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="80" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -4534,7 +4533,7 @@
                                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                               </Group>
                                               <Group type="102" alignment="1" attributes="0">
-                                                  <EmptySpace min="0" pref="101" max="32767" attributes="0"/>
+                                                  <EmptySpace min="0" pref="111" max="32767" attributes="0"/>
                                                   <Group type="103" groupAlignment="0" attributes="0">
                                                       <Component id="DumbMode" alignment="1" min="-2" pref="200" max="-2" attributes="0"/>
                                                       <Component id="Delay" alignment="1" min="-2" pref="200" max="-2" attributes="0"/>
@@ -4692,7 +4691,7 @@
                                 </Component>
                               </SubComponents>
                             </Container>
-                            <Container class="javax.swing.JLayeredPane" name="jLayeredPane2">
+                            <Container class="javax.swing.JLayeredPane" name="DataScrollPane">
                               <Properties>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -4799,7 +4798,7 @@
                                 </Component>
                               </SubComponents>
                             </Container>
-                            <Container class="javax.swing.JLayeredPane" name="jLayeredPane3">
+                            <Container class="javax.swing.JLayeredPane" name="SerialPortPane">
                               <Properties>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -4906,41 +4905,53 @@
                                 </Component>
                               </SubComponents>
                             </Container>
-                            <Container class="javax.swing.JLayeredPane" name="OptionsMachineModule">
+                            <Container class="javax.swing.JLayeredPane" name="MicroPythonPane">
                               <Properties>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                    <TitledBorder title="MicroPython machine module">
-                                      <Font PropertyName="font" name="Tahoma" size="10" style="0"/>
+                                    <TitledBorder title="MicroPython">
+                                      <Font PropertyName="font" name="Dialog" size="10" style="1"/>
                                     </TitledBorder>
                                   </Border>
                                 </Property>
-                                <Property name="name" type="java.lang.String" value="MicroPython machine module" noResource="true"/>
                               </Properties>
-                              <AccessibilityProperties>
-                                <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
-                              </AccessibilityProperties>
 
                               <Layout>
                                 <DimensionLayout dim="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="pyMachineModule" max="32767" attributes="0"/>
+                                      <Group type="102" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="OptionsShowRaw" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="pyMachineModule" alignment="0" min="-2" pref="287" max="-2" attributes="0"/>
+                                              <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
                                 <DimensionLayout dim="1">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="pyMachineModule" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="pyMachineModule" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="OptionsShowRaw" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>
                               <SubComponents>
+                                <Component class="javax.swing.JLabel" name="jLabel14">
+                                  <Properties>
+                                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                                      <Font name="Dialog" size="10" style="0"/>
+                                    </Property>
+                                    <Property name="text" type="java.lang.String" value="Machine Module"/>
+                                  </Properties>
+                                </Component>
                                 <Component class="javax.swing.JComboBox" name="pyMachineModule">
                                   <Properties>
                                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
@@ -4958,6 +4969,18 @@
                                   <AuxValues>
                                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                                   </AuxValues>
+                                </Component>
+                                <Component class="javax.swing.JCheckBox" name="OptionsShowRaw">
+                                  <Properties>
+                                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                                      <Font name="Tahoma" size="10" style="0"/>
+                                    </Property>
+                                    <Property name="text" type="java.lang.String" value="Show internal scriptlets while executing"/>
+                                    <Property name="toolTipText" type="java.lang.String" value="Switches between RAW repl and Paste Mode"/>
+                                  </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OptionsShowRawActionPerformed"/>
+                                  </Events>
                                 </Component>
                               </SubComponents>
                             </Container>
@@ -7213,7 +7236,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="RN2483jTab" alignment="0" pref="385" max="32767" attributes="0"/>
+                          <Component id="RN2483jTab" alignment="0" pref="268" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -8546,6 +8569,8 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="LEDPanel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="REPLCtrl" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="FirmwareIcon" min="-2" pref="107" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -8559,10 +8584,13 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="LEDPanel" min="-2" max="-2" attributes="0"/>
-                          <Component id="FirmwareIcon" min="-2" pref="112" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                              <Component id="LEDPanel" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="REPLCtrl" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="FirmwareIcon" alignment="1" min="-2" pref="112" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="RightBigPane" max="32767" attributes="0"/>
@@ -8635,7 +8663,7 @@
                                       <Group type="102" attributes="0">
                                           <Component id="Speed" min="-2" pref="100" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="DonateSmall" max="32767" attributes="0"/>
+                                          <Component id="DonateSmall" pref="101" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -9097,7 +9125,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="RightFilesSplitPane" pref="418" max="32767" attributes="0"/>
+                          <Component id="RightFilesSplitPane" pref="410" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="RightSnippetsPane" min="-2" pref="96" max="-2" attributes="0"/>
                       </Group>
@@ -9134,9 +9162,9 @@
                         </DimensionLayout>
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="416" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="408" max="32767" attributes="0"/>
                               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                                  <Component id="RightSplitPane" alignment="0" pref="416" max="32767" attributes="0"/>
+                                  <Component id="RightSplitPane" alignment="0" pref="408" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -9280,9 +9308,6 @@
                                     </Property>
                                     <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                                       <Color id="Hand Cursor"/>
-                                    </Property>
-                                    <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                                      <Insets value="[0, 0, 0, 0]"/>
                                     </Property>
                                     <Property name="name" type="java.lang.String" value="Log" noResource="true"/>
                                     <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
@@ -10005,6 +10030,99 @@
                 </Property>
               </Properties>
             </Component>
+            <Container class="javax.swing.JLayeredPane" name="REPLCtrl">
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="btnCtrlC" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btnCtrlD" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="btnCtrlB" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="btnCtrlE" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="btnCtrlA" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnCtrlA" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="7" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="btnCtrlB" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnCtrlE" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="btnCtrlC" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnCtrlD" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JButton" name="btnCtrlA">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Ctrl-A"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Start Raw REPL"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCtrlAActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnCtrlB">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Ctrl-B"/>
+                    <Property name="toolTipText" type="java.lang.String" value="End Raw REPL"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCtrlBActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnCtrlC">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Ctrl-C"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Break"/>
+                    <Property name="defaultCapable" type="boolean" value="false"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCtrlCActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnCtrlD">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Ctrl-D"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Soft Reboot -or- End Paste Mode "/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCtrlDActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnCtrlE">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Ctrl-E"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Start Paste Mode"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCtrlEActionPerformed"/>
+                  </Events>
+                </Component>
+              </SubComponents>
+            </Container>
           </SubComponents>
         </Container>
       </SubComponents>
