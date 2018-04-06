@@ -49,7 +49,7 @@ public class ESPlorer extends javax.swing.JFrame {
     public static boolean pOpen = false;
     public static boolean sOpen = false;
     public static boolean portJustOpen = false;
-    public static final String VERSION = "v0.3.180107";
+    public static final String VERSION = "v0.4.180406";
     public static ArrayList<String> LAF;
     public static ArrayList<String> LAFclass;
     public static Preferences prefs;
@@ -14349,7 +14349,7 @@ public class ESPlorer extends javax.swing.JFrame {
 
         } else 
         if (File.Name.endsWith(".py")) {
-            Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/document.png")));
+            Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/pythonfile.png")));
             AddMenuItemRun(x, File.Fullname);
             AddMenuItemSeparator(x);
             AddMenuItemView(x, File.Fullname);
@@ -14362,7 +14362,7 @@ public class ESPlorer extends javax.swing.JFrame {
         } else 
         if (File.Name.endsWith(".pyc")) {
             // No View or Edit 
-            Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/file.png")));
+            Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/pythonfile.png")));
             AddMenuItemRun(x, File.Fullname);
             AddMenuItemSeparator(x);
             AddMenuItemDump(x, File.Fullname);
