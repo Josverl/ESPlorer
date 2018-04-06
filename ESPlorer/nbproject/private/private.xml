@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="6">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="7">
+        <file>
+            <url>src/ESPlorer/MCUFile.java</url>
+            <bookmark id="7">
+                <name/>
+                <line>23</line>
+                <key/>
+            </bookmark>
+        </file>
         <file>
             <url>src/ESPlorer/pyFiler.java</url>
             <bookmark id="6">
                 <name/>
-                <line>177</line>
+                <line>193</line>
                 <key/>
             </bookmark>
         </file>
@@ -13,30 +21,37 @@
             <url>src/ESPlorer/ESPlorer.java</url>
             <bookmark id="2">
                 <name/>
-                <line>8614</line>
+                <line>8620</line>
                 <key/>
             </bookmark>
             <bookmark id="4">
                 <name/>
-                <line>8768</line>
+                <line>8774</line>
                 <key/>
             </bookmark>
             <bookmark id="5">
                 <name/>
-                <line>10921</line>
+                <line>10928</line>
                 <key/>
             </bookmark>
             <bookmark id="3">
                 <name/>
-                <line>13912</line>
+                <line>13936</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/folder%20closed.png</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/file%20manager%20(delete).png</file>
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/pyFiler.java</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/file_remove.png</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/file.png</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/MCUFile.java</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/folder_open_document.png</file>
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/ESPlorer.java</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/folder%20open.png</file>
         </group>
     </open-files>
 </project-private>

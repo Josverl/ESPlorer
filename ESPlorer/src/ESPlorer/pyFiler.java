@@ -4,12 +4,14 @@
  */
 package ESPlorer;
 
+import static ESPlorer.ESPlorer.DEBUG;
 import java.util.ArrayList;
 import javax.xml.bind.DatatypeConverter;
 
 // The main window can be used to get back to the Sendbuffer in the
 // main ESPlorer application instance 
 import static ESPlorer.ESPlorer.mainwindow; 
+import static ESPlorer.ESPlorer.portMask;
 import static ESPlorer.ESPlorer.rcvBuf;
 import static ESPlorer.ESPlorer.rx_data;
 import static ESPlorer.ESPlorer.s;
@@ -43,7 +45,13 @@ public class pyFiler {
      * @return the MCUFiles
      */
     public MCUFile[] getDirectoryList() {
+        
         MCUFile[] temp;
+        synchronized (this) {
+            temp = MCUFiles;     
+        }
+        
+        /* 
         try { 
             filesLock.readLock().lock();
             temp = MCUFiles;
@@ -51,6 +59,7 @@ public class pyFiler {
         finally { 
             filesLock.readLock().unlock();
         }
+        */
         return temp;
     }
 
@@ -59,13 +68,20 @@ public class pyFiler {
      * @param MCUFiles the MCUFiles to set
      */
     public void setDirectoryList(MCUFile[] MCUFiles) {
+        synchronized (this) {
+            this.MCUFiles = MCUFiles;    
+        }
+        /*
         filesLock.writeLock().lock();
+        filelistReady = false;
         try {
             this.MCUFiles = MCUFiles;    
         } catch (Exception e) {
         } finally { 
             filesLock.writeLock().unlock();
+            filelistReady = true;
         }
+        */
     }
     // use raw mode paste to hide the file transfers
     // this can be changed externally (from options)
@@ -106,7 +122,7 @@ public class pyFiler {
     // MCUFile listing retrieved from the MCU 
     private MCUFile[] MCUFiles;    
     ReadWriteLock filesLock = new ReentrantReadWriteLock();
-    
+    private boolean filelistReady; 
     /**
      * Default constructor
      */
@@ -202,8 +218,36 @@ public class pyFiler {
     // todo: return a list of file info things
     public String refreshDirectoryList() {
         mainwindow.log("Start ListDir");
+        
+        synchronized(this){
+            try {
+                serialPort.removeEventListener();
+            } catch (Exception e) {
+                mainwindow.log(e.toString());
+                return null;
+            }
+            try {
+                serialPort.addEventListener(new PortPyFilesReader(), ESPlorer.portMask);
+                mainwindow.log("pyFileManager: Add EventListener: Success.");
+            } catch (SerialPortException e) {
+                mainwindow.log("pyFileManager: Add EventListener Error. Canceled.");
+                return null;
+            }
+            ESPlorer.rx_data = "";
+            ESPlorer.rcvBuf = "";
+            // todo : make sure that esplorer module is present on MCU
+            // retrieve full tree 
+            String cmd = "import esplorer;import json;json.dumps(esplorer.listdir('/',True))";
+            mainwindow.btnSend(cmd);
+            // Start timeout watchdog 
+            WatchDogPyListDir();
+            
+        }
+        return "";
+        /*            
         // lock access as we will be writing
         filesLock.writeLock().lock();
+        filelistReady = false;
         mainwindow.log("filesLock.writeLock().lock()");
         
         try {
@@ -227,9 +271,11 @@ public class pyFiler {
         mainwindow.btnSend(cmd);
         // Start timeout watchdog 
         WatchDogPyListDir();
-
+       
         return "";
+        */
     }
+        
     // Start 3 second timeout 
     private void WatchDogPyListDir() {
         watchDog = new ActionListener() {
@@ -243,15 +289,16 @@ public class pyFiler {
                 mainwindow.log("filesLock.writeLock().unlock()");
                 try {
                     serialPort.removeEventListener();
-                    //Restore 
-//                    serialPort.addEventListener(new ESPlorer.PortReader(), portMask);
+                    //cant Restore :-( 
+                    //ESPlorer.registerStandardPortReader();
+                    //serialPort.addEventListener(new ESPlorer.PortReader(), portMask);
                 } catch (Exception e) {
                     mainwindow.log(e.toString());
                 }
 //                SendUnLock(); // (re)enable the sendSerial button 
             }
         };
-        // fixed delay of 3 seconds to list the directory 
+        // fixed maximum delay of 3 seconds to list the directory 
         int delay = 30*1000;
 
         timeout = new Timer(delay, watchDog);
@@ -265,7 +312,6 @@ public class pyFiler {
     public final Object lock = new Object();
     
     private class PortPyFilesReader implements SerialPortEventListener {
-        
         public void serialEvent(SerialPortEvent event) {
             String data;
             if (event.isRXCHAR() && event.getEventValue() > 0) {
@@ -296,29 +342,28 @@ public class pyFiler {
                        
                         // parse json string to object
                         MCUFiles = gson.fromJson(rx_data, MCUFile[].class);                    
-
+                        
+                        filelistReady = true;
                         // unlock our writelock
                         filesLock.writeLock().unlock();
+                        // todo : writelock does not block the readlock ?
                         mainwindow.log("filesLock.writeLock().unlock()");
-                        
-                        mainwindow.TerminalAdd("\r\n----------------------------");
-                        for (MCUFile item : MCUFiles ) {
-                            mainwindow.TerminalAdd("\r\n" + item.Fullname);
+                        if(DEBUG) {
+                            mainwindow.TerminalAdd("\r\n----------------------------");
+                            for (MCUFile item : MCUFiles ) {
+                                mainwindow.TerminalAdd("\r\n" + item.Fullname);
+                            }
+                     
+                            mainwindow.TerminalAdd("\r\n----------------------------\r\n> ");
                         }
-                        mainwindow.TerminalAdd("\r\n----------------------------\r\n> ");
-/*                        UnifiedFileManagerPane.invalidate();
-                        UnifiedFileManagerPane.doLayout();
-                        UnifiedFileManagerPane.repaint();
-                        UnifiedFileManagerPane.requestFocusInWindow();
-*/                        
                         mainwindow.log("pyFileManager: File list parsing done, found " +"?"+ " file(s).");
                     } catch (Exception e) {
                         mainwindow.log(e.toString());
                     }
                     try {
                         serialPort.removeEventListener();
-                        //TODO restore standard eventhandler
-                        //serialPort.addEventListener(new PortReader(), portMask);
+                        //restore standard eventhandler is done by caller 
+                        // not great , but it works ....
                     } catch (Exception e) {
                         mainwindow.log(e.toString());
                     }
@@ -352,7 +397,7 @@ public class pyFiler {
     }
     // partly implemented 
     // todo: retrieve the actual folder on connection 
-    public String pwd() {
+    public String CurrentWorkingDirectory() {
         return ESPWorkingDirectory ;
     }
     // stub created but not implemented 

@@ -21,10 +21,10 @@ public class MCUFile {
     public String Type;
     
     public boolean isDirectory() {
-            return (Type.toLowerCase() == "dir");
+            return (Type.equalsIgnoreCase("dir") );
     }
     public boolean isFile() {
-            return (Type.toLowerCase() == "file");
+            return (Type.equalsIgnoreCase("file") );
     }
         
 }
