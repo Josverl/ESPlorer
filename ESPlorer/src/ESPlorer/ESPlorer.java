@@ -1357,11 +1357,11 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
         TextEditor.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                TextEditorCaretPositionChanged(evt);
-            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 TextEditorInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                TextEditorCaretPositionChanged(evt);
             }
         });
         TextEditor.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -2821,10 +2821,10 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
         SnippetText.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
                 SnippetTextCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
         SnippetText.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -6149,10 +6149,12 @@ public class ESPlorer extends javax.swing.JFrame {
 
         FileManagerScrollPane.setBorder(null);
         FileManagerScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        FileManagerScrollPane.setEnabled(false);
 
         FileManagersLayer.setMaximumSize(new java.awt.Dimension(145, 145));
 
         UnifiedFileManagerPane.setComponentPopupMenu(ContextMenuFileManager);
+        UnifiedFileManagerPane.setEnabled(false);
         UnifiedFileManagerPane.setMaximumSize(new java.awt.Dimension(145, 145));
         UnifiedFileManagerPane.setName(""); // NOI18N
         UnifiedFileManagerPane.setPreferredSize(new java.awt.Dimension(145, 145));
@@ -7474,6 +7476,8 @@ public class ESPlorer extends javax.swing.JFrame {
         }
         UpdateButtons();
     }//GEN-LAST:event_OpenActionPerformed
+    
+    // anable or Disable buttons based on the 
     private void UpdateButtons() {
         pOpen = Open.isSelected();
         UpdateLED();
@@ -7516,6 +7520,9 @@ public class ESPlorer extends javax.swing.JFrame {
         MenuItemTerminalReset.setEnabled(pOpen);    // PopupMenu: Terminal > Reset ESP module
         MenuItemESPReset.setEnabled(pOpen);         // Menu: ESP > Reset 
 
+        //@@filemanager 
+        FileListReload.setEnabled(pOpen);
+        
         // Format ESP 
         MenuItemTerminalFormat.setEnabled(pOpen);   // PopupMenu: Terminal > Format ESP Module
         MenuItemESPFormat.setEnabled(pOpen);        // Menu: ESP > Format 
@@ -10886,9 +10893,7 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_OptionMicroPythonItemStateChanged
 
     private void OptionMicroPythonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_OptionMicroPythonStateChanged
-        if (OptionMicroPython.isSelected()) {
-            SetFirmwareType(FIRMWARE_MPYTHON);
-        }
+        // also fires on a hover over .....
     }//GEN-LAST:event_OptionMicroPythonStateChanged
 
     private void OptionNodeMCUItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_OptionNodeMCUItemStateChanged
@@ -12072,8 +12077,9 @@ public class ESPlorer extends javax.swing.JFrame {
         //Command.setSelectedIndex(Command.getItemCount()-1);
     }
 
-    //  Add a terminating CRLF to a string
-    // todo: clarify why LF is not added for uPython  
+    // Used to submit a command to the REPL 
+    // Add a terminating CRLF to a string
+    // LF is not added for uPython  
     public String addCRLF(String s) {
         String r = s;
         r += (char) 13; //CR 
@@ -12086,7 +12092,7 @@ public class ESPlorer extends javax.swing.JFrame {
         return r;
     }
     //  Add a terminating CR to a string   
-    public String addCR(String s) {
+    static public String addCR(String s) {
         String r = s;
         r += (char) 13; //CR
         return r;
@@ -12454,11 +12460,11 @@ public class ESPlorer extends javax.swing.JFrame {
         UnifiedFileManagerPane.add(FileAsButtonList.get(i));
     }
 
-    private void AddMenuItemSeparator(int x) {
-        FilePopupMenu.get(x).add(new javax.swing.JPopupMenu.Separator());
+    private void AddMenuItemSeparator(int ButtonID) {
+        FilePopupMenu.get(ButtonID).add(new javax.swing.JPopupMenu.Separator());
     }
 
-    private void AddMenuItemEdit(int x, String FileName, int size) {
+    private void AddMenuItemEdit(int ButtonID, String FileName, int size) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12472,10 +12478,10 @@ public class ESPlorer extends javax.swing.JFrame {
                 LUAFileDownload(evt.getActionCommand());
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
 
-    private void AddMenuItemDownload(int x, String FileName, int size) {
+    private void AddMenuItemDownload(int ButtonID, String FileName, int size) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12489,12 +12495,12 @@ public class ESPlorer extends javax.swing.JFrame {
                 LUAFileDownload(evt.getActionCommand());
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
 
 
     // Add a Run  menu item that allows both LUA and uPython scripts to run 
-    private void AddMenuItemRun(int x, String FileName) {
+    private void AddMenuItemRun(int ButtonID, String FileName) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12517,10 +12523,10 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         });
         
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
 
-    private void AddMenuItemCompile(int x, String FileName) {
+    private void AddMenuItemCompile(int ButtonID, String FileName) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12538,10 +12544,10 @@ public class ESPlorer extends javax.swing.JFrame {
                 FileListReload.doClick();
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
 
-    private void AddMenuItemRename(int x, String FileName) {
+    private void AddMenuItemRename(int ButtonID, String FileName) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12559,10 +12565,10 @@ public class ESPlorer extends javax.swing.JFrame {
                 FileRename.grabFocus();
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
 
-    private void AddMenuItemRemove(int x, String FileName) {
+    private void AddMenuItemRemove(int ButtonID, String FileName) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12577,10 +12583,10 @@ public class ESPlorer extends javax.swing.JFrame {
                 // FileListReload not needed
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
 
-    private void AddMenuItemView(int x, String FileName) {
+    private void AddMenuItemView(int ButtonID, String FileName) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12593,10 +12599,10 @@ public class ESPlorer extends javax.swing.JFrame {
                 ViewFile(evt.getActionCommand());
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
 
-    private void AddMenuItemDump(int x, String FileName) {
+    private void AddMenuItemDump(int ButtonID, String FileName) {
         int y;
         FilePopupMenuItem.add(new javax.swing.JMenuItem());
         y = FilePopupMenuItem.size() - 1;
@@ -12609,9 +12615,25 @@ public class ESPlorer extends javax.swing.JFrame {
                 HexDump(evt.getActionCommand());
             }
         });
-        FilePopupMenu.get(x).add(FilePopupMenuItem.get(y));
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
     }
-
+    private void AddMenuItemChangeDir(int ButtonID, String FolderName) {
+    // MicroPython only
+        int y;
+        FilePopupMenuItem.add(new javax.swing.JMenuItem());
+        y = FilePopupMenuItem.size() - 1;
+        FilePopupMenuItem.get(y).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/dump.png")));
+        FilePopupMenuItem.get(y).setText("chdir " + FolderName);
+        FilePopupMenuItem.get(y).setToolTipText("change to folder :" + FolderName );
+        FilePopupMenuItem.get(y).setActionCommand(FolderName);
+        FilePopupMenuItem.get(y).addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                // get the foldername from the actioncommand
+                pyFiler.ChDir(evt.getActionCommand());
+            }
+        });
+        FilePopupMenu.get(ButtonID).add(FilePopupMenuItem.get(y));
+    }    
     private void AddTab(String s) {
         int i = FilesTabbedPane.getTabCount();
 
@@ -13292,12 +13314,12 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     // Refactored to avoid code duplication
-    private boolean SendToESP(String str) {
+    boolean SendToESP(String str) {
         // split and convert to ArrayList, then Send via SendToESP ArrayList<String>
         return SendToESP(new ArrayList (Arrays.asList(str.split("\r?\n")))); 
     }
 
-    private boolean SendToESP(ArrayList<String> CommandBuffer) {
+    boolean SendToESP(ArrayList<String> CommandBuffer) {
         boolean success = false;
         if (!pOpen || portJustOpen) {
             log("SendESP: Serial port not open. Cancel.");
@@ -13487,7 +13509,8 @@ public class ESPlorer extends javax.swing.JFrame {
                     }
                 };
             } else { // MicroPython
-                // No delay 
+                // No delay --> Now Adding 50 ms DELAY
+                delay = 50;
                 // cmdlines are not trimmed
                 // progress bar is advanced 
                 taskPerformer = new ActionListener() {
@@ -13495,6 +13518,7 @@ public class ESPlorer extends javax.swing.JFrame {
                         String line;
                         if (j < sendBuffer.size()) {
                             line = sendBuffer.get(j);
+                            //todo : add check for Serial FlowControl
                             sendSerial(addCRLF(line), false);
                             inc_j();
                             
@@ -14136,15 +14160,7 @@ public class ESPlorer extends javax.swing.JFrame {
     private void ViewFile(String FileName) {
         String cmd = "";
         if (FirmwareType == FIRMWARE_MPYTHON || OptionMicroPython.isSelected()) {
-            //todo: Add try/catch     
-            cmd =   "print('------ :" +FileName+ "')\n" + 
-                    "with open('" +FileName+ "') as f: \n" + 
-                    "     s = f.read()\n" +
-                    "     print(s)\n" +
-                    "print('------')\n";
-            LocalEcho = false;
-            // execute
-            SendToESP(cmd);
+            pyFiler.ViewFile(FileName);
         } else {
             cmd = "_view=function()\n"
                     + "local _line\n"
@@ -14192,7 +14208,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 chooser.setFileFilter(FILTER_PYTHON);
                 CommandsSetMicroPython();
 //                CommandsNodeMCU.setVisible(false);
-                ClearUnifiedFileManager();
+                ClearUnifiedFileManager(); // is this really needed ?
                 DisableNotImplemented();
                 //Set Icon 
                 FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/Micropython-logo.png")));
@@ -14205,7 +14221,7 @@ public class ESPlorer extends javax.swing.JFrame {
                 chooser.setFileFilter(FILTER_LUA);
                 CommandsSetNodeMCU();
                 //merged file managers
-                ClearUnifiedFileManager();
+                ClearUnifiedFileManager(); // is this really needed 
                 //Set Icon 
                 FirmwareIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/NodeMCU-logo.png")));
                 FirmwareIcon.setEnabled(true);                
@@ -14225,16 +14241,11 @@ public class ESPlorer extends javax.swing.JFrame {
     }
 
     // tempory disable ESPlorer functions not(yet) emplemented for MicroPython
+    // todo : I think this can be removed / refectored out completely 
     private void DisableNotImplemented() {
         if (OptionMicroPython.isSelected()) {
 
-            // File Upload
-//            FilesUpload.setEnabled(true);
-            
-            //FileAutoSaveESP.setSelected(false);
-
-            /* temporay disabling not emplemented functions */
-            LineDelay.setValue(0); // micro python very fast :)
+            LineDelay.setValue(0); // micro python very fast ... but still not fast enopugh all of the times 
             DumbMode.setSelected(true);
 
             MenuItemViewLeftExtra.setSelected(false);
@@ -14339,9 +14350,11 @@ public class ESPlorer extends javax.swing.JFrame {
         int y;
         // Now add the menu items to that popup menu
         if (File.isDirectory() ) {
-            // Folder 
+            // Folder , use FullName
+            Button.setText(File.Fullname);
             Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/folder closed.png")));
-            //@@todo AddMenuItemChangetoFolder(x, File.Fullname);
+
+            AddMenuItemChangeDir(x, File.Fullname);
             AddMenuItemSeparator(x);
             AddMenuItemRename(x, File.Fullname);
             AddMenuItemSeparator(x);
@@ -14380,24 +14393,6 @@ public class ESPlorer extends javax.swing.JFrame {
             AddMenuItemSeparator(x);
             AddMenuItemRemove(x, File.Fullname);
         }
-        /*
-        //todo:
-        // - Change Directory
-        // - Rename 
-        // - Remove 
-        } else if (FileName.endsWith(".lc")) {
-            FileAsButtonList.get(i).setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/lc.png")));
-            FileAsButtonList.get(i).setToolTipText(FileAsButtonList.get(i).getActionCommand() + ", LeftClick - Run, RightClick - Other actions");
-            AddMenuItemRun(x, FileName);
-            AddMenuItemSeparator(x);
-            AddMenuItemDump(x, FileName);
-            AddMenuItemDownload(x, FileName, size);
-            AddMenuItemRename(x, FileName);
-            AddMenuItemSeparator(x);
-            AddMenuItemRemove(x, FileName);
-        
-       
-         */
         // and connect the popup menu to the File button
         FileAsButtonList.get(i).setComponentPopupMenu(FilePopupMenu.get(x));
         UnifiedFileManagerPane.add(FileAsButtonList.get(i));
@@ -14408,6 +14403,7 @@ public class ESPlorer extends javax.swing.JFrame {
     // sendSerial os.listdir for current folder 
     // eventhandler picks up response , and adds it to the file list 
     private void PyListFiles() {
+        MCUFile[] filelist = null;
         if (portJustOpen) {
             log("ERROR: Communication with MCU not yet established.");
             return;
@@ -14415,14 +14411,12 @@ public class ESPlorer extends javax.swing.JFrame {
         // refresh file listing from MCU 
         pyFiler.refreshDirectoryList();
         ClearUnifiedFileManager();
+       
         try {
-            //waste some time for the directory list to get generated
-            // todo : make less crude 
-            sleep(1000);    
-        } catch (Exception e) {}
-        MCUFile[] filelist =  pyFiler.getDirectoryList();
-        // restore the 'local' standard event handler
-        registerStandardPortReader();
+            filelist =  pyFiler.getDirectoryList();
+        } catch (Exception e) {
+            log(e.toString());
+        }
         if (filelist == null || filelist.length == 0) {
             TerminalAdd("No files found.");
         } else { 
@@ -14438,10 +14432,6 @@ public class ESPlorer extends javax.swing.JFrame {
         UnifiedFileManagerPane.repaint();
         UnifiedFileManagerPane.requestFocusInWindow();
         
-        //re-establish the default eventhandler 
-        registerStandardPortReader();
-
-        SendUnLock(); // (re)enable the sendSerial button 
     } // PyListFiles
 
 /*    

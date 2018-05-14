@@ -5,7 +5,7 @@
             <url>src/ESPlorer/MCUFile.java</url>
             <bookmark id="7">
                 <name/>
-                <line>23</line>
+                <line>21</line>
                 <key/>
             </bookmark>
         </file>
@@ -13,7 +13,7 @@
             <url>src/ESPlorer/pyFiler.java</url>
             <bookmark id="6">
                 <name/>
-                <line>193</line>
+                <line>201</line>
                 <key/>
             </bookmark>
         </file>
@@ -21,22 +21,22 @@
             <url>src/ESPlorer/ESPlorer.java</url>
             <bookmark id="2">
                 <name/>
-                <line>8620</line>
+                <line>8627</line>
                 <key/>
             </bookmark>
             <bookmark id="4">
                 <name/>
-                <line>8774</line>
+                <line>8781</line>
                 <key/>
             </bookmark>
             <bookmark id="5">
                 <name/>
-                <line>10928</line>
+                <line>10933</line>
                 <key/>
             </bookmark>
             <bookmark id="3">
                 <name/>
-                <line>13936</line>
+                <line>13960</line>
                 <key/>
             </bookmark>
         </file>
@@ -48,7 +48,6 @@
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/pyFiler.java</file>
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/file_remove.png</file>
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/file.png</file>
-            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/MCUFile.java</file>
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/folder_open_document.png</file>
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/ESPlorer.java</file>
             <file>file:/C:/Develop/ESPlorer/ESPlorer/src/resources/folder%20open.png</file>

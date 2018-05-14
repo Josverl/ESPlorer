@@ -1,10 +1,11 @@
 /**
  *
- * @author 4refr0nt
+ * @author Jos Verlinde
  */
 package ESPlorer;
 
 import static ESPlorer.ESPlorer.DEBUG;
+import static ESPlorer.ESPlorer.addCR;
 import java.util.ArrayList;
 import javax.xml.bind.DatatypeConverter;
 
@@ -41,49 +42,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class pyFiler {
 
-    /**
-     * @return the MCUFiles
-     */
-    public MCUFile[] getDirectoryList() {
-        
-        MCUFile[] temp;
-        synchronized (this) {
-            temp = MCUFiles;     
-        }
-        
-        /* 
-        try { 
-            filesLock.readLock().lock();
-            temp = MCUFiles;
-        }
-        finally { 
-            filesLock.readLock().unlock();
-        }
-        */
-        return temp;
-    }
-
-    /**
-     * Allows the filelist to be cleared or set, but consider locking
-     * @param MCUFiles the MCUFiles to set
-     */
-    public void setDirectoryList(MCUFile[] MCUFiles) {
-        synchronized (this) {
-            this.MCUFiles = MCUFiles;    
-        }
-        /*
-        filesLock.writeLock().lock();
-        filelistReady = false;
-        try {
-            this.MCUFiles = MCUFiles;    
-        } catch (Exception e) {
-        } finally { 
-            filesLock.writeLock().unlock();
-            filelistReady = true;
-        }
-        */
-    }
-    // use raw mode paste to hide the file transfers
+     // use raw mode paste to hide the file transfers
     // this can be changed externally (from options)
     public boolean useRawMode;
     /**
@@ -121,8 +80,13 @@ public class pyFiler {
     
     // MCUFile listing retrieved from the MCU 
     private MCUFile[] MCUFiles;    
-    ReadWriteLock filesLock = new ReentrantReadWriteLock();
-    private boolean filelistReady; 
+    //ReadWriteLock filesLock = new ReentrantReadWriteLock();
+
+    public final Object lock = new Object();
+    
+    // are we waiting on the MCU 
+    boolean waitingForJson ;
+    
     /**
      * Default constructor
      */
@@ -132,7 +96,36 @@ public class pyFiler {
         //assume current folder until we have better
         // todo: retrieve current folder on refresh
         ESPWorkingDirectory = "."; 
+        waitingForJson = false;
     }
+       
+    /**
+     * @return the MCUFiles
+     */
+    public MCUFile[] getDirectoryList() throws InterruptedException {
+        synchronized(lock){
+            mainwindow.log(String.format("getting files"));            
+            while(waitingForJson){
+                lock.wait();
+            }
+            MCUFile[] temp = MCUFiles; 
+            mainwindow.log(String.format("returned %d files",temp.length));            
+            return temp;
+        }
+    }
+
+
+    /**
+     * Allows the filelist to be cleared or set, but consider locking
+     * @param MCUFiles the MCUFiles to set
+     */
+    public void setDirectoryList(MCUFile[] MCUFiles) {
+        synchronized (lock) {
+            this.MCUFiles = MCUFiles;
+            lock.notifyAll();
+        }
+    }
+        
 
     /**
      * upload a binary (or script file)  to the MCU 
@@ -165,6 +158,20 @@ public class pyFiler {
         }
         // BUG if the filesize is larger that 3.5 KB on ESP8622 ,
         // Assumed root cause is that the Compiler runs out of memory 
+        // BUG2: MCU cannot always keep up , causing characters to miss out. 
+        // serial overrun is not detected, but does cause errors in the generated script.
+        /* possible solution : 
+               > use upload function , but this does not work on LoBo 
+        
+               > wait a few moments between lines ( ? detect CTS ?) 
+               > save to file.tmp 
+               > break into multiple paste commands of 50 lines to avoid running out of memory  / heap 
+               > issue gc.collect() in between 
+               > check filesize of file.tmp 
+               > if file exists: remove old file 
+               > rename tmpfile.to new name 
+        */         
+        
         mainwindow.sendBuffer.add("import ubinascii;_n=0;_f = open('" +FileName+ "', 'wb')");
         for (byte[] chunk : chunks) {
             strHex= Hexlify(chunk);
@@ -176,7 +183,7 @@ public class pyFiler {
         // END Paste Mode 
         mainwindow.sendBuffer.add( EndPasteMode + EndRawMode);
         
-        // todo: check for actual success
+        // todo: check for 
         return success;
     }
 
@@ -192,6 +199,47 @@ public class pyFiler {
         return UploadFile( FileName, ScriptContent.getBytes());
     }
 
+    // overload to add default param value
+    public boolean SendCommand(String cmd) {
+        return SendCommand(cmd, false);
+    }
+    public boolean SendCommand(String cmd, boolean sendBreak) {
+        if(sendBreak == true) {
+            // Enter Raw or Paste Mode 
+            mainwindow.btnSend(BreakBreak);
+        }
+        if (useRawMode) { 
+            mainwindow.btnSend( StartRawMode );
+        } else { 
+            mainwindow.btnSend( StartPasteMode );  
+        }
+        //mainwindow.log(String.format("SendCommand: '%s'",cmd));
+        mainwindow.btnSend(addCR(cmd));
+        // END Paste Mode 
+        mainwindow.btnSend( EndPasteMode);        
+        // todo: check for actual success
+        return true;
+    }
+    /*
+    public boolean SendCommandSerial(String cmd, boolean sendBreak) {
+        if(sendBreak == true) {
+            // Enter Raw or Paste Mode 
+            mainwindow.sendSerial(BreakBreak, false);
+        }
+        if (useRawMode) { 
+            mainwindow.sendSerial( StartRawMode ,false);
+        } else { 
+            mainwindow.sendSerial( StartPasteMode,false );  
+        }
+        mainwindow.log(String.format("SendCommand: '%s'",cmd));
+        mainwindow.sendSerial(addCR(cmd), false);
+        // END Paste Mode 
+        mainwindow.sendSerial( EndPasteMode,false );        
+        // todo: check for actual success
+        return true;
+    }
+    */
+    
     /**
      * Run the provided script (filename) on the uPython board in the global environment
      * @param FileName
@@ -199,210 +247,176 @@ public class pyFiler {
      */
     public boolean Run(String FileName) {
         String cmd;
-        mainwindow.sendBuffer = new ArrayList<>();
-        cmd = "exec(open('" + FileName + "').read(),globals())";  
-        // Enter Raw or Paste Mode 
-        mainwindow.sendBuffer.add( BreakBreak );
-        if (useRawMode) { 
-            mainwindow.sendBuffer.add( StartRawMode );
-        } else { 
-            mainwindow.sendBuffer.add( StartPasteMode );  
-        }
-        mainwindow.sendBuffer.add(cmd);
-        // END Paste Mode 
-        mainwindow.sendBuffer.add( EndPasteMode );        
-        // todo: check for actual success
-        return true;
+        cmd = String.format("exec(open('%s').read(),globals())",FileName );  
+        return SendCommand(cmd);
     }
 
-    // todo: return a list of file info things
-    public String refreshDirectoryList() {
-        mainwindow.log("Start ListDir");
-        
-        synchronized(this){
-            try {
-                serialPort.removeEventListener();
-            } catch (Exception e) {
-                mainwindow.log(e.toString());
-                return null;
+    public boolean refreshDirectoryList() {
+        // todo : make sure that esplorer module is present on MCU
+        synchronized(lock){
+            if (waitingForJson == true) { 
+                mainwindow.log("Error, already waiting for JSON");
+                Toolkit.getDefaultToolkit().beep();
+                return false;
             }
-            try {
-                serialPort.addEventListener(new PortPyFilesReader(), ESPlorer.portMask);
-                mainwindow.log("pyFileManager: Add EventListener: Success.");
-            } catch (SerialPortException e) {
-                mainwindow.log("pyFileManager: Add EventListener Error. Canceled.");
-                return null;
-            }
-            ESPlorer.rx_data = "";
-            ESPlorer.rcvBuf = "";
-            // todo : make sure that esplorer module is present on MCU
-            // retrieve full tree 
-            String cmd = "import esplorer;import json;json.dumps(esplorer.listdir('/',True))";
-            mainwindow.btnSend(cmd);
-            // Start timeout watchdog 
-            WatchDogPyListDir();
-            
+            // now we can start waiting
+            waitingForJson = true;
         }
-        return "";
-        /*            
-        // lock access as we will be writing
-        filesLock.writeLock().lock();
-        filelistReady = false;
-        mainwindow.log("filesLock.writeLock().lock()");
-        
+        mainwindow.log("Start ListDir");
         try {
             serialPort.removeEventListener();
         } catch (Exception e) {
             mainwindow.log(e.toString());
-            return null;
+            return false;
         }
         try {
             serialPort.addEventListener(new PortPyFilesReader(), ESPlorer.portMask);
             mainwindow.log("pyFileManager: Add EventListener: Success.");
         } catch (SerialPortException e) {
             mainwindow.log("pyFileManager: Add EventListener Error. Canceled.");
-            return null;
+            return false;
         }
         ESPlorer.rx_data = "";
         ESPlorer.rcvBuf = "";
 
-        //todo: add filesize 
-        String cmd = "import esplorer;import json;json.dumps(esplorer.listdir('.'))";
-        mainwindow.btnSend(cmd);
+        // retrieve full directory tree 
+        String cmd;
+        cmd = String.format("import esplorer;esplorer.listdir('/',True,JSON=True)" );
+
+        SendCommand(cmd);
         // Start timeout watchdog 
-        WatchDogPyListDir();
-       
-        return "";
-        */
+        WatchDogPyListDir( 100); //3*1000);
+        return true;
     }
         
     // Start 3 second timeout 
-    private void WatchDogPyListDir() {
+    private void WatchDogPyListDir(int delay) {
         watchDog = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 //StopSend();
-                Toolkit.getDefaultToolkit().beep();
+//                Toolkit.getDefaultToolkit().beep();
                 mainwindow.TerminalAdd("Waiting answer from ESP - Timeout reached. Command aborted.\r\n");
                 mainwindow.log("Waiting answer from ESP - Timeout reached. Command aborted.");
-                // unlock our writelock
-                filesLock.writeLock().unlock();
-                mainwindow.log("filesLock.writeLock().unlock()");
-                try {
-                    serialPort.removeEventListener();
-                    //cant Restore :-( 
-                    //ESPlorer.registerStandardPortReader();
-                    //serialPort.addEventListener(new ESPlorer.PortReader(), portMask);
-                } catch (Exception e) {
-                    mainwindow.log(e.toString());
-                }
-//                SendUnLock(); // (re)enable the sendSerial button 
+//                mainwindow.registerStandardPortReader();
+//                synchronized(lock) { 
+//                    waitingForJson = false;
+//                    lock.notifyAll();
+//                }
+                //mainwindow.SendUnLock(); // (re)enable the sendSerial button 
             }
         };
-        // fixed maximum delay of 3 seconds to list the directory 
-        int delay = 30*1000;
 
         timeout = new Timer(delay, watchDog);
         timeout.setRepeats(false);
         timeout.setInitialDelay(delay);
+        mainwindow.log("Start json watchdog.");
         timeout.start();
     } // WatchDogPyListDir
     
     
     // Inspiration: https://www.cpume.com/question/hzzzizoz-java-jssc-passing-value-to-another-class-from-serialevent.html
-    public final Object lock = new Object();
     
     private class PortPyFilesReader implements SerialPortEventListener {
         public void serialEvent(SerialPortEvent event) {
             String data;
-            if (event.isRXCHAR() && event.getEventValue() > 0) {
-                try {
-                    data = serialPort.readString(event.getEventValue());
-                    //rcvBuf = rcvBuf + data;   // does not appear to be used at all 
-                    rx_data = rx_data + data;
-                    mainwindow.TerminalAdd(data);
-                } catch (Exception e) {
-                    data = "";
-                    mainwindow.log(e.toString());
-                }
-                // look for JSON ending sequence : }]' in recieved data 
-                if (rx_data.contains("}]'\r\n>>>")) {
+                if (event.isRXCHAR() && event.getEventValue() > 0) {
                     try {
-                        timeout.stop();
-                    } catch (Exception e) {
-                        mainwindow.log(e.toString());
-                    }
-                    mainwindow.log("FileManager: File list found! Do parsing...");
-                    try {
-                        int start = rx_data.indexOf("'[{");
-                        int end = rx_data.indexOf("}]'");
-                        // trim so we kust have the json left 
-                        rx_data = rx_data.substring(start + 1,end +2 );
-                        // Get Gson object
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                       
-                        // parse json string to object
-                        MCUFiles = gson.fromJson(rx_data, MCUFile[].class);                    
-                        
-                        filelistReady = true;
-                        // unlock our writelock
-                        filesLock.writeLock().unlock();
-                        // todo : writelock does not block the readlock ?
-                        mainwindow.log("filesLock.writeLock().unlock()");
-                        if(DEBUG) {
-                            mainwindow.TerminalAdd("\r\n----------------------------");
-                            for (MCUFile item : MCUFiles ) {
-                                mainwindow.TerminalAdd("\r\n" + item.Fullname);
-                            }
-                     
-                            mainwindow.TerminalAdd("\r\n----------------------------\r\n> ");
+                        data = serialPort.readString(event.getEventValue());
+                        //rcvBuf = rcvBuf + data;   // does not appear to be used at all 
+                        rx_data = rx_data + data;
+                        if (useRawMode == false ) { // only show clutter if indicated
+                            mainwindow.TerminalAdd(data);
                         }
-                        mainwindow.log("pyFileManager: File list parsing done, found " +"?"+ " file(s).");
                     } catch (Exception e) {
+                        data = "";
                         mainwindow.log(e.toString());
                     }
-                    try {
-                        serialPort.removeEventListener();
-                        //restore standard eventhandler is done by caller 
-                        // not great , but it works ....
-                    } catch (Exception e) {
-                        mainwindow.log(e.toString());
+                    // look for JSON ending sequence : }]' in recieved data 
+                    if (rx_data.contains("}]'\r\n>>>")) {
+                        try {
+                            timeout.stop(); // stop no-response watchdog
+                        } catch (Exception e) {
+                            mainwindow.log(e.toString());
+                        }
+                        mainwindow.log("FileManager: File list found! Do parsing...");
+                        try {
+                            int start = rx_data.indexOf("'[{");
+                            int end = rx_data.indexOf("}]'");
+                            // trim so we just have the json left 
+                            rx_data = rx_data.substring(start + 1,end +2 );
+                            // Get Gson object
+                            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+                            // parse json string to object
+                            MCUFiles = gson.fromJson(rx_data, MCUFile[].class);                    
+
+                            if(DEBUG) {
+                                mainwindow.TerminalAdd("\r\n----------------------------");
+                                for (MCUFile item : MCUFiles ) {
+                                    mainwindow.TerminalAdd("\r\n" + item.Fullname);
+                                }
+                                mainwindow.TerminalAdd("\r\n----------------------------\r\n> ");
+                            }
+                            synchronized(lock) {
+                                // no longer waiting
+                                waitingForJson = false;
+                            }
+                            lock.notifyAll();
+                            mainwindow.log(String.format("FileManager: File list parsing done, found %d file(s).",MCUFiles.length));
+                            mainwindow.SendUnLock();
+                        } catch (Exception e) {
+                            mainwindow.log(e.toString());
+                        }
+                        try {
+                            serialPort.removeEventListener();
+                            //restore standard eventhandler 
+                            mainwindow.registerStandardPortReader();
+                        } catch (Exception e) {
+                            mainwindow.log(e.toString());
+                        }
                     }
-//                    SendUnLock();
+                } else if (event.isCTS()) {
+                    mainwindow.UpdateLedCTS();
+                } else if (event.isERR()) {
+                    mainwindow.log("FileManager: Unknown serial port error received.");
                 }
-            } else if (event.isCTS()) {
-//                mainwindow.UpdateLedCTS();
-            } else if (event.isERR()) {
-                mainwindow.log("FileManager: Unknown serial port error received.");
-            }
         } // serialEvent
     } // PortPyFilesReader
 
-    
+    public boolean ViewFile(String FileName){
+        //todo: Add try/catch     
+        String cmd ;
+        cmd =   String.format("import esplorer;esplorer.viewfile('%s')", FileName);
+        
+        return SendCommand(cmd);
+    }
     
     // stub created but not implemented 
     public boolean DownloadFile() {
         return false;
     }
     // stub created, however the functionality is implemented in ESPlorer.Java 
-    public boolean Rename() {
+    public boolean RenameFile(String Oldname, String NewName) {
         return false;
     }
-    // stub created but not implemented 
-    public int Length() {
-        return 0;
+    // stub created,  
+    public boolean RenameDirectory(String Oldname, String NewName) {
+        return false;
     }
-    // stub created but not implemented, not used 
-    public String cd() {
+
+    // change to folder
+    // todo: Make more robust and retrieve the final directory
+    public String ChDir( String Foldername) {
+        String cmd ;
+        cmd =   String.format("import uos as os;os.chdir('%s');os.getcwd()", Foldername);
+        SendCommand(cmd);    
+        ESPWorkingDirectory = Foldername;
         return ESPWorkingDirectory;
     }
     // partly implemented 
     // todo: retrieve the actual folder on connection 
     public String CurrentWorkingDirectory() {
         return ESPWorkingDirectory ;
-    }
-    // stub created but not implemented 
-    public String GetParent() {
-        return "";
     }
     // stub created but not implemented 
     public boolean isExist() {
