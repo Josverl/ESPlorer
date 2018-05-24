@@ -10,12 +10,10 @@ import static ESPlorer.ESPlorer.sendBuffer;
 import java.util.Arrays;
 
 public class pyFiler {
-
-
     public static final int OK = 0;
     public static final int CHUNKSIZE = 80;
     public static final int ERROR_COMMUNICATION = 1;
-    
+   
     // use raw mode paste to hide the file transfers 
     //todo : add to options
     private boolean useRawMode = true;
@@ -37,8 +35,9 @@ public class pyFiler {
     public static String StartPasteMode = ""+ (char)ASCII_CTRL_E; 
     //uPython End multiline paste mode 
     public static String EndPasteMode = ""+ (char)ASCII_CTRL_D; 
-
+    
     private static String ESPWorkingDirectory; 
+
             
     /**
      * Default constructor
@@ -80,6 +79,9 @@ public class pyFiler {
         } else { 
             sendBuffer.add( StartPasteMode );  
         }
+        // Free memory 
+        sendBuffer.add("import gc;gc.collect()");
+        
         sendBuffer.add("import ubinascii;_n=0;_f = open('" +FileName+ "', 'wb')");
         for (byte[] chunk : chunks) {
             strHex= Hexlify(chunk);
@@ -107,15 +109,83 @@ public class pyFiler {
         return UploadFile( FileName, ScriptContent.getBytes());
     }
 
+    // get the MicroPython cmd to run a named script
+    public String cmdRun(String FileName) {
+        String cmd;
+        cmd = "exec(open('" + FileName + "').read(),globals())";  
+        // and run garbadge collection to avoid OSError: [Errno 5] EIO
+        cmd=cmd+";import gc;gc.collect();"; 
+        return cmd;
+    }
+
+    
+    public String cmdViewFile(String FileName){
+        String cmd;
+        //ToDo: Add try/Except         
+        cmd =   "print('------ :" +FileName+ "')\n" + 
+                "with open('" +FileName+ "') as f: \n" + 
+                "     s = f.read()\n" +
+                "     print(s)\n" +
+                "print('------')\n";
+        return cmd;
+    }
+
+    public String cmdHexDump(String FileName){
+        String cmd;
+        //ref : http://code.activestate.com/recipes/572181-unicode-string-hex-dump
+        // optimised by using binascci and processing line by line
+
+        cmd =   "FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])\n" +
+                "import binascii\n" +
+                "_ln = 0\n" +
+                "_sz = 16\n" +
+                "with open('" +FileName+ "', 'rb') as f:\n" +
+                "    while True:\n" +
+                "        chunk = f.read(_sz)\n" +
+                "        if chunk == b'':\n" +
+                "            break\n" +
+                "        hex = binascii.hexlify(chunk).decode(\"utf-8\")\n" +
+                "        printable = ''.join([\"%s\" % ((x <= 127 and FILTER[x]) or '.') for x in chunk])\n" +
+                "        print('{0:#06x} {1:32} {2}'.format(_ln, hex, printable))\n" +
+                "        _ln+=_sz";
+        return cmd;
+    }
+    
+    // Micropython command to delete a file
+    public String cmdDeleteFile(String FileName){
+        return "import uos;uos.remove('" + FileName + "')";
+    }
+
+    /**
+     * micropython script to retrieve the current working directory 
+     * and the files in the current directory
+     * @return
+     */
+    public String cmdFileList(){
+        //todo: add filesize 
+        String cmd;
+        //cmd = "import uos;'<cwd={}>'.format(uos.getcwd());uos.listdir('" + pyFiler.ESPWorkingDirectory + "')";
+        // by using the current directory there is no confusion if a user or a script changed to another folder 
+        cmd = "import uos;'<cwd={}>'.format(uos.getcwd());uos.listdir('.')";
+        return cmd;
+    }
+
+    public String cmdChDir(String FolderName){
+        // assume relative foldername
+        String cmd = "import uos;uos.chdir('" + FolderName + "')";
+        return cmd;
+    }
+    
     /**
      * Run the provided script (filename) on the uPython board in the global environment
      * @param FileName
      * @return success
-     */
+     * FixMe: does not work due to issues with sendbuffer 
+    */
     public boolean Run(String FileName) {
         String cmd;
         sendBuffer = new ArrayList<>();
-        cmd = "exec(open('" + FileName + "').read(),globals())";  
+        cmd = cmdRun(FileName);
         // Enter Raw or Paste Mode 
         sendBuffer.add( BreakBreak );
         if (useRawMode) { 
@@ -147,15 +217,17 @@ public class pyFiler {
     public int Length() {
         return 0;
     }
-    // stub created but not implemented, not used 
-    public String cd() {
-        return ESPWorkingDirectory;
-    }
+
     // partly implemented 
     // todo: retrieve the actual folder on connection 
-    public String pwd() {
+    public String getcwd() {
         return ESPWorkingDirectory ;
     }
+    public static void setcwd(String ESPWorkingDirectory) {
+        pyFiler.ESPWorkingDirectory = ESPWorkingDirectory;
+    }
+    
+    
     // stub created but not implemented 
     public String GetParent() {
         return "";

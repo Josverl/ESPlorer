@@ -5,25 +5,26 @@
             <url>src/ESPlorer/ESPlorer.java</url>
             <bookmark id="2">
                 <name/>
-                <line>8503</line>
+                <line>8536</line>
                 <key/>
             </bookmark>
             <bookmark id="4">
                 <name/>
-                <line>8657</line>
+                <line>8675</line>
                 <key/>
             </bookmark>
             <bookmark id="3">
                 <name/>
-                <line>13762</line>
+                <line>13815</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Dev/ESPlorer/ESPlorer/src/ESPlorer/ESPlorer.java</file>
-            <file>file:/C:/Dev/ESPlorer/ESPlorer/src/ESPlorer/Changes.md</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/pyFiler.java</file>
+            <file>jar:file:/C:/Develop/ESPlorer/ESPlorer/jar/jssc-2.8.0-sources.jar!/src/jssc/SerialPort.java</file>
+            <file>file:/C:/Develop/ESPlorer/ESPlorer/src/ESPlorer/ESPlorer.java</file>
         </group>
     </open-files>
 </project-private>
