@@ -48,7 +48,7 @@ public class ESPlorer extends javax.swing.JFrame {
     public static boolean pOpen = false;
     public static boolean sOpen = false;
     public static boolean portJustOpen = false;
-    public static final String VERSION = "v0.3.180521";
+    public static final String VERSION = "v0.4.180524";
     public static ArrayList<String> LAF;
     public static ArrayList<String> LAFclass;
     public static Preferences prefs;
