@@ -135,19 +135,25 @@ public class pyFiler {
         //ref : http://code.activestate.com/recipes/572181-unicode-string-hex-dump
         // optimised by using binascci and processing line by line
 
-        cmd =   "FILTER = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])\n" +
-                "import binascii\n" +
-                "_ln = 0\n" +
-                "_sz = 16\n" +
-                "with open('" +FileName+ "', 'rb') as f:\n" +
-                "    while True:\n" +
-                "        chunk = f.read(_sz)\n" +
-                "        if chunk == b'':\n" +
-                "            break\n" +
-                "        hex = binascii.hexlify(chunk).decode(\"utf-8\")\n" +
-                "        printable = ''.join([\"%s\" % ((x <= 127 and FILTER[x]) or '.') for x in chunk])\n" +
-                "        print('{0:#06x} {1:32} {2}'.format(_ln, hex, printable))\n" +
-                "        _ln+=_sz";
+        cmd =   "def hexdump(fn):\n" +
+                "    _FLT = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])\n" +
+                "    try: \n" +
+                "        with open(fn, 'rb') as f:\n" +
+                "            _ln = 0\n" +
+                "            while True:\n" +
+                "                chunk = f.read(_sz)\n" +
+                "                if chunk == b'':\n" +
+                "                    break\n" +
+                "                hex = binascii.hexlify(chunk).decode(\"utf-8\")\n" +
+                "                i=0;l=[]\n" +
+                "                for c in hex: i+=1;l.append(c if i%4 else c+' ')\n" +
+                "                hex = ''.join(l)\n" +
+                "                printable = ''.join([\"%s\" % ((x <= 127 and _FLT[x]) or '.') for x in chunk])\n" +
+                "                print('{0:#06x} {1:40} {2}'.format(_ln, hex, printable))\n" +
+                "                _ln+=_sz\n" +
+                "    except:\n" +
+                "        print ('Sorry, ran into an error')\n" +
+                "hexdump('" +FileName+ "')";
         return cmd;
     }
     
