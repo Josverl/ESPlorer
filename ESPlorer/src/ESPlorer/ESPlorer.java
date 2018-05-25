@@ -10448,7 +10448,7 @@ public class ESPlorer extends javax.swing.JFrame {
     }//GEN-LAST:event_cmdMicroPythonSendToHostActionPerformed
 
     private void cmdMicroPythonScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdMicroPythonScanActionPerformed
-        btnSend("import network;nic = network.WLAN(network.STA_IF);nic.scan()");
+        SendToESP(pyFiler.cmdWifiScan());
     }//GEN-LAST:event_cmdMicroPythonScanActionPerformed
 
     private void EditorOnlyCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_EditorOnlyCheckBoxItemStateChanged
@@ -14325,7 +14325,7 @@ public class ESPlorer extends javax.swing.JFrame {
             }
         };
         // fixed delay of 3 seconds to list the directory 
-        int delay = 3000*100;
+        int delay = 3000;
 
         timeout = new Timer(delay, watchDog);
         timeout.setRepeats(false);

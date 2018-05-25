@@ -137,9 +137,10 @@ public class pyFiler {
 
         cmd =   "def hexdump(fn):\n" +
                 "    _FLT = ''.join([(len(repr(chr(x))) == 3) and chr(x) or '.' for x in range(256)])\n" +
+                "    import binascii\n" +
+                "    _ln = 0;_sz=16\n"+
                 "    try: \n" +
                 "        with open(fn, 'rb') as f:\n" +
-                "            _ln = 0\n" +
                 "            while True:\n" +
                 "                chunk = f.read(_sz)\n" +
                 "                if chunk == b'':\n" +
@@ -161,7 +162,24 @@ public class pyFiler {
     public String cmdDeleteFile(String FileName){
         return "import uos;uos.remove('" + FileName + "')";
     }
-
+    // Scan Network 
+    public String cmdWifiScan(){
+        String cmd =    "# ------------------------\n" +
+                        "# Scan for accesspoints\n" +
+                        "# ------------------------\n" +
+                        "import network;\n" +
+                        "nic = network.WLAN(network.STA_IF);\n" +
+                        "_ = nic.active(True)\n" +
+                        "#sort on signal strength \n" +
+                        "networks = sorted(nic.scan(), key=lambda x: x[3], reverse=True)\n" +
+                        "_f = \"{0:<32} {2:>8} {3:>8} {4:>8} {5:>8}\"\n" +
+                        "print( _f.format(\"SSID\",\"bssid\",\"Channel\",\"Signal\",\"Authmode\",\"Hidden\") )\n" +
+                        "for row in networks: \n" +
+                        "     print( _f.format( *row ) ) \n" +
+                        "del _f";
+        return cmd;
+    }
+    
     /**
      * micropython script to retrieve the current working directory 
      * and the files in the current directory
