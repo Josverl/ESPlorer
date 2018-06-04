@@ -12282,7 +12282,7 @@ public class ESPlorer extends javax.swing.JFrame {
         
         FileAsButtonList.get(i).setText(FileName);
         //FileAsButtonList.get(i).setFont(new java.awt.Font("Tahoma", 0, 12));
-        FileAsButtonList.get(i).setAlignmentX(0.5F);
+        FileAsButtonList.get(i).setAlignmentX(JComponent.CENTER_ALIGNMENT);
         FileAsButtonList.get(i).setMargin(new java.awt.Insets(2, 2, 2, 2));
         FileAsButtonList.get(i).setMaximumSize(new java.awt.Dimension(130, 25));
         FileAsButtonList.get(i).setPreferredSize(new java.awt.Dimension(130, 25));
@@ -14192,7 +14192,7 @@ public class ESPlorer extends javax.swing.JFrame {
         javax.swing.JButton Button = FileAsButtonList.get(i);
 
         Button.setText(FileName);
-        Button.setAlignmentX(0.5F);
+        Button.setAlignmentX(JComponent.CENTER_ALIGNMENT);
         Button.setMargin(new java.awt.Insets(2, 2, 2, 2));
         Button.setMaximumSize(new java.awt.Dimension(130, 25));
         Button.setPreferredSize(new java.awt.Dimension(130, 25));
