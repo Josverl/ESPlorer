@@ -1,6 +1,7 @@
-import pyb
+#generic uPython version
+import machine
 import time
-pin = pyb.Pin(2, pyb.Pin.OUT)
+pin = machine.Pin(2, machine.Pin.OUT)
 for i in range(4):
     print('LED ON')
     pin.value(0)
