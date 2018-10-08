@@ -12,8 +12,8 @@ d) it only runs on JRE 1.8 , which I fear will soon run into security issues
 I am currently switching to using VSCode in combination with the pymakr add-in that pycomm has created. They appear to be very open to input , and are quite responsive 👍
 
 I suggest that you Check Out :
-https://code.visualstudio.com/Download
-https://marketplace.visualstudio.com/items?itemName=pycom.Pymakr
+* https://code.visualstudio.com/Download
+* https://marketplace.visualstudio.com/items?itemName=pycom.Pymakr
 
 ================== (jan 2018) 
 I have been adding new functionality to ESPlorer to make it work better with MicroPython boards.
